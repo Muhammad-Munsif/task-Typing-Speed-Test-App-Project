@@ -8,6 +8,46 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Custom styles for typing test */
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.typing-test {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Typing text styling */
+.correct {
+  color: #10b981;
+  /* Green for correct */
+}
+
+.incorrect {
+  color: #ef4444;
+  /* Red for incorrect */
+  text-decoration: underline;
+}
+
+.current {
+  border-left: 2px solid #3b82f6;
+  /* Blue cursor effect */
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+}
+  </style>
 </head>
 
 <body
