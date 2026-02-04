@@ -155,7 +155,8 @@
     /* Mobile keyboard friendly */
     @media (max-width: 768px) {
       textarea {
-        font-size: 16px !important; /* Prevents zoom on iOS */
+        font-size: 16px !important;
+        /* Prevents zoom on iOS */
       }
     }
 
@@ -196,7 +197,8 @@
   </style>
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
+<body
+  class="bg-gray-100 dark:bg-gray-900 min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
   <div class="container w-full max-w-4xl mx-auto">
     <div class="typing-test bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-4 md:p-8">
       <!-- Header -->
@@ -211,11 +213,13 @@
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
             <span class="text-gray-600 dark:text-gray-300 text-sm hidden md:block">Theme</span>
-            <button id="themeToggle" class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+            <button id="themeToggle"
+              class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
               <i class="fas fa-moon"></i>
             </button>
           </div>
-          <button id="settingsToggle" class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+          <button id="settingsToggle"
+            class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
             <i class="fas fa-cog"></i>
           </button>
         </div>
@@ -227,25 +231,39 @@
           <div>
             <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Test Duration</h3>
             <div class="flex gap-2">
-              <button class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition" data-time="30">30s</button>
+              <button
+                class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+                data-time="30">30s</button>
               <button class="time-option px-3 py-1.5 rounded-lg bg-blue-500 text-white" data-time="60">60s</button>
-              <button class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition" data-time="120">120s</button>
+              <button
+                class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+                data-time="120">120s</button>
             </div>
           </div>
           <div>
             <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Difficulty</h3>
             <div class="flex gap-2">
-              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-green-100 dark:bg-gray-600 text-green-700 dark:text-gray-300 hover:bg-green-200 dark:hover:bg-gray-500 transition" data-difficulty="easy">Easy</button>
-              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-blue-500 text-white" data-difficulty="medium">Medium</button>
-              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition" data-difficulty="hard">Hard</button>
+              <button
+                class="difficulty-option px-3 py-1.5 rounded-lg bg-green-100 dark:bg-gray-600 text-green-700 dark:text-gray-300 hover:bg-green-200 dark:hover:bg-gray-500 transition"
+                data-difficulty="easy">Easy</button>
+              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-blue-500 text-white"
+                data-difficulty="medium">Medium</button>
+              <button
+                class="difficulty-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+                data-difficulty="hard">Hard</button>
             </div>
           </div>
           <div>
             <h3 class="font-semibold text-gray-800 dark:text-white mb-2">Quote Source</h3>
             <div class="flex gap-2">
-              <button class="source-option px-3 py-1.5 rounded-lg bg-blue-500 text-white" data-source="programming">Programming</button>
-              <button class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition" data-source="literature">Literature</button>
-              <button class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition" data-source="mixed">Mixed</button>
+              <button class="source-option px-3 py-1.5 rounded-lg bg-blue-500 text-white"
+                data-source="programming">Programming</button>
+              <button
+                class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+                data-source="literature">Literature</button>
+              <button
+                class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition"
+                data-source="mixed">Mixed</button>
             </div>
           </div>
         </div>
@@ -289,7 +307,9 @@
       </div>
 
       <!-- Quote Display -->
-      <div id="quoteDisplay" class="bg-gray-50 dark:bg-gray-700 p-5 md:p-6 rounded-xl mb-4 text-gray-800 dark:text-gray-200 text-lg md:text-xl leading-relaxed md:leading-loose min-h-[140px] overflow-y-auto"></div>
+      <div id="quoteDisplay"
+        class="bg-gray-50 dark:bg-gray-700 p-5 md:p-6 rounded-xl mb-4 text-gray-800 dark:text-gray-200 text-lg md:text-xl leading-relaxed md:leading-loose min-h-[140px] overflow-y-auto">
+      </div>
 
       <!-- Input Area -->
       <div class="relative mb-4">
@@ -298,7 +318,8 @@
           rows="3" placeholder="Start typing here... (Press Ctrl+Enter to restart)" autofocus></textarea>
         <div class="absolute bottom-3 right-3 flex items-center gap-2">
           <span id="charCount" class="text-sm text-gray-500 dark:text-gray-400">0/0</span>
-          <button id="clearBtn" class="p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition">
+          <button id="clearBtn"
+            class="p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -306,13 +327,16 @@
 
       <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row gap-3">
-        <button id="restartBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
+        <button id="restartBtn"
+          class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
           <i class="fas fa-redo"></i> Restart Test
         </button>
-        <button id="newQuoteBtn" class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
+        <button id="newQuoteBtn"
+          class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
           <i class="fas fa-random"></i> New Quote
         </button>
-        <button id="practiceBtn" class="flex-1 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
+        <button id="practiceBtn"
+          class="flex-1 bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl transition flex items-center justify-center gap-2">
           <i class="fas fa-dumbbell"></i> Practice Mode
         </button>
       </div>
@@ -321,7 +345,9 @@
       <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
         <p class="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
           <i class="fas fa-info-circle text-blue-500"></i>
-          <span><strong>Tip:</strong> Use <kbd class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd> to restart test. Focus on accuracy first, then speed.</span>
+          <span><strong>Tip:</strong> Use <kbd
+              class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd> to restart test. Focus on
+            accuracy first, then speed.</span>
         </p>
       </div>
     </div>
@@ -330,12 +356,13 @@
     <div id="resultModal" class="result-modal">
       <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full mx-4">
         <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-trophy text-3xl text-green-500"></i>
           </div>
           <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Test Complete!</h2>
           <p class="text-gray-600 dark:text-gray-300 mb-6">Your typing results are in</p>
-          
+
           <div class="grid grid-cols-2 gap-4 mb-6">
             <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl">
               <p class="text-sm text-gray-600 dark:text-gray-300">WPM</p>
@@ -354,12 +381,14 @@
               <p id="resultTime" class="text-2xl font-bold text-gray-800 dark:text-white">0s</p>
             </div>
           </div>
-          
+
           <div class="flex flex-col sm:flex-row gap-3">
-            <button id="closeResultBtn" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-xl transition">
+            <button id="closeResultBtn"
+              class="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-5 py-3 rounded-xl transition">
               Close
             </button>
-            <button id="shareResultBtn" class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition">
+            <button id="shareResultBtn"
+              class="flex-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition">
               <i class="fas fa-share-alt mr-2"></i> Share
             </button>
           </div>
@@ -496,7 +525,7 @@
         document.getElementById("settingsToggle").addEventListener("click", toggleSettings);
         closeResultBtn.addEventListener("click", closeResultModal);
         shareResultBtn.addEventListener("click", shareResults);
-        
+
         // Settings event listeners
         document.querySelectorAll(".time-option").forEach(btn => {
           btn.addEventListener("click", (e) => {
@@ -507,7 +536,7 @@
             timeElement.textContent = `${timeLeft}s`;
           });
         });
-        
+
         document.querySelectorAll(".difficulty-option").forEach(btn => {
           btn.addEventListener("click", (e) => {
             document.querySelectorAll(".difficulty-option").forEach(b => {
@@ -520,7 +549,7 @@
             loadNewQuote();
           });
         });
-        
+
         document.querySelectorAll(".source-option").forEach(btn => {
           btn.addEventListener("click", (e) => {
             document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white"));
@@ -537,7 +566,7 @@
           e.preventDefault();
           resetTest();
         }
-        
+
         // Escape to clear input
         if (e.key === "Escape") {
           e.preventDefault();
@@ -548,16 +577,16 @@
       function loadNewQuote() {
         const quoteArray = quotes[quoteSource][difficulty];
         currentQuote = quoteArray[Math.floor(Math.random() * quoteArray.length)];
-        
+
         // Update UI with quote info
         const wordCount = currentQuote.split(" ").length;
         wordsCount.textContent = `${wordCount} word${wordCount !== 1 ? 's' : ''}`;
         quoteLength.textContent = `${currentQuote.length} chars`;
-        
+
         // Update difficulty badge
         difficultyBadge.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
         difficultyBadge.className = `difficulty-badge difficulty-${difficulty}`;
-        
+
         // Render quote with character spans
         quoteDisplay.innerHTML = "";
         currentQuote.split("").forEach((char) => {
@@ -566,7 +595,7 @@
           charSpan.innerText = char;
           quoteDisplay.appendChild(charSpan);
         });
-        
+
         // Reset test
         resetTest();
       }
@@ -620,7 +649,7 @@
 
         // Update character count
         charCount.textContent = `${inputChars.length}/${quoteChars.length}`;
-        
+
         // Update progress
         const progress = Math.min(100, (inputChars.length / quoteChars.length) * 100);
         progressFill.style.width = `${progress}%`;
@@ -647,7 +676,7 @@
         timer = setInterval(() => {
           timeLeft--;
           timeElement.textContent = `${timeLeft}s`;
-          
+
           // Update progress based on time
           const timeProgress = ((totalTime - timeLeft) / totalTime) * 100;
           if (!isCompleted) {
@@ -665,17 +694,17 @@
         isCompleted = true;
         isTyping = false;
         quoteInput.disabled = true;
-        
+
         // Calculate final metrics
         const timeUsed = totalTime - timeLeft;
         const minutes = timeUsed / 60;
         const wordsTyped = correctTyped / 5;
         const wpm = Math.round(wordsTyped / minutes) || 0;
         const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 0;
-        
+
         // Show results
         showResults(wpm, accuracy, errors, timeUsed);
-        
+
         // Store in history
         storeTestResult(wpm, accuracy, timeUsed);
       }
@@ -695,7 +724,7 @@
       function shareResults() {
         const wpm = resultWPM.textContent;
         const accuracy = resultAccuracy.textContent;
-        
+
         if (navigator.share) {
           navigator.share({
             title: 'Typing Test Results',
@@ -721,10 +750,10 @@
           difficulty,
           source: quoteSource
         });
-        
+
         // Keep only last 10 results
         if (history.length > 10) history.shift();
-        
+
         localStorage.setItem('typingTestHistory', JSON.stringify(history));
       }
 
@@ -745,7 +774,7 @@
         charCount.textContent = "0/0";
         progressFill.style.width = "0%";
         quoteInput.focus();
-        
+
         // Re-render quote
         quoteDisplay.innerHTML = "";
         currentQuote.split("").forEach((char) => {
@@ -764,15 +793,15 @@
 
       function togglePracticeMode() {
         practiceMode = !practiceMode;
-        practiceBtn.innerHTML = practiceMode 
-          ? '<i class="fas fa-check"></i> Practice Mode (On)' 
+        practiceBtn.innerHTML = practiceMode
+          ? '<i class="fas fa-check"></i> Practice Mode (On)'
           : '<i class="fas fa-dumbbell"></i> Practice Mode';
-        
+
         practiceBtn.classList.toggle("bg-green-500");
         practiceBtn.classList.toggle("bg-green-600");
         practiceBtn.classList.toggle("bg-gray-500");
         practiceBtn.classList.toggle("dark:bg-gray-600");
-        
+
         if (practiceMode) {
           // In practice mode, timer doesn't run out
           totalTime = 999;
@@ -783,7 +812,7 @@
           timeLeft = 60;
           timeElement.textContent = "60s";
         }
-        
+
         resetTest();
       }
 
@@ -827,4 +856,5 @@
     });
   </script>
 </body>
+
 </html>
