@@ -9,24 +9,29 @@ body {
 
 /* Typing text styling */
 .correct {
-  color: #10b981; /* Green for correct */
+  color: #10b981;
+  /* Green for correct */
 }
 
 .incorrect {
-  color: #ef4444; /* Red for incorrect */
+  color: #ef4444;
+  /* Red for incorrect */
   text-decoration: underline;
 }
 
 .current {
-  border-left: 2px solid #3b82f6; /* Blue cursor effect */
+  border-left: 2px solid #3b82f6;
+  /* Blue cursor effect */
   animation: blink 0.7s infinite;
 }
 
 @keyframes blink {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.3;
   }
