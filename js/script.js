@@ -1,4 +1,4 @@
-  <script>
+
     document.addEventListener("DOMContentLoaded", () => {
       // DOM Elements
       const quoteDisplay = document.getElementById("quoteDisplay");
@@ -513,4 +513,4 @@
         setTheme(savedTheme);
       }
     });
-  </script>
+  
