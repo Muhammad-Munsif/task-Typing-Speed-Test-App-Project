@@ -7,7 +7,7 @@
   <title>Advanced Typing Speed Test</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
- 
+
 </head>
 
 <body class="light min-h-screen flex items-center justify-center p-4 transition-colors duration-300">
@@ -16,20 +16,25 @@
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2 transition-colors duration-300">
+          <h1
+            class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-2 transition-colors duration-300">
             <i class="fas fa-keyboard text-blue-500"></i>
             Advanced Typing Test
           </h1>
-          <p class="text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-300">Test your typing speed and accuracy</p>
+          <p class="text-gray-600 dark:text-gray-300 mt-1 transition-colors duration-300">Test your typing speed and
+            accuracy</p>
         </div>
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2">
-            <span class="text-gray-600 dark:text-gray-300 text-sm hidden md:block transition-colors duration-300">Theme</span>
-            <button id="themeToggle" class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300">
+            <span
+              class="text-gray-600 dark:text-gray-300 text-sm hidden md:block transition-colors duration-300">Theme</span>
+            <button id="themeToggle"
+              class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300">
               <i class="fas fa-sun"></i>
             </button>
           </div>
-          <button id="settingsToggle" class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300">
+          <button id="settingsToggle"
+            class="p-2.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-300">
             <i class="fas fa-cog"></i>
           </button>
         </div>
@@ -39,27 +44,43 @@
       <div id="settingsPanel" class="settings-panel rounded-xl p-4 mb-6 transition-all duration-300">
         <div class="flex flex-col md:flex-row justify-between gap-4">
           <div>
-            <h3 class="font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Test Duration</h3>
+            <h3 class="font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Test Duration
+            </h3>
             <div class="flex gap-2">
-              <button class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300" data-time="30">30s</button>
+              <button
+                class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                data-time="30">30s</button>
               <button class="time-option px-3 py-1.5 rounded-lg bg-blue-500 text-white" data-time="60">60s</button>
-              <button class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300" data-time="120">120s</button>
+              <button
+                class="time-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                data-time="120">120s</button>
             </div>
           </div>
           <div>
             <h3 class="font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Difficulty</h3>
             <div class="flex gap-2">
-              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300" data-difficulty="easy">Easy</button>
-              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-blue-500 text-white" data-difficulty="medium">Medium</button>
-              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300" data-difficulty="hard">Hard</button>
+              <button
+                class="difficulty-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                data-difficulty="easy">Easy</button>
+              <button class="difficulty-option px-3 py-1.5 rounded-lg bg-blue-500 text-white"
+                data-difficulty="medium">Medium</button>
+              <button
+                class="difficulty-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                data-difficulty="hard">Hard</button>
             </div>
           </div>
           <div>
-            <h3 class="font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Quote Source</h3>
+            <h3 class="font-semibold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Quote Source
+            </h3>
             <div class="flex gap-2">
-              <button class="source-option px-3 py-1.5 rounded-lg bg-blue-500 text-white" data-source="programming">Programming</button>
-              <button class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300" data-source="literature">Literature</button>
-              <button class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300" data-source="mixed">Mixed</button>
+              <button class="source-option px-3 py-1.5 rounded-lg bg-blue-500 text-white"
+                data-source="programming">Programming</button>
+              <button
+                class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                data-source="literature">Literature</button>
+              <button
+                class="source-option px-3 py-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300"
+                data-source="mixed">Mixed</button>
             </div>
           </div>
         </div>
@@ -82,7 +103,8 @@
         </div>
         <div class="stat flex-1 min-w-[120px] text-center">
           <p class="text-sm text-gray-600 dark:text-gray-300 mb-1 transition-colors duration-300">Accuracy</p>
-          <p id="accuracy" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0%</p>
+          <p id="accuracy" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0%
+          </p>
         </div>
         <div class="stat flex-1 min-w-[120px] text-center">
           <p class="text-sm text-gray-600 dark:text-gray-300 mb-1 transition-colors duration-300">Errors</p>
@@ -115,8 +137,10 @@
           class="w-full p-4 md:p-5 rounded-xl focus:outline-none resize-none transition-all duration-300 text-lg"
           rows="4" placeholder="Start typing here... (Press Ctrl+Enter to restart)" autofocus></textarea>
         <div class="absolute bottom-3 right-3 flex items-center gap-2">
-          <span id="charCount" class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">0/0</span>
-          <button id="clearBtn" class="p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300">
+          <span id="charCount"
+            class="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">0/0</span>
+          <button id="clearBtn"
+            class="p-1.5 rounded-lg bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-500 transition-all duration-300">
             <i class="fas fa-times"></i>
           </button>
         </div>
@@ -124,13 +148,16 @@
 
       <!-- Action Buttons -->
       <div class="flex flex-col sm:flex-row gap-3 action-buttons">
-        <button id="restartBtn" class="btn-primary px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
+        <button id="restartBtn"
+          class="btn-primary px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
           <i class="fas fa-redo"></i> Restart Test
         </button>
-        <button id="newQuoteBtn" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
+        <button id="newQuoteBtn"
+          class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
           <i class="fas fa-random"></i> New Quote
         </button>
-        <button id="practiceBtn" class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
+        <button id="practiceBtn"
+          class="bg-green-500 hover:bg-green-600 text-white px-5 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
           <i class="fas fa-dumbbell"></i> Practice Mode
         </button>
       </div>
@@ -139,45 +166,55 @@
       <div class="mt-8 p-4 rounded-xl transition-colors duration-300" id="instructionsPanel">
         <p class="text-sm flex items-center gap-2 transition-colors duration-300">
           <i class="fas fa-info-circle text-blue-500"></i>
-          <span><strong>Tip:</strong> Use <kbd class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs transition-colors duration-300">Ctrl+Enter</kbd> to restart test. Focus on accuracy first, then speed.</span>
+          <span><strong>Tip:</strong> Use <kbd
+              class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs transition-colors duration-300">Ctrl+Enter</kbd>
+            to restart test. Focus on accuracy first, then speed.</span>
         </p>
       </div>
     </div>
 
     <!-- Result Modal -->
     <div id="resultModal" class="result-modal">
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full mx-4 transition-colors duration-300">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full mx-4 transition-colors duration-300">
         <div class="text-center">
-          <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div
+            class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="fas fa-trophy text-3xl text-green-500"></i>
           </div>
-          <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Test Complete!</h2>
+          <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2 transition-colors duration-300">Test
+            Complete!</h2>
           <p class="text-gray-600 dark:text-gray-300 mb-6 transition-colors duration-300">Your typing results are in</p>
-          
+
           <div class="grid grid-cols-2 gap-4 mb-6">
             <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl transition-colors duration-300">
               <p class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">WPM</p>
-              <p id="resultWPM" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0</p>
+              <p id="resultWPM" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
+                0</p>
             </div>
             <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl transition-colors duration-300">
               <p class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">Accuracy</p>
-              <p id="resultAccuracy" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0%</p>
+              <p id="resultAccuracy"
+                class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0%</p>
             </div>
             <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl transition-colors duration-300">
               <p class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">Errors</p>
-              <p id="resultErrors" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0</p>
+              <p id="resultErrors"
+                class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0</p>
             </div>
             <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl transition-colors duration-300">
               <p class="text-sm text-gray-600 dark:text-gray-300 transition-colors duration-300">Time</p>
-              <p id="resultTime" class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0s</p>
+              <p id="resultTime"
+                class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">0s</p>
             </div>
           </div>
-          
+
           <div class="flex flex-col sm:flex-row gap-3">
             <button id="closeResultBtn" class="btn-primary px-5 py-3 rounded-xl transition-all duration-300">
               Close
             </button>
-            <button id="shareResultBtn" class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition-all duration-300">
+            <button id="shareResultBtn"
+              class="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-3 rounded-xl transition-all duration-300">
               <i class="fas fa-share-alt mr-2"></i> Share
             </button>
           </div>
@@ -188,4 +225,5 @@
 
 
 </body>
+
 </html>
