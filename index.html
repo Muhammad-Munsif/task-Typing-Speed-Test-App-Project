@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
 </head>
+
 <body class="light min-h-screen flex items-center justify-center p-3 md:p-5">
   <div class="container max-w-5xl mx-auto">
     <div class="typing-test rounded-3xl p-5 md:p-8 transition-all duration-300 typing-card">
@@ -22,77 +24,143 @@
           <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">accuracy · flow · precision</p>
         </div>
         <div class="flex gap-3">
-          <button id="themeToggle" class="p-3 rounded-full bg-white/70 dark:bg-gray-800 shadow-md hover:scale-110 transition-all"><i class="fas fa-sun text-yellow-500"></i></button>
-          <button id="settingsToggle" class="p-3 rounded-full bg-white/70 dark:bg-gray-800 shadow-md hover:rotate-45 transition"><i class="fas fa-sliders-h"></i></button>
+          <button id="themeToggle"
+            class="p-3 rounded-full bg-white/70 dark:bg-gray-800 shadow-md hover:scale-110 transition-all"><i
+              class="fas fa-sun text-yellow-500"></i></button>
+          <button id="settingsToggle"
+            class="p-3 rounded-full bg-white/70 dark:bg-gray-800 shadow-md hover:rotate-45 transition"><i
+              class="fas fa-sliders-h"></i></button>
         </div>
       </div>
 
       <!-- settings expandable panel -->
-      <div id="settingsPanel" class="settings-panel rounded-2xl mb-6 overflow-hidden transition-all duration-300 max-h-0 opacity-0">
+      <div id="settingsPanel"
+        class="settings-panel rounded-2xl mb-6 overflow-hidden transition-all duration-300 max-h-0 opacity-0">
         <div class="bg-black/5 dark:bg-white/5 p-5 rounded-2xl backdrop-blur-sm grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div><p class="font-semibold mb-2 flex gap-2"><i class="fas fa-hourglass-half"></i> Duration</p>
-            <div class="flex gap-2 flex-wrap"> <button data-time="30" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">30s</button><button data-time="60" class="time-option bg-blue-500 text-white">60s</button><button data-time="120" class="time-option">120s</button> </div>
+          <div>
+            <p class="font-semibold mb-2 flex gap-2"><i class="fas fa-hourglass-half"></i> Duration</p>
+            <div class="flex gap-2 flex-wrap"> <button data-time="30"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">30s</button><button data-time="60"
+                class="time-option bg-blue-500 text-white">60s</button><button data-time="120"
+                class="time-option">120s</button> </div>
           </div>
-          <div><p class="font-semibold mb-2 flex gap-2"><i class="fas fa-chart-line"></i> Difficulty</p>
-            <div class="flex gap-2 flex-wrap"> <button data-difficulty="easy" class="difficulty-option px-4 py-2 rounded-xl">Easy</button><button data-difficulty="medium" class="difficulty-option bg-blue-500 text-white">Medium</button><button data-difficulty="hard" class="difficulty-option">Hard</button> </div>
+          <div>
+            <p class="font-semibold mb-2 flex gap-2"><i class="fas fa-chart-line"></i> Difficulty</p>
+            <div class="flex gap-2 flex-wrap"> <button data-difficulty="easy"
+                class="difficulty-option px-4 py-2 rounded-xl">Easy</button><button data-difficulty="medium"
+                class="difficulty-option bg-blue-500 text-white">Medium</button><button data-difficulty="hard"
+                class="difficulty-option">Hard</button> </div>
           </div>
-          <div><p class="font-semibold mb-2 flex gap-2"><i class="fas fa-quote-right"></i> Vibe</p>
-            <div class="flex gap-2 flex-wrap"> <button data-source="programming" class="source-option bg-blue-500 text-white">💻 Code</button><button data-source="literature" class="source-option">📖 Lit</button><button data-source="mixed" class="source-option">🌍 Wisdom</button> </div>
+          <div>
+            <p class="font-semibold mb-2 flex gap-2"><i class="fas fa-quote-right"></i> Vibe</p>
+            <div class="flex gap-2 flex-wrap"> <button data-source="programming"
+                class="source-option bg-blue-500 text-white">💻 Code</button><button data-source="literature"
+                class="source-option">📖 Lit</button><button data-source="mixed" class="source-option">🌍
+                Wisdom</button> </div>
           </div>
         </div>
       </div>
 
       <!-- progress bar fancy -->
-      <div class="progress-bar h-2 rounded-full bg-gray-300 dark:bg-gray-700 mb-5 overflow-hidden"><div id="progressFill" class="progress-fill h-full w-0 transition-all duration-150"></div></div>
+      <div class="progress-bar h-2 rounded-full bg-gray-300 dark:bg-gray-700 mb-5 overflow-hidden">
+        <div id="progressFill" class="progress-fill h-full w-0 transition-all duration-150"></div>
+      </div>
 
       <!-- stats cards -->
       <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div class="stat rounded-2xl p-4 text-center shadow-sm"><p class="text-xs uppercase tracking-wider opacity-70">⏱️ Time</p><p id="time" class="text-3xl font-mono font-bold">60s</p></div>
-        <div class="stat rounded-2xl p-4 text-center"><p class="text-xs uppercase tracking-wider">⚡ WPM</p><p id="wpm" class="text-3xl font-bold text-blue-500">0</p></div>
-        <div class="stat rounded-2xl p-4 text-center"><p class="text-xs uppercase tracking-wider">🎯 Accuracy</p><p id="accuracy" class="text-3xl font-bold text-emerald-500">0%</p></div>
-        <div class="stat rounded-2xl p-4 text-center"><p class="text-xs uppercase tracking-wider">❌ Errors</p><p id="errors" class="text-3xl font-bold text-rose-400">0</p></div>
+        <div class="stat rounded-2xl p-4 text-center shadow-sm">
+          <p class="text-xs uppercase tracking-wider opacity-70">⏱️ Time</p>
+          <p id="time" class="text-3xl font-mono font-bold">60s</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center">
+          <p class="text-xs uppercase tracking-wider">⚡ WPM</p>
+          <p id="wpm" class="text-3xl font-bold text-blue-500">0</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center">
+          <p class="text-xs uppercase tracking-wider">🎯 Accuracy</p>
+          <p id="accuracy" class="text-3xl font-bold text-emerald-500">0%</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center">
+          <p class="text-xs uppercase tracking-wider">❌ Errors</p>
+          <p id="errors" class="text-3xl font-bold text-rose-400">0</p>
+        </div>
       </div>
 
       <!-- quote meta -->
       <div class="flex justify-between items-center mb-2 flex-wrap gap-2">
-        <div class="flex gap-3 items-center"><span id="difficultyBadge" class="difficulty-badge difficulty-medium">Medium</span><span class="text-sm"><i class="far fa-file-alt"></i> <span id="wordsCount">0</span> words</span><span class="text-sm"><i class="fas fa-i-cursor"></i> <span id="quoteLength">0</span> chars</span></div>
-        <div class="text-xs opacity-70"><i class="fas fa-keyboard"></i> <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">Ctrl+Enter</kbd> restart</div>
+        <div class="flex gap-3 items-center"><span id="difficultyBadge"
+            class="difficulty-badge difficulty-medium">Medium</span><span class="text-sm"><i
+              class="far fa-file-alt"></i> <span id="wordsCount">0</span> words</span><span class="text-sm"><i
+              class="fas fa-i-cursor"></i> <span id="quoteLength">0</span> chars</span></div>
+        <div class="text-xs opacity-70"><i class="fas fa-keyboard"></i> <kbd
+            class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded">Ctrl+Enter</kbd> restart</div>
       </div>
 
       <!-- quote display area with monospace & clean -->
-      <div id="quoteDisplay" class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px]"></div>
+      <div id="quoteDisplay"
+        class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px]">
+      </div>
 
       <!-- textarea -->
       <div class="relative mb-5">
-        <textarea id="quoteInput" rows="3" class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:ring-2 focus:ring-blue-500 transition" placeholder="✨ start typing to ignite the test..."></textarea>
-        <div class="absolute bottom-3 right-3 flex gap-2"><span id="charCount" class="text-sm bg-black/30 px-2 py-1 rounded-full">0/0</span><button id="clearBtn" class="p-2 rounded-full bg-gray-300/70 dark:bg-gray-700"><i class="fas fa-eraser"></i></button></div>
+        <textarea id="quoteInput" rows="3"
+          class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:ring-2 focus:ring-blue-500 transition"
+          placeholder="✨ start typing to ignite the test..."></textarea>
+        <div class="absolute bottom-3 right-3 flex gap-2"><span id="charCount"
+            class="text-sm bg-black/30 px-2 py-1 rounded-full">0/0</span><button id="clearBtn"
+            class="p-2 rounded-full bg-gray-300/70 dark:bg-gray-700"><i class="fas fa-eraser"></i></button></div>
       </div>
 
       <!-- action buttons -->
       <div class="flex flex-wrap gap-3 justify-center">
-        <button id="restartBtn" class="btn-primary px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md"><i class="fas fa-arrows-rotate"></i> Restart</button>
-        <button id="newQuoteBtn" class="bg-indigo-500/80 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2"><i class="fas fa-dice-d6"></i> New Quote</button>
-        <button id="practiceBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2"><i class="fas fa-infinity"></i> Practice ∞</button>
+        <button id="restartBtn" class="btn-primary px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md"><i
+            class="fas fa-arrows-rotate"></i> Restart</button>
+        <button id="newQuoteBtn"
+          class="bg-indigo-500/80 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2"><i
+            class="fas fa-dice-d6"></i> New Quote</button>
+        <button id="practiceBtn"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2"><i
+            class="fas fa-infinity"></i> Practice ∞</button>
       </div>
-      <div class="mt-6 text-center text-xs opacity-60"><i class="fas fa-brain"></i> focus on precision — speed follows mastery</div>
+      <div class="mt-6 text-center text-xs opacity-60"><i class="fas fa-brain"></i> focus on precision — speed follows
+        mastery</div>
     </div>
 
     <!-- result modal premium -->
     <div id="resultModal" class="result-modal fixed inset-0 hidden items-center justify-center z-50">
-      <div class="result-card bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20">
-        <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg"><i class="fas fa-crown text-4xl text-white"></i></div>
+      <div
+        class="result-card bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20">
+        <div
+          class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <i class="fas fa-crown text-4xl text-white"></i></div>
         <h2 class="text-2xl font-black">🏆 Test Complete</h2>
         <div class="grid grid-cols-2 gap-4 my-6">
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">WPM</p><p id="resultWPM" class="text-3xl font-bold text-blue-500">0</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">Accuracy</p><p id="resultAccuracy" class="text-3xl font-bold text-emerald-500">0%</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">Errors</p><p id="resultErrors" class="text-3xl font-bold text-rose-500">0</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">Time</p><p id="resultTime" class="text-3xl font-bold">0s</p></div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">WPM</p>
+            <p id="resultWPM" class="text-3xl font-bold text-blue-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">Accuracy</p>
+            <p id="resultAccuracy" class="text-3xl font-bold text-emerald-500">0%</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">Errors</p>
+            <p id="resultErrors" class="text-3xl font-bold text-rose-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">Time</p>
+            <p id="resultTime" class="text-3xl font-bold">0s</p>
+          </div>
         </div>
-        <div class="flex gap-3"><button id="closeResultBtn" class="btn-primary flex-1 py-3 rounded-xl">Close</button><button id="shareResultBtn" class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl"><i class="fab fa-twitter"></i> Share</button></div>
+        <div class="flex gap-3"><button id="closeResultBtn"
+            class="btn-primary flex-1 py-3 rounded-xl">Close</button><button id="shareResultBtn"
+            class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl"><i class="fab fa-twitter"></i> Share</button>
+        </div>
       </div>
     </div>
   </div>
 
 
 </body>
+
 </html>
