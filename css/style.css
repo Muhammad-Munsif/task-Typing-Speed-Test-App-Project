@@ -1,4 +1,4 @@
-  <style>
+
     * {
       margin: 0;
       padding: 0;
@@ -141,4 +141,4 @@
       transition: all 0.2s;
     }
     .btn-primary:hover { filter: brightness(1.05); transform: translateY(-2px); box-shadow: 0 12px 20px -12px #2563eb; }
-  </style>
+  
