@@ -1,4 +1,4 @@
-  <script>
+
     // --------------------------------------------------------------
     //  HUGE QUOTE DATABASE: EASY = 20+, MEDIUM = 35+, HARD = 50+
     // --------------------------------------------------------------
@@ -188,4 +188,4 @@
       document.querySelectorAll(".source-option").forEach(btn => { btn.onclick = e => { document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white")); btn.classList.add("bg-blue-500", "text-white"); quoteSource = btn.dataset.source; newQuote(); }; });
     }
     initTheme(); attachEvents(); loadQuote();
-  </script>
+  
