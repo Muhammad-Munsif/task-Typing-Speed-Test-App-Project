@@ -1,4 +1,4 @@
-<script>
+
     // ==================== HUGE QUOTE DATABASE ====================
     // Easy: 20+ | Medium: 35+ | Hard: 50+ per category
     const QUOTES_LIB = {
@@ -334,4 +334,3 @@
     initTheme();
     attachEvents();
     loadQuote();
-  </script>
