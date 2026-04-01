@@ -128,3 +128,209 @@
       elements.difficultyBadge.className = `difficulty-badge difficulty-${difficulty}`;
       updateQuoteCountDisplay();
     }
+
+    
+    function loadQuote() {
+      const arr = QUOTES_LIB[quoteSource]?.[difficulty] || QUOTES_LIB.programming.medium;
+      currentQuoteText = arr[Math.floor(Math.random() * arr.length)];
+      updateQuoteUI();
+      resetTestState();
+    }
+
+    function resetTestState() {
+      clearInterval(timer);
+      isTyping = false;
+      testDone = false;
+      errors = 0;
+      totalTypedChars = 0;
+      correctCharsTyped = 0;
+      elements.quoteInput.value = "";
+      elements.quoteInput.disabled = false;
+      timeLeft = practiceActive ? 9999 : totalDuration;
+      if (!practiceActive) elements.timeElem.innerText = timeLeft + "s";
+      else elements.timeElem.innerText = "∞";
+      elements.wpmElem.innerText = "0";
+      elements.accuracyElem.innerText = "0%";
+      elements.errorsElem.innerText = "0";
+      elements.charCountSpan.innerText = `0/${currentQuoteText.length}`;
+      elements.progressFill.style.width = "0%";
+      startTime = null;
+      const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
+      quoteChars.forEach(c => c.classList.remove("correct", "incorrect", "current", "extra"));
+      if (currentQuoteText.length) quoteChars[0]?.classList.add("current");
+      elements.quoteInput.focus();
+    }
+
+    function computeAndUpdateMetrics() {
+      const elapsed = startTime ? (Date.now() - startTime) / 1000 : 0;
+      const minutes = Math.max(0.01, elapsed / 60);
+      const wordsTyped = correctCharsTyped / 5;
+      const wpm = Math.floor(wordsTyped / minutes);
+      const accuracy = totalTypedChars ? Math.floor((correctCharsTyped / totalTypedChars) * 100) : 0;
+      elements.wpmElem.innerText = wpm || 0;
+      elements.accuracyElem.innerText = accuracy + "%";
+      elements.errorsElem.innerText = errors;
+    }
+
+    function handleInput() {
+      if (!isTyping && elements.quoteInput.value.length > 0 && !testDone) {
+        startTime = Date.now();
+        isTyping = true;
+        startTimer();
+      }
+      const inputVal = elements.quoteInput.value;
+      const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
+      let correctCount = 0, errCount = 0;
+      totalTypedChars = inputVal.length;
+
+      quoteChars.forEach((span, idx) => {
+        span.classList.remove("correct", "incorrect", "current", "extra");
+        if (idx < inputVal.length) {
+          if (inputVal[idx] === span.innerText) {
+            span.classList.add("correct");
+            correctCount++;
+          } else {
+            span.classList.add("incorrect");
+            errCount++;
+          }
+        }
+      });
+
+      // Handle extra chars
+      if (inputVal.length > quoteChars.length) {
+        for (let i = quoteChars.length; i < inputVal.length; i++) {
+          let extra = document.createElement("span");
+          extra.className = "char extra";
+          extra.innerText = inputVal[i];
+          elements.quoteDisplay.appendChild(extra);
+          errCount++;
+        }
+      }
+
+      if (inputVal.length < quoteChars.length) {
+        quoteChars[inputVal.length]?.classList.add("current");
+      }
+
+      correctCharsTyped = correctCount;
+      errors = errCount;
+      const progress = Math.min(100, (inputVal.length / currentQuoteText.length) * 100);
+      elements.progressFill.style.width = `${progress}%`;
+      elements.charCountSpan.innerText = `${inputVal.length}/${currentQuoteText.length}`;
+      computeAndUpdateMetrics();
+
+      if (inputVal.length >= currentQuoteText.length && !testDone) finishTest();
+    }
+
+    function startTimer() {
+      if (timer) clearInterval(timer);
+      timer = setInterval(() => {
+        if (practiceActive) return;
+        if (timeLeft <= 1) {
+          finishTest();
+        } else {
+          timeLeft--;
+          elements.timeElem.innerText = timeLeft + "s";
+          if (!testDone) {
+            const timeProgress = ((totalDuration - timeLeft) / totalDuration) * 100;
+            elements.progressFill.style.width = `${Math.max(timeProgress, parseFloat(elements.progressFill.style.width) || 0)}%`;
+          }
+        }
+      }, 1000);
+    }
+
+    function finishTest() {
+      if (testDone) return;
+      testDone = true;
+      isTyping = false;
+      clearInterval(timer);
+      elements.quoteInput.disabled = true;
+      const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft;
+      elements.resultWPM.innerText = elements.wpmElem.innerText;
+      elements.resultAccuracy.innerText = elements.accuracyElem.innerText;
+      elements.resultErrors.innerText = elements.errorsElem.innerText;
+      elements.resultTime.innerText = Math.floor(usedTime) + "s";
+      elements.resultModal.classList.add("active", "flex");
+      elements.resultModal.classList.remove("hidden");
+    }
+
+    function resetTest() { resetTestState(); testDone = false; }
+    function newQuote() { loadQuote(); resetTestState(); testDone = false; clearInterval(timer); isTyping = false; startTime = null; }
+    function togglePractice() {
+      practiceActive = !practiceActive;
+      elements.practiceBtn.innerHTML = practiceActive ? '<i class="fas fa-check-circle"></i> Practice ON' : '<i class="fas fa-infinity"></i> Practice Mode';
+      if (practiceActive) { totalDuration = 9999; timeLeft = 9999; elements.timeElem.innerText = "∞"; }
+      else { totalDuration = parseInt(document.querySelector(".time-option.bg-blue-500")?.dataset.time || "60"); timeLeft = totalDuration; elements.timeElem.innerText = timeLeft + "s"; }
+      resetTest();
+    }
+    function clearInputField() { elements.quoteInput.value = ""; handleInput(); elements.quoteInput.focus(); }
+    function shareResults() {
+      const text = `🔥 VelocityType: ${elements.resultWPM.innerText} WPM · ${elements.resultAccuracy.innerText} accuracy! Can you beat me?`;
+      navigator.clipboard?.writeText(text);
+      alert("📋 Results copied to clipboard!");
+    }
+    function closeModal() { elements.resultModal.classList.remove("active", "flex"); elements.resultModal.classList.add("hidden"); resetTest(); }
+
+    function initTheme() {
+      let saved = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      document.body.classList.add(saved);
+      const icon = elements.themeToggle.querySelector("i");
+      icon.className = saved === "dark" ? "fas fa-moon" : "fas fa-sun";
+    }
+    function toggleThemeGlobal() {
+      let isDark = document.body.classList.contains("dark");
+      document.body.classList.remove("light", "dark");
+      document.body.classList.add(isDark ? "light" : "dark");
+      localStorage.setItem("theme", isDark ? "light" : "dark");
+      let icon = elements.themeToggle.querySelector("i");
+      icon.className = isDark ? "fas fa-sun" : "fas fa-moon";
+    }
+
+    function attachEvents() {
+      elements.restartBtn.onclick = resetTest;
+      elements.newQuoteBtn.onclick = newQuote;
+      elements.practiceBtn.onclick = togglePractice;
+      elements.clearBtn.onclick = clearInputField;
+      elements.themeToggle.onclick = toggleThemeGlobal;
+      elements.settingsToggle.onclick = () => {
+        elements.settingsPanel.classList.toggle("active");
+      };
+      elements.closeResult.onclick = closeModal;
+      elements.shareBtn.onclick = shareResults;
+      elements.quoteInput.addEventListener("input", handleInput);
+      elements.quoteInput.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); resetTest(); }
+        if (e.key === "Escape") { e.preventDefault(); clearInputField(); }
+      });
+
+      document.querySelectorAll(".time-option").forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll(".time-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
+          btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+          if (!practiceActive) totalDuration = parseInt(btn.dataset.time);
+          if (!practiceActive) { timeLeft = totalDuration; elements.timeElem.innerText = timeLeft + "s"; }
+          resetTest();
+        };
+      });
+
+      document.querySelectorAll(".difficulty-option").forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll(".difficulty-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
+          btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+          difficulty = btn.dataset.difficulty;
+          newQuote();
+        };
+      });
+
+      document.querySelectorAll(".source-option").forEach(btn => {
+        btn.onclick = () => {
+          document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
+          btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+          quoteSource = btn.dataset.source;
+          newQuote();
+        };
+      });
+    }
+
+    initTheme();
+    attachEvents();
+    loadQuote();
