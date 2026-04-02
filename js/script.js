@@ -1,4 +1,4 @@
-<script>
+
     // ==================== EXPANDED QUOTE DATABASE with Expert difficulty ====================
     const QUOTES_LIB = {
       programming: {
@@ -346,4 +346,4 @@
     attachEvents();
     loadQuote();
     updateHistoryDisplay();
-  </script>
+  
