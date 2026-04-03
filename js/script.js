@@ -189,159 +189,159 @@ function handleInput() {
 
   if (inputVal.length >= currentQuoteText.length && !testDone) finishTest();
 }
-    
-    function startTimer() {
-      if (timer) clearInterval(timer);
-      timer = setInterval(() => {
-        if (practiceActive) return;
-        if (timeLeft <= 1) {
-          finishTest();
-        } else {
-          timeLeft--;
-          elements.timeElem.innerText = timeLeft + "s";
-          if (!testDone) {
-            const timeProgress = ((totalDuration - timeLeft) / totalDuration) * 100;
-            elements.progressFill.style.width = `${Math.max(timeProgress, parseFloat(elements.progressFill.style.width) || 0)}%`;
-          }
-        }
-      }, 1000);
-    }
 
-    function finishTest() {
-      if (testDone) return;
-      testDone = true;
-      isTyping = false;
-      clearInterval(timer);
-      elements.quoteInput.disabled = true;
-      const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft;
-      const finalWPM = parseInt(elements.wpmElem.innerText);
-      const finalRawWPM = parseInt(elements.rawWpmElem.innerText);
-      const finalAccuracy = elements.accuracyElem.innerText;
-      const finalErrors = elements.errorsElem.innerText;
-
-      elements.resultWPM.innerText = finalWPM;
-      elements.resultRawWPM.innerText = finalRawWPM;
-      elements.resultAccuracy.innerText = finalAccuracy;
-      elements.resultErrors.innerText = finalErrors;
-      elements.resultTime.innerText = Math.floor(usedTime) + "s";
-      elements.resultModal.classList.add("active", "flex");
-      elements.resultModal.classList.remove("hidden");
-
-      // Save to history
-      const historyEntry = { wpm: finalWPM, rawWpm: finalRawWPM, accuracy: finalAccuracy, errors: finalErrors, time: Math.floor(usedTime), difficulty, source: quoteSource, date: new Date().toISOString() };
-      testHistory.unshift(historyEntry);
-      if (testHistory.length > 15) testHistory.pop();
-      localStorage.setItem("velocityHistory", JSON.stringify(testHistory));
-      updateHistoryDisplay();
-
-      // Celebration effect
-      document.querySelector(".typing-test").classList.add("celebration");
-      setTimeout(() => document.querySelector(".typing-test").classList.remove("celebration"), 500);
-    }
-
-    function updateHistoryDisplay() {
-      if (testHistory.length === 0) {
-        elements.historyList.innerHTML = '<p class="text-center text-sm opacity-50">No history yet. Complete a test!</p>';
-        return;
+function startTimer() {
+  if (timer) clearInterval(timer);
+  timer = setInterval(() => {
+    if (practiceActive) return;
+    if (timeLeft <= 1) {
+      finishTest();
+    } else {
+      timeLeft--;
+      elements.timeElem.innerText = timeLeft + "s";
+      if (!testDone) {
+        const timeProgress = ((totalDuration - timeLeft) / totalDuration) * 100;
+        elements.progressFill.style.width = `${Math.max(timeProgress, parseFloat(elements.progressFill.style.width) || 0)}%`;
       }
-      elements.historyList.innerHTML = testHistory.map(entry => `
+    }
+  }, 1000);
+}
+
+function finishTest() {
+  if (testDone) return;
+  testDone = true;
+  isTyping = false;
+  clearInterval(timer);
+  elements.quoteInput.disabled = true;
+  const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft;
+  const finalWPM = parseInt(elements.wpmElem.innerText);
+  const finalRawWPM = parseInt(elements.rawWpmElem.innerText);
+  const finalAccuracy = elements.accuracyElem.innerText;
+  const finalErrors = elements.errorsElem.innerText;
+
+  elements.resultWPM.innerText = finalWPM;
+  elements.resultRawWPM.innerText = finalRawWPM;
+  elements.resultAccuracy.innerText = finalAccuracy;
+  elements.resultErrors.innerText = finalErrors;
+  elements.resultTime.innerText = Math.floor(usedTime) + "s";
+  elements.resultModal.classList.add("active", "flex");
+  elements.resultModal.classList.remove("hidden");
+
+  // Save to history
+  const historyEntry = { wpm: finalWPM, rawWpm: finalRawWPM, accuracy: finalAccuracy, errors: finalErrors, time: Math.floor(usedTime), difficulty, source: quoteSource, date: new Date().toISOString() };
+  testHistory.unshift(historyEntry);
+  if (testHistory.length > 15) testHistory.pop();
+  localStorage.setItem("velocityHistory", JSON.stringify(testHistory));
+  updateHistoryDisplay();
+
+  // Celebration effect
+  document.querySelector(".typing-test").classList.add("celebration");
+  setTimeout(() => document.querySelector(".typing-test").classList.remove("celebration"), 500);
+}
+
+function updateHistoryDisplay() {
+  if (testHistory.length === 0) {
+    elements.historyList.innerHTML = '<p class="text-center text-sm opacity-50">No history yet. Complete a test!</p>';
+    return;
+  }
+  elements.historyList.innerHTML = testHistory.map(entry => `
         <div class="history-item bg-white/50 dark:bg-gray-800/50 rounded-lg p-2 flex justify-between items-center text-sm">
           <span><span class="font-bold text-blue-500">${entry.wpm}</span> WPM</span>
           <span class="text-emerald-500">${entry.accuracy}</span>
           <span class="text-xs opacity-60">${new Date(entry.date).toLocaleTimeString()}</span>
         </div>
       `).join('');
-    }
+}
 
-    function resetTest() { resetTestState(); testDone = false; }
-    function newQuote() { loadQuote(); resetTestState(); testDone = false; clearInterval(timer); isTyping = false; startTime = null; }
-    function togglePractice() {
-      practiceActive = !practiceActive;
-      elements.practiceBtn.innerHTML = practiceActive ? '<i class="fas fa-check-circle"></i> Practice ON' : '<i class="fas fa-infinity"></i> Practice Mode';
-      if (practiceActive) { totalDuration = 9999; timeLeft = 9999; elements.timeElem.innerText = "∞"; }
-      else { totalDuration = parseInt(document.querySelector(".time-option.bg-blue-500")?.dataset.time || "60"); timeLeft = totalDuration; elements.timeElem.innerText = timeLeft + "s"; }
+function resetTest() { resetTestState(); testDone = false; }
+function newQuote() { loadQuote(); resetTestState(); testDone = false; clearInterval(timer); isTyping = false; startTime = null; }
+function togglePractice() {
+  practiceActive = !practiceActive;
+  elements.practiceBtn.innerHTML = practiceActive ? '<i class="fas fa-check-circle"></i> Practice ON' : '<i class="fas fa-infinity"></i> Practice Mode';
+  if (practiceActive) { totalDuration = 9999; timeLeft = 9999; elements.timeElem.innerText = "∞"; }
+  else { totalDuration = parseInt(document.querySelector(".time-option.bg-blue-500")?.dataset.time || "60"); timeLeft = totalDuration; elements.timeElem.innerText = timeLeft + "s"; }
+  resetTest();
+}
+function toggleFocusMode() {
+  focusMode = !focusMode;
+  elements.focusModeToggle.innerHTML = focusMode ? '🧘 Focus On' : '🧘 Focus Off';
+  const panels = [elements.settingsPanel, elements.historyPanel];
+  const statsCards = document.querySelectorAll('.stat');
+  if (focusMode) {
+    panels.forEach(p => p.classList.remove('active'));
+    statsCards.forEach(c => c.style.opacity = '0.5');
+  } else {
+    statsCards.forEach(c => c.style.opacity = '1');
+  }
+}
+function clearInputField() { elements.quoteInput.value = ""; handleInput(); elements.quoteInput.focus(); }
+function shareResults() { const text = `⚡ VelocityType: ${elements.resultWPM.innerText} WPM · ${elements.resultAccuracy.innerText} accuracy! Can you beat me?`; navigator.clipboard?.writeText(text); alert("📋 Results copied to clipboard!"); }
+function closeModal() { elements.resultModal.classList.remove("active", "flex"); elements.resultModal.classList.add("hidden"); resetTest(); }
+function clearHistory() { testHistory = []; localStorage.setItem("velocityHistory", "[]"); updateHistoryDisplay(); }
+
+function initTheme() {
+  let saved = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  document.body.classList.add(saved);
+  const icon = elements.themeToggle.querySelector("i");
+  icon.className = saved === "dark" ? "fas fa-moon" : "fas fa-sun";
+}
+function toggleThemeGlobal() {
+  let isDark = document.body.classList.contains("dark");
+  document.body.classList.remove("light", "dark");
+  document.body.classList.add(isDark ? "light" : "dark");
+  localStorage.setItem("theme", isDark ? "light" : "dark");
+  let icon = elements.themeToggle.querySelector("i");
+  icon.className = isDark ? "fas fa-sun" : "fas fa-moon";
+}
+
+function attachEvents() {
+  elements.restartBtn.onclick = resetTest;
+  elements.newQuoteBtn.onclick = newQuote;
+  elements.practiceBtn.onclick = togglePractice;
+  elements.clearBtn.onclick = clearInputField;
+  elements.themeToggle.onclick = toggleThemeGlobal;
+  elements.focusModeToggle.onclick = toggleFocusMode;
+  elements.clearHistoryBtn.onclick = clearHistory;
+  elements.settingsToggle.onclick = () => { elements.settingsPanel.classList.toggle("active"); if (elements.historyPanel.classList.contains("active")) elements.historyPanel.classList.remove("active"); };
+  elements.historyToggle.onclick = () => { elements.historyPanel.classList.toggle("active"); if (elements.settingsPanel.classList.contains("active")) elements.settingsPanel.classList.remove("active"); updateHistoryDisplay(); };
+  elements.closeResult.onclick = closeModal;
+  elements.shareBtn.onclick = shareResults;
+  elements.quoteInput.addEventListener("input", handleInput);
+  elements.quoteInput.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); resetTest(); }
+    if (e.key === "Escape") { e.preventDefault(); clearInputField(); }
+  });
+
+  document.querySelectorAll(".time-option").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".time-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
+      btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+      if (!practiceActive) totalDuration = parseInt(btn.dataset.time);
+      if (!practiceActive) { timeLeft = totalDuration; elements.timeElem.innerText = timeLeft + "s"; }
       resetTest();
-    }
-    function toggleFocusMode() {
-      focusMode = !focusMode;
-      elements.focusModeToggle.innerHTML = focusMode ? '🧘 Focus On' : '🧘 Focus Off';
-      const panels = [elements.settingsPanel, elements.historyPanel];
-      const statsCards = document.querySelectorAll('.stat');
-      if (focusMode) {
-        panels.forEach(p => p.classList.remove('active'));
-        statsCards.forEach(c => c.style.opacity = '0.5');
-      } else {
-        statsCards.forEach(c => c.style.opacity = '1');
-      }
-    }
-    function clearInputField() { elements.quoteInput.value = ""; handleInput(); elements.quoteInput.focus(); }
-    function shareResults() { const text = `⚡ VelocityType: ${elements.resultWPM.innerText} WPM · ${elements.resultAccuracy.innerText} accuracy! Can you beat me?`; navigator.clipboard?.writeText(text); alert("📋 Results copied to clipboard!"); }
-    function closeModal() { elements.resultModal.classList.remove("active", "flex"); elements.resultModal.classList.add("hidden"); resetTest(); }
-    function clearHistory() { testHistory = []; localStorage.setItem("velocityHistory", "[]"); updateHistoryDisplay(); }
+    };
+  });
 
-    function initTheme() {
-      let saved = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-      document.body.classList.add(saved);
-      const icon = elements.themeToggle.querySelector("i");
-      icon.className = saved === "dark" ? "fas fa-moon" : "fas fa-sun";
-    }
-    function toggleThemeGlobal() {
-      let isDark = document.body.classList.contains("dark");
-      document.body.classList.remove("light", "dark");
-      document.body.classList.add(isDark ? "light" : "dark");
-      localStorage.setItem("theme", isDark ? "light" : "dark");
-      let icon = elements.themeToggle.querySelector("i");
-      icon.className = isDark ? "fas fa-sun" : "fas fa-moon";
-    }
+  document.querySelectorAll(".difficulty-option").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".difficulty-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
+      btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+      difficulty = btn.dataset.difficulty;
+      newQuote();
+    };
+  });
 
-    function attachEvents() {
-      elements.restartBtn.onclick = resetTest;
-      elements.newQuoteBtn.onclick = newQuote;
-      elements.practiceBtn.onclick = togglePractice;
-      elements.clearBtn.onclick = clearInputField;
-      elements.themeToggle.onclick = toggleThemeGlobal;
-      elements.focusModeToggle.onclick = toggleFocusMode;
-      elements.clearHistoryBtn.onclick = clearHistory;
-      elements.settingsToggle.onclick = () => { elements.settingsPanel.classList.toggle("active"); if (elements.historyPanel.classList.contains("active")) elements.historyPanel.classList.remove("active"); };
-      elements.historyToggle.onclick = () => { elements.historyPanel.classList.toggle("active"); if (elements.settingsPanel.classList.contains("active")) elements.settingsPanel.classList.remove("active"); updateHistoryDisplay(); };
-      elements.closeResult.onclick = closeModal;
-      elements.shareBtn.onclick = shareResults;
-      elements.quoteInput.addEventListener("input", handleInput);
-      elements.quoteInput.addEventListener("keydown", (e) => {
-        if (e.ctrlKey && e.key === "Enter") { e.preventDefault(); resetTest(); }
-        if (e.key === "Escape") { e.preventDefault(); clearInputField(); }
-      });
+  document.querySelectorAll(".source-option").forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
+      btn.classList.add("bg-blue-500", "text-white", "shadow-md");
+      quoteSource = btn.dataset.source;
+      newQuote();
+    };
+  });
+}
 
-      document.querySelectorAll(".time-option").forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll(".time-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
-          btn.classList.add("bg-blue-500", "text-white", "shadow-md");
-          if (!practiceActive) totalDuration = parseInt(btn.dataset.time);
-          if (!practiceActive) { timeLeft = totalDuration; elements.timeElem.innerText = timeLeft + "s"; }
-          resetTest();
-        };
-      });
-
-      document.querySelectorAll(".difficulty-option").forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll(".difficulty-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
-          btn.classList.add("bg-blue-500", "text-white", "shadow-md");
-          difficulty = btn.dataset.difficulty;
-          newQuote();
-        };
-      });
-
-      document.querySelectorAll(".source-option").forEach(btn => {
-        btn.onclick = () => {
-          document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md"));
-          btn.classList.add("bg-blue-500", "text-white", "shadow-md");
-          quoteSource = btn.dataset.source;
-          newQuote();
-        };
-      });
-    }
-
-    initTheme();
-    attachEvents();
-    loadQuote();
-    updateHistoryDisplay();
+initTheme();
+attachEvents();
+loadQuote();
+updateHistoryDisplay();
