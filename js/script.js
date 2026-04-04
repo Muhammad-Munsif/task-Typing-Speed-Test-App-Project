@@ -1,4 +1,4 @@
-  <script>
+
     // ==================== QUOTE DATABASE (Professional) ====================
     const QUOTES_LIB = {
       programming: {
@@ -64,4 +64,3 @@
       document.querySelectorAll(".source-option").forEach(btn => { btn.onclick = () => { document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md")); btn.classList.add("bg-blue-500", "text-white", "shadow-md"); quoteSource = btn.dataset.source; newQuote(); }; });
     }
     initTheme(); attachEvents(); loadQuote(); updateHistoryDisplay();
-  </script>
