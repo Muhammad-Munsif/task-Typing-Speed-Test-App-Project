@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
@@ -28,54 +29,77 @@
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', 'Fira Code', monospace;
     }
 
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
-    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
 
     body.light {
       background: linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%);
     }
+
     body.light .typing-test {
       background: rgba(255, 255, 255, 0.96);
       box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.15);
     }
+
     body.light .stat {
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
     }
+
     body.light textarea {
       background: #ffffff;
       border: 2px solid #e2e8f0;
     }
+
     body.light textarea:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
     }
-    body.light .char.current { background: #dbeafe !important; }
+
+    body.light .char.current {
+      background: #dbeafe !important;
+    }
 
     body.dark {
       background: radial-gradient(circle at 20% 30%, #0a0f1a, #030712);
     }
+
     body.dark .typing-test {
       background: rgba(17, 24, 39, 0.94);
       backdrop-filter: blur(8px);
       border: 1px solid rgba(51, 65, 85, 0.5);
-      box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5);
     }
+
     body.dark .stat {
       background: rgba(30, 41, 59, 0.85);
       border: 1px solid #334155;
     }
+
     body.dark textarea {
       background: #0f172a;
       border: 2px solid #334155;
       color: #e2e8f0;
     }
+
     body.dark textarea:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
     }
+
     body.dark .char.extra {
       background: rgba(124, 45, 18, 0.3);
       color: #fdba74;
@@ -88,33 +112,48 @@
       padding: 0 1px;
       white-space: pre-wrap;
     }
+
     .char.correct {
       color: #10b981;
       background: rgba(16, 185, 129, 0.15);
     }
+
     .char.incorrect {
       color: #f87171;
       background: rgba(239, 68, 68, 0.2);
       text-decoration: underline wavy #ef4444;
     }
+
     .char.current {
       background: rgba(59, 130, 246, 0.4) !important;
       border-radius: 4px;
       animation: pulse 1s infinite;
     }
+
     .char.extra {
       color: #f97316;
       background: #ffedd5;
       text-decoration: line-through;
     }
+
     body.dark .char.extra {
       background: rgba(249, 115, 22, 0.2);
       color: #fdba74;
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 0.7; transform: scale(1); }
-      50% { opacity: 1; background: rgba(59, 130, 246, 0.6) !important; transform: scale(1.02); }
+
+      0%,
+      100% {
+        opacity: 0.7;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        background: rgba(59, 130, 246, 0.6) !important;
+        transform: scale(1.02);
+      }
     }
 
     .progress-fill {
@@ -123,9 +162,15 @@
       animation: shimmer 2s linear infinite;
       transition: width 0.1s ease-out;
     }
+
     @keyframes shimmer {
-      0% { background-position: 0% 0%; }
-      100% { background-position: 200% 0%; }
+      0% {
+        background-position: 0% 0%;
+      }
+
+      100% {
+        background-position: 200% 0%;
+      }
     }
 
     .difficulty-badge {
@@ -136,26 +181,51 @@
       letter-spacing: 0.3px;
       backdrop-filter: blur(4px);
     }
-    .difficulty-easy { background: rgba(16, 185, 129, 0.2); color: #10b981; border-left: 3px solid #10b981; }
-    .difficulty-medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-left: 3px solid #f59e0b; }
-    .difficulty-hard { background: rgba(239, 68, 68, 0.2); color: #f87171; border-left: 3px solid #ef4444; }
+
+    .difficulty-easy {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border-left: 3px solid #10b981;
+    }
+
+    .difficulty-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border-left: 3px solid #f59e0b;
+    }
+
+    .difficulty-hard {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-left: 3px solid #ef4444;
+    }
 
     .result-modal {
       backdrop-filter: blur(12px);
       background: rgba(0, 0, 0, 0.7);
       transition: opacity 0.2s ease;
     }
+
     .result-card {
       animation: slideUp 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
     }
+
     @keyframes slideUp {
-      from { transform: translateY(30px) scale(0.96); opacity: 0; }
-      to { transform: translateY(0) scale(1); opacity: 1; }
+      from {
+        transform: translateY(30px) scale(0.96);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
     }
 
     .settings-panel {
       transition: max-height 0.35s ease-out, opacity 0.25s ease, margin 0.2s;
     }
+
     .settings-panel.active {
       max-height: 380px !important;
       opacity: 1 !important;
@@ -166,13 +236,21 @@
       background: linear-gradient(105deg, #2563eb, #1d4ed8);
       transition: all 0.2s;
     }
+
     .btn-primary:hover:not(:disabled) {
       filter: brightness(1.08);
       transform: translateY(-2px);
       box-shadow: 0 12px 20px -12px #2563eb;
     }
-    button:active:not(:disabled) { transform: scale(0.97); }
-    button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    button:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
     #quoteDisplay {
       line-height: 1.7;
@@ -180,25 +258,47 @@
       white-space: pre-wrap;
       font-size: 1.2rem;
     }
+
     @media (max-width: 640px) {
-      #quoteDisplay { font-size: 1rem; }
-      .stat p:first-child { font-size: 0.7rem; }
+      #quoteDisplay {
+        font-size: 1rem;
+      }
+
+      .stat p:first-child {
+        font-size: 0.7rem;
+      }
     }
 
     .history-item {
       transition: all 0.2s;
       cursor: pointer;
     }
-    .history-item:hover { transform: translateX(4px); }
+
+    .history-item:hover {
+      transform: translateX(4px);
+    }
 
     @keyframes celebrate {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.02); background: rgba(255,215,0,0.2); }
-      100% { transform: scale(1); }
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+        background: rgba(255, 215, 0, 0.2);
+      }
+
+      100% {
+        transform: scale(1);
+      }
     }
-    .celebration { animation: celebrate 0.5s ease; }
+
+    .celebration {
+      animation: celebrate 0.5s ease;
+    }
   </style>
 </head>
+
 <body class="light min-h-screen flex items-center justify-center p-3 md:p-5">
   <div class="container max-w-6xl mx-auto">
     <div class="typing-test rounded-3xl p-5 md:p-8 transition-all duration-300">
@@ -216,13 +316,19 @@
           </p>
         </div>
         <div class="flex gap-2">
-          <button id="themeToggle" class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200" aria-label="Toggle theme">
+          <button id="themeToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200"
+            aria-label="Toggle theme">
             <i class="fas fa-sun text-yellow-500"></i>
           </button>
-          <button id="settingsToggle" class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:rotate-45 transition-all duration-200" aria-label="Settings">
+          <button id="settingsToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:rotate-45 transition-all duration-200"
+            aria-label="Settings">
             <i class="fas fa-sliders-h"></i>
           </button>
-          <button id="historyToggle" class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200" aria-label="History">
+          <button id="historyToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200"
+            aria-label="History">
             <i class="fas fa-chart-simple"></i>
           </button>
         </div>
@@ -237,32 +343,45 @@
               <button data-time="15" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">15s</button>
               <button data-time="30" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">30s</button>
               <button data-time="60" class="time-option bg-blue-500 text-white shadow-md">60s</button>
-              <button data-time="120" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">120s</button>
+              <button data-time="120"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">120s</button>
             </div>
           </div>
           <div>
             <p class="font-semibold mb-2 flex gap-2"><i class="fas fa-chart-line text-green-500"></i> Difficulty</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-difficulty="easy" class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">Easy</button>
-              <button data-difficulty="medium" class="difficulty-option bg-blue-500 text-white shadow-md">Medium</button>
-              <button data-difficulty="hard" class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">Hard</button>
-              <button data-difficulty="expert" class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i class="fas fa-fire text-orange-500 mr-1"></i> Expert</button>
+              <button data-difficulty="easy"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">Easy</button>
+              <button data-difficulty="medium"
+                class="difficulty-option bg-blue-500 text-white shadow-md">Medium</button>
+              <button data-difficulty="hard"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700">Hard</button>
+              <button data-difficulty="expert"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i
+                  class="fas fa-fire text-orange-500 mr-1"></i> Expert</button>
             </div>
-            <p class="text-xs mt-1 opacity-60"><span id="quoteCountBadge"><i class="fas fa-book-open mr-1"></i> 20+ quotes</span></p>
+            <p class="text-xs mt-1 opacity-60"><span id="quoteCountBadge"><i class="fas fa-book-open mr-1"></i> 20+
+                quotes</span></p>
           </div>
           <div>
             <p class="font-semibold mb-2 flex gap-2"><i class="fas fa-quote-right text-purple-500"></i> Category</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-source="programming" class="source-option bg-blue-500 text-white shadow-md"><i class="fas fa-code mr-1"></i> Code</button>
-              <button data-source="literature" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i class="fas fa-book mr-1"></i> Lit</button>
-              <button data-source="mixed" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i class="fas fa-globe mr-1"></i> Wisdom</button>
-              <button data-source="science" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i class="fas fa-flask mr-1"></i> Science</button>
+              <button data-source="programming" class="source-option bg-blue-500 text-white shadow-md"><i
+                  class="fas fa-code mr-1"></i> Code</button>
+              <button data-source="literature"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i class="fas fa-book mr-1"></i>
+                Lit</button>
+              <button data-source="mixed" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i
+                  class="fas fa-globe mr-1"></i> Wisdom</button>
+              <button data-source="science" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i
+                  class="fas fa-flask mr-1"></i> Science</button>
             </div>
           </div>
           <div>
             <p class="font-semibold mb-2 flex gap-2"><i class="fas fa-eye text-cyan-500"></i> Focus Mode</p>
             <div class="flex gap-2">
-              <button id="focusModeToggle" class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i class="fas fa-eye-slash mr-1"></i> Focus Off</button>
+              <button id="focusModeToggle" class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700"><i
+                  class="fas fa-eye-slash mr-1"></i> Focus Off</button>
             </div>
             <p class="text-xs mt-1 opacity-60">Minimal interface for distraction-free practice</p>
           </div>
@@ -320,22 +439,28 @@
           <span class="text-sm"><i class="fas fa-tachometer-alt"></i> <span id="charPerSec">0</span> CPS</span>
         </div>
         <div class="text-xs opacity-60 flex items-center gap-2">
-          <i class="fas fa-keyboard"></i> <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd> restart
+          <i class="fas fa-keyboard"></i> <kbd
+            class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd> restart
           <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs ml-1">Esc</kbd> clear
         </div>
       </div>
 
       <!-- Quote Display Area -->
-      <div id="quoteDisplay" class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px] bg-black/5 dark:bg-black/20">
+      <div id="quoteDisplay"
+        class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px] bg-black/5 dark:bg-black/20">
         Loading...
       </div>
 
       <!-- Input Area -->
       <div class="relative mb-5">
-        <textarea id="quoteInput" rows="3" class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:outline-none transition-all duration-200" placeholder="Start typing to begin the test..."></textarea>
+        <textarea id="quoteInput" rows="3"
+          class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:outline-none transition-all duration-200"
+          placeholder="Start typing to begin the test..."></textarea>
         <div class="absolute bottom-3 right-3 flex gap-2">
-          <span id="charCount" class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur">0/0</span>
-          <button id="clearBtn" class="p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition" title="Clear input">
+          <span id="charCount"
+            class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur">0/0</span>
+          <button id="clearBtn" class="p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition"
+            title="Clear input">
             <i class="fas fa-eraser text-sm"></i>
           </button>
         </div>
@@ -346,10 +471,12 @@
         <button id="restartBtn" class="btn-primary px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md">
           <i class="fas fa-arrows-rotate"></i> Restart
         </button>
-        <button id="newQuoteBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
+        <button id="newQuoteBtn"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
           <i class="fas fa-dice-d6"></i> New Quote
         </button>
-        <button id="practiceBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
+        <button id="practiceBtn"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
           <i class="fas fa-infinity"></i> Practice Mode
         </button>
       </div>
@@ -363,22 +490,41 @@
 
     <!-- Result Modal -->
     <div id="resultModal" class="result-modal fixed inset-0 hidden items-center justify-center z-50">
-      <div class="result-card bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20 mx-4">
-        <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+      <div
+        class="result-card bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20 mx-4">
+        <div
+          class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
           <i class="fas fa-crown text-4xl text-white"></i>
         </div>
         <h2 class="text-2xl font-black">Test Complete!</h2>
         <p class="text-sm opacity-70 mt-1">Great effort! Check your stats below</p>
         <div class="grid grid-cols-2 gap-4 my-6">
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">WPM</p><p id="resultWPM" class="text-3xl font-bold text-blue-500">0</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">Raw WPM</p><p id="resultRawWPM" class="text-2xl font-bold text-purple-500">0</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">Accuracy</p><p id="resultAccuracy" class="text-3xl font-bold text-emerald-500">0%</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl"><p class="text-xs">Errors</p><p id="resultErrors" class="text-3xl font-bold text-rose-500">0</p></div>
-          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl col-span-2"><p class="text-xs">Time</p><p id="resultTime" class="text-2xl font-bold">0s</p></div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">WPM</p>
+            <p id="resultWPM" class="text-3xl font-bold text-blue-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">Raw WPM</p>
+            <p id="resultRawWPM" class="text-2xl font-bold text-purple-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">Accuracy</p>
+            <p id="resultAccuracy" class="text-3xl font-bold text-emerald-500">0%</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl">
+            <p class="text-xs">Errors</p>
+            <p id="resultErrors" class="text-3xl font-bold text-rose-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl col-span-2">
+            <p class="text-xs">Time</p>
+            <p id="resultTime" class="text-2xl font-bold">0s</p>
+          </div>
         </div>
         <div class="flex gap-3">
           <button id="closeResultBtn" class="btn-primary flex-1 py-3 rounded-xl font-semibold">Close</button>
-          <button id="shareResultBtn" class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl font-semibold hover:bg-gray-300 transition"><i class="fab fa-twitter mr-2"></i> Share</button>
+          <button id="shareResultBtn"
+            class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl font-semibold hover:bg-gray-300 transition"><i
+              class="fab fa-twitter mr-2"></i> Share</button>
         </div>
       </div>
     </div>
@@ -419,7 +565,7 @@
     let testHistory = JSON.parse(localStorage.getItem("velocityHistory") || "[]");
 
     function updateQuoteCountDisplay() { const count = QUOTES_LIB[quoteSource]?.[difficulty]?.length || 20; elements.quoteCountBadge.innerHTML = `<i class="fas fa-book-open mr-1"></i> ${count} quotes`; }
-    function updateQuoteUI() { elements.quoteDisplay.innerHTML = ""; [...currentQuoteText].forEach(ch => { let span = document.createElement("span"); span.className = "char"; span.innerText = ch; elements.quoteDisplay.appendChild(span); }); const wordCount = currentQuoteText.split(/\s+/).filter(w => w).length; elements.wordsCountSpan.innerText = wordCount; elements.quoteLengthSpan.innerText = currentQuoteText.length; elements.difficultyBadge.innerText = difficulty.charAt(0).toUpperCase() + difficulty.slice(1); elements.difficultyBadge.className = `difficulty-badge difficulty-${difficulty === "expert" ? "hard" : difficulty}`; updateQuoteCountDisplay(); }
+    function updateQuoteUI() { elements.quoteDisplay.innerHTML = "";[...currentQuoteText].forEach(ch => { let span = document.createElement("span"); span.className = "char"; span.innerText = ch; elements.quoteDisplay.appendChild(span); }); const wordCount = currentQuoteText.split(/\s+/).filter(w => w).length; elements.wordsCountSpan.innerText = wordCount; elements.quoteLengthSpan.innerText = currentQuoteText.length; elements.difficultyBadge.innerText = difficulty.charAt(0).toUpperCase() + difficulty.slice(1); elements.difficultyBadge.className = `difficulty-badge difficulty-${difficulty === "expert" ? "hard" : difficulty}`; updateQuoteCountDisplay(); }
     function loadQuote() { const arr = QUOTES_LIB[quoteSource]?.[difficulty] || QUOTES_LIB.programming.medium; currentQuoteText = arr[Math.floor(Math.random() * arr.length)]; updateQuoteUI(); resetTestState(); }
     function resetTestState() { clearInterval(timer); isTyping = false; testDone = false; errors = 0; totalTypedChars = 0; correctCharsTyped = 0; elements.quoteInput.value = ""; elements.quoteInput.disabled = false; timeLeft = practiceActive ? 9999 : totalDuration; if (!practiceActive) elements.timeElem.innerText = timeLeft + "s"; else elements.timeElem.innerText = "∞"; elements.wpmElem.innerText = "0"; elements.rawWpmElem.innerText = "0"; elements.accuracyElem.innerText = "0%"; elements.errorsElem.innerText = "0"; elements.charPerSecElem.innerText = "0"; elements.charCountSpan.innerText = `0/${currentQuoteText.length}`; elements.progressFill.style.width = "0%"; startTime = null; const quoteChars = elements.quoteDisplay.querySelectorAll(".char"); quoteChars.forEach(c => c.classList.remove("correct", "incorrect", "current", "extra")); if (currentQuoteText.length) quoteChars[0]?.classList.add("current"); elements.quoteInput.focus(); }
     function computeAndUpdateMetrics() { const elapsed = startTime ? (Date.now() - startTime) / 1000 : 0; const minutes = Math.max(0.01, elapsed / 60); const wpm = Math.floor((correctCharsTyped / 5) / minutes); const rawWpm = Math.floor((totalTypedChars / 5) / minutes); const accuracy = totalTypedChars ? Math.floor((correctCharsTyped / totalTypedChars) * 100) : 0; const cps = elapsed > 0 ? (totalTypedChars / elapsed).toFixed(1) : 0; elements.wpmElem.innerText = wpm || 0; elements.rawWpmElem.innerText = rawWpm || 0; elements.accuracyElem.innerText = accuracy + "%"; elements.errorsElem.innerText = errors; elements.charPerSecElem.innerText = cps; }
@@ -452,4 +598,5 @@
     initTheme(); attachEvents(); loadQuote(); updateHistoryDisplay();
   </script>
 </body>
+
 </html>
