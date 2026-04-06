@@ -450,39 +450,62 @@
       <div id="settingsPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0">
         <div class="bg-black/5 dark:bg-white/5 p-5 rounded-2xl backdrop-blur-sm grid grid-cols-1 md:grid-cols-4 gap-5">
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i class="fas fa-hourglass-half text-blue-500"></i> Duration</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-hourglass-half text-blue-500"></i> Duration</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-time="15" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">15s</button>
-              <button data-time="30" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">30s</button>
+              <button data-time="15"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">15s</button>
+              <button data-time="30"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">30s</button>
               <button data-time="60" class="time-option bg-blue-500 text-white shadow-md">60s</button>
-              <button data-time="120" class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">120s</button>
+              <button data-time="120"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">120s</button>
             </div>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i class="fas fa-chart-line text-green-500"></i> Difficulty</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-chart-line text-green-500"></i> Difficulty</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-difficulty="easy" class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">Easy</button>
-              <button data-difficulty="medium" class="difficulty-option bg-blue-500 text-white shadow-md">Medium</button>
-              <button data-difficulty="hard" class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">Hard</button>
-              <button data-difficulty="expert" class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i class="fas fa-fire text-orange-500 mr-1"></i>Expert</button>
+              <button data-difficulty="easy"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">Easy</button>
+              <button data-difficulty="medium"
+                class="difficulty-option bg-blue-500 text-white shadow-md">Medium</button>
+              <button data-difficulty="hard"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">Hard</button>
+              <button data-difficulty="expert"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-fire text-orange-500 mr-1"></i>Expert</button>
             </div>
-            <p class="text-xs mt-1 opacity-60 text-gray-600 dark:text-gray-400"><span id="quoteCountBadge"><i class="fas fa-book-open mr-1"></i>20+ quotes</span></p>
+            <p class="text-xs mt-1 opacity-60 text-gray-600 dark:text-gray-400"><span id="quoteCountBadge"><i
+                  class="fas fa-book-open mr-1"></i>20+ quotes</span></p>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i class="fas fa-quote-right text-purple-500"></i> Category</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-quote-right text-purple-500"></i> Category</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-source="programming" class="source-option bg-blue-500 text-white shadow-md"><i class="fas fa-code mr-1"></i>Code</button>
-              <button data-source="literature" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i class="fas fa-book mr-1"></i>Lit</button>
-              <button data-source="mixed" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i class="fas fa-globe mr-1"></i>Wisdom</button>
-              <button data-source="science" class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i class="fas fa-flask mr-1"></i>Science</button>
+              <button data-source="programming" class="source-option bg-blue-500 text-white shadow-md"><i
+                  class="fas fa-code mr-1"></i>Code</button>
+              <button data-source="literature"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-book mr-1"></i>Lit</button>
+              <button data-source="mixed"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-globe mr-1"></i>Wisdom</button>
+              <button data-source="science"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-flask mr-1"></i>Science</button>
             </div>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i class="fas fa-eye text-cyan-500"></i> Focus Mode</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-eye text-cyan-500"></i> Focus Mode</p>
             <div class="flex gap-2">
-              <button id="focusModeToggle" class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i class="fas fa-eye-slash mr-1"></i>Focus Off</button>
+              <button id="focusModeToggle"
+                class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-eye-slash mr-1"></i>Focus Off</button>
             </div>
-            <p class="text-xs mt-1 opacity-60 text-gray-600 dark:text-gray-400">Minimal interface for distraction-free practice</p>
+            <p class="text-xs mt-1 opacity-60 text-gray-600 dark:text-gray-400">Minimal interface for distraction-free
+              practice</p>
           </div>
         </div>
       </div>
@@ -491,11 +514,13 @@
       <div id="historyPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0 mb-4">
         <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl backdrop-blur-sm">
           <div class="flex justify-between items-center mb-3">
-            <p class="font-semibold text-gray-700 dark:text-gray-300"><i class="fas fa-history mr-2"></i>Recent Results</p>
+            <p class="font-semibold text-gray-700 dark:text-gray-300"><i class="fas fa-history mr-2"></i>Recent Results
+            </p>
             <button id="clearHistoryBtn" class="text-xs text-red-500 hover:text-red-700 transition">Clear All</button>
           </div>
           <div id="historyList" class="max-h-48 overflow-y-auto space-y-2">
-            <p class="text-center text-sm opacity-50 text-gray-600 dark:text-gray-400">No history yet. Complete a test!</p>
+            <p class="text-center text-sm opacity-50 text-gray-600 dark:text-gray-400">No history yet. Complete a test!
+            </p>
           </div>
         </div>
       </div>
@@ -503,7 +528,8 @@
       <!-- Detailed Stats Panel -->
       <div id="statsPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0 mb-4">
         <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl backdrop-blur-sm">
-          <p class="font-semibold mb-3 text-gray-700 dark:text-gray-300"><i class="fas fa-chart-pie mr-2 text-purple-500"></i>Performance Summary</p>
+          <p class="font-semibold mb-3 text-gray-700 dark:text-gray-300"><i
+              class="fas fa-chart-pie mr-2 text-purple-500"></i>Performance Summary</p>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
             <div class="p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
               <p class="text-xs opacity-60 text-gray-600 dark:text-gray-400">Best WPM</p>
@@ -533,23 +559,28 @@
       <!-- Stats Cards -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
         <div class="stat rounded-2xl p-4 text-center shadow-sm transition-all hover:scale-[1.02]">
-          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i class="far fa-clock mr-1"></i>Time</p>
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="far fa-clock mr-1"></i>Time</p>
           <p id="time" class="text-3xl font-mono font-bold text-gray-800 dark:text-white">60s</p>
         </div>
         <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
-          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i class="fas fa-bolt mr-1"></i>WPM</p>
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-bolt mr-1"></i>WPM</p>
           <p id="wpm" class="stat-value text-3xl font-bold text-blue-500">0</p>
         </div>
         <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
-          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i class="fas fa-gauge-high mr-1"></i>Raw WPM</p>
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-gauge-high mr-1"></i>Raw WPM</p>
           <p id="rawWpm" class="stat-value text-2xl font-bold text-purple-500">0</p>
         </div>
         <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
-          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i class="fas fa-bullseye mr-1"></i>Accuracy</p>
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-bullseye mr-1"></i>Accuracy</p>
           <p id="accuracy" class="stat-value text-3xl font-bold text-emerald-500">0%</p>
         </div>
         <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
-          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i class="fas fa-times-circle mr-1"></i>Errors</p>
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-times-circle mr-1"></i>Errors</p>
           <p id="errors" class="stat-value text-3xl font-bold text-rose-400">0</p>
         </div>
       </div>
@@ -558,10 +589,14 @@
       <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
         <div class="flex gap-3 items-center flex-wrap">
           <span id="difficultyBadge" class="difficulty-badge difficulty-medium">Medium</span>
-          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="far fa-file-alt"></i> <span id="wordsCount">0</span> words</span>
-          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-i-cursor"></i> <span id="quoteLength">0</span> chars</span>
-          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-tachometer-alt"></i> <span id="charPerSec">0</span> CPS</span>
-          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-clock"></i> <span id="timeElapsed">0</span>s elapsed</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="far fa-file-alt"></i> <span
+              id="wordsCount">0</span> words</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-i-cursor"></i> <span
+              id="quoteLength">0</span> chars</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-tachometer-alt"></i> <span
+              id="charPerSec">0</span> CPS</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-clock"></i> <span
+              id="timeElapsed">0</span>s elapsed</span>
         </div>
         <div class="text-xs opacity-60 flex items-center gap-2 text-gray-600 dark:text-gray-400">
           <i class="fas fa-keyboard"></i>
@@ -572,16 +607,21 @@
       </div>
 
       <!-- Quote Display Area -->
-      <div id="quoteDisplay" class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px] transition-all duration-300">
+      <div id="quoteDisplay"
+        class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px] transition-all duration-300">
         Loading...
       </div>
 
       <!-- Input Area -->
       <div class="relative mb-5">
-        <textarea id="quoteInput" rows="3" class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:outline-none transition-all duration-200" placeholder="Start typing to begin the test..."></textarea>
+        <textarea id="quoteInput" rows="3"
+          class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:outline-none transition-all duration-200"
+          placeholder="Start typing to begin the test..."></textarea>
         <div class="absolute bottom-3 right-3 flex gap-2">
-          <span id="charCount" class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur text-white">0/0</span>
-          <button id="clearBtn" class="p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition" title="Clear input">
+          <span id="charCount"
+            class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur text-white">0/0</span>
+          <button id="clearBtn" class="p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition"
+            title="Clear input">
             <i class="fas fa-eraser text-sm"></i>
           </button>
         </div>
@@ -589,18 +629,22 @@
 
       <!-- Action Buttons -->
       <div class="flex flex-wrap gap-3 justify-center">
-        <button id="restartBtn" class="btn-primary px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md text-white">
+        <button id="restartBtn"
+          class="btn-primary px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md text-white">
           <i class="fas fa-arrows-rotate"></i>Restart
         </button>
-        <button id="newQuoteBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
+        <button id="newQuoteBtn"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
           <i class="fas fa-dice-d6"></i>New Quote
         </button>
-        <button id="practiceBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
+        <button id="practiceBtn"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
           <i class="fas fa-infinity"></i>Practice Mode
         </button>
       </div>
 
-      <div class="mt-6 text-center text-xs opacity-60 flex justify-center gap-4 flex-wrap text-gray-600 dark:text-gray-400">
+      <div
+        class="mt-6 text-center text-xs opacity-60 flex justify-center gap-4 flex-wrap text-gray-600 dark:text-gray-400">
         <span><i class="fas fa-brain mr-1"></i>Focus on accuracy first</span>
         <span><i class="fas fa-chart-simple mr-1"></i>WPM = (correct chars/5) / minutes</span>
         <span><i class="fas fa-fire mr-1"></i>Raw WPM includes all typed chars</span>
@@ -610,8 +654,10 @@
 
     <!-- Result Modal -->
     <div id="resultModal" class="result-modal fixed inset-0 hidden items-center justify-center z-50">
-      <div class="result-card rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20 mx-4 transition-all duration-300">
-        <div class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+      <div
+        class="result-card rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20 mx-4 transition-all duration-300">
+        <div
+          class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
           <i class="fas fa-crown text-4xl text-white"></i>
         </div>
         <h2 class="text-2xl font-black text-gray-800 dark:text-white">Test Complete!</h2>
@@ -638,12 +684,16 @@
             <p id="resultTime" class="text-2xl font-bold text-gray-800 dark:text-white">0s</p>
           </div>
         </div>
-        <div id="achievementBadge" class="mb-4 hidden p-2 rounded-lg bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30">
-          <i class="fas fa-trophy text-yellow-500 mr-2"></i><span id="achievementText" class="text-gray-800 dark:text-white">New Personal Best!</span>
+        <div id="achievementBadge"
+          class="mb-4 hidden p-2 rounded-lg bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30">
+          <i class="fas fa-trophy text-yellow-500 mr-2"></i><span id="achievementText"
+            class="text-gray-800 dark:text-white">New Personal Best!</span>
         </div>
         <div class="flex gap-3">
           <button id="closeResultBtn" class="btn-primary flex-1 py-3 rounded-xl font-semibold text-white">Close</button>
-          <button id="shareResultBtn" class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition text-gray-800 dark:text-white"><i class="fab fa-twitter mr-2"></i>Share</button>
+          <button id="shareResultBtn"
+            class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition text-gray-800 dark:text-white"><i
+              class="fab fa-twitter mr-2"></i>Share</button>
         </div>
       </div>
     </div>
