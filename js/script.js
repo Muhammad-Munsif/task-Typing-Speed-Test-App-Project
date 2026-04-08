@@ -284,6 +284,44 @@ function toggleThemeGlobal() {
   });
 }
 
+    function finishTest() { 
+      if (testDone) return; 
+      
+      // Play completion fanfare
+      SoundManager.playComplete();
+      
+      testDone = true; 
+      isTyping = false; 
+      clearInterval(timer); 
+      elements.quoteInput.disabled = true; 
+      const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft; 
+      const finalWPM = parseInt(elements.wpmElem.innerText), finalRawWPM = parseInt(elements.rawWpmElem.innerText), finalAccuracy = elements.accuracyElem.innerText, finalErrors = elements.errorsElem.innerText; 
+      elements.resultWPM.innerText = finalWPM; 
+      elements.resultRawWPM.innerText = finalRawWPM; 
+      elements.resultAccuracy.innerText = finalAccuracy; 
+      elements.resultErrors.innerText = finalErrors; 
+      elements.resultTime.innerText = Math.floor(usedTime) + "s"; 
+      const isNewBest = finalWPM > bestWpm && finalWPM > 0; 
+      if (isNewBest) { 
+        elements.achievementBadge.classList.remove("hidden"); 
+        elements.achievementText.innerText = "New Personal Best! 🏆";
+        // Play achievement sound for new best
+        SoundManager.playAchievement();
+      } else { 
+        elements.achievementBadge.classList.add("hidden"); 
+      } 
+      elements.resultModal.classList.add("active", "flex"); 
+      elements.resultModal.classList.remove("hidden"); 
+      const historyEntry = { wpm: finalWPM, rawWpm: finalRawWPM, accuracy: finalAccuracy, errors: finalErrors, time: Math.floor(usedTime), difficulty, source: quoteSource, date: new Date().toISOString() }; 
+      testHistory.unshift(historyEntry); 
+      if (testHistory.length > 15) testHistory.pop(); 
+      localStorage.setItem("velocityHistory", JSON.stringify(testHistory)); 
+      updateHistoryDisplay(); 
+      updateStatsSummary(); 
+      document.querySelector(".typing-test").classList.add("celebration"); 
+      setTimeout(() => document.querySelector(".typing-test").classList.remove("celebration"), 500); 
+    }
+
 function attachEvents() {
   elements.restartBtn.onclick = resetTest; elements.newQuoteBtn.onclick = newQuote; elements.practiceBtn.onclick = togglePractice; elements.clearBtn.onclick = clearInputField;
   elements.themeToggle.onclick = toggleThemeGlobal; elements.focusModeToggle.onclick = toggleFocusMode; elements.clearHistoryBtn.onclick = clearHistory;
