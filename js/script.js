@@ -323,6 +323,56 @@ function toggleThemeGlobal() {
     }
 
 function attachEvents() {
+        // Sound controls
+      const soundToggle = document.getElementById('soundToggle');
+      const hapticsToggle = document.getElementById('hapticsToggle');
+      const volumeSlider = document.getElementById('volumeSlider');
+      const volumeValue = document.getElementById('volumeValue');
+      
+      if (soundToggle) {
+        soundToggle.textContent = SoundManager.enabled ? 'ON' : 'OFF';
+        soundToggle.className = SoundManager.enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+        soundToggle.onclick = () => {
+          const enabled = SoundManager.toggle();
+          soundToggle.textContent = enabled ? 'ON' : 'OFF';
+          soundToggle.className = enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+          localStorage.setItem('velocitySoundSettings', JSON.stringify({
+            enabled: SoundManager.enabled,
+            hapticsEnabled: SoundManager.hapticsEnabled,
+            volume: SoundManager.volume
+          }));
+        };
+      }
+      
+      if (hapticsToggle) {
+        hapticsToggle.textContent = SoundManager.hapticsEnabled ? 'ON' : 'OFF';
+        hapticsToggle.className = SoundManager.hapticsEnabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+        hapticsToggle.onclick = () => {
+          const enabled = SoundManager.toggleHaptics();
+          hapticsToggle.textContent = enabled ? 'ON' : 'OFF';
+          hapticsToggle.className = enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+          localStorage.setItem('velocitySoundSettings', JSON.stringify({
+            enabled: SoundManager.enabled,
+            hapticsEnabled: SoundManager.hapticsEnabled,
+            volume: SoundManager.volume
+          }));
+        };
+      }
+      
+      if (volumeSlider) {
+        volumeSlider.value = SoundManager.volume * 100;
+        volumeValue.textContent = Math.round(SoundManager.volume * 100) + '%';
+        volumeSlider.oninput = (e) => {
+          const val = parseInt(e.target.value) / 100;
+          SoundManager.setVolume(val);
+          volumeValue.textContent = Math.round(val * 100) + '%';
+          localStorage.setItem('velocitySoundSettings', JSON.stringify({
+            enabled: SoundManager.enabled,
+            hapticsEnabled: SoundManager.hapticsEnabled,
+            volume: SoundManager.volume
+          }));
+        };
+      }
   elements.restartBtn.onclick = resetTest; elements.newQuoteBtn.onclick = newQuote; elements.practiceBtn.onclick = togglePractice; elements.clearBtn.onclick = clearInputField;
   elements.themeToggle.onclick = toggleThemeGlobal; elements.focusModeToggle.onclick = toggleFocusMode; elements.clearHistoryBtn.onclick = clearHistory;
   elements.settingsToggle.onclick = () => { elements.settingsPanel.classList.toggle("active"); if (elements.historyPanel.classList.contains("active")) elements.historyPanel.classList.remove("active"); if (elements.statsPanel.classList.contains("active")) elements.statsPanel.classList.remove("active"); };
