@@ -48,6 +48,113 @@
       if (best > bestWpm) { bestWpm = best; localStorage.setItem("bestWpm", bestWpm); }
     }
 
+    // ==================== SOUND & HAPTIC FEEDBACK SYSTEM (DAY 1) ====================
+    const SoundManager = {
+      // Settings
+      enabled: true,
+      hapticsEnabled: true,
+      volume: 0.4,
+      
+      // Audio context for web audio API (better than HTMLAudioElement)
+      audioContext: null,
+      sounds: {},
+      
+      // Initialize audio system (requires user interaction first)
+      init() {
+        if (this.audioContext) return;
+        try {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+          console.log('Web Audio API not supported');
+          this.enabled = false;
+        }
+      },
+      
+      // Generate beep sound using Web Audio API
+      playBeep(frequency, duration, type = 'sine') {
+        if (!this.enabled || !this.audioContext) return;
+        
+        // Resume audio context if suspended (browser policy)
+        if (this.audioContext.state === 'suspended') {
+          this.audioContext.resume();
+        }
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+        gainNode.gain.value = this.volume;
+        
+        oscillator.start();
+        
+        // Fade out for smoother sound
+        gainNode.gain.exponentialRampToValueAtTime(0.00001, this.audioContext.currentTime + duration);
+        oscillator.stop(this.audioContext.currentTime + duration);
+      },
+      
+      // Keypress sound (subtle click)
+      playKeypress() {
+        if (!this.enabled) return;
+        this.playBeep(880, 0.03, 'sine');
+      },
+      
+      // Error sound (lower pitch, buzzer-like)
+      playError() {
+        if (!this.enabled) return;
+        this.playBeep(440, 0.15, 'triangle');
+        
+        // Haptic feedback on mobile
+        if (this.hapticsEnabled && window.navigator && window.navigator.vibrate) {
+          window.navigator.vibrate(50);
+        }
+      },
+      
+      // Test completion fanfare (pleasant ascending notes)
+      playComplete() {
+        if (!this.enabled) return;
+        this.playBeep(523.25, 0.2, 'sine');  // C5
+        setTimeout(() => this.playBeep(659.25, 0.2, 'sine'), 150);  // E5
+        setTimeout(() => this.playBeep(783.99, 0.4, 'sine'), 300);  // G5
+      },
+      
+      // Achievement unlock sound
+      playAchievement() {
+        if (!this.enabled) return;
+        this.playBeep(987.77, 0.15, 'sine');  // B5
+        setTimeout(() => this.playBeep(1318.52, 0.3, 'sine'), 120); // E6
+      },
+      
+      // Toggle sound on/off
+      toggle() {
+        this.enabled = !this.enabled;
+        if (this.enabled && this.audioContext && this.audioContext.state === 'suspended') {
+          this.audioContext.resume();
+        }
+        return this.enabled;
+      },
+      
+      // Toggle haptics
+      toggleHaptics() {
+        this.hapticsEnabled = !this.hapticsEnabled;
+        return this.hapticsEnabled;
+      },
+      
+      // Set volume (0-1)
+      setVolume(vol) {
+        this.volume = Math.max(0, Math.min(1, vol));
+      }
+    };
+    
+    // Load sound settings from localStorage
+    const soundSettings = JSON.parse(localStorage.getItem('velocitySoundSettings') || '{"enabled":true,"hapticsEnabled":true,"volume":0.4}');
+    SoundManager.enabled = soundSettings.enabled;
+    SoundManager.hapticsEnabled = soundSettings.hapticsEnabled;
+    SoundManager.volume = soundSettings.volume;
+
     function updateQuoteCountDisplay() { const count = QUOTES_LIB[quoteSource]?.[difficulty]?.length || 20; elements.quoteCountBadge.innerHTML = `<i class="fas fa-book-open mr-1"></i>${count} quotes`; }
     function updateQuoteUI() { elements.quoteDisplay.innerHTML = "";[...currentQuoteText].forEach(ch => { let span = document.createElement("span"); span.className = "char"; span.innerText = ch; elements.quoteDisplay.appendChild(span); }); const wordCount = currentQuoteText.split(/\s+/).filter(w => w).length; elements.wordsCountSpan.innerText = wordCount; elements.quoteLengthSpan.innerText = currentQuoteText.length; elements.difficultyBadge.innerText = difficulty.charAt(0).toUpperCase() + difficulty.slice(1); elements.difficultyBadge.className = `difficulty-badge difficulty-${difficulty === "expert" ? "hard" : difficulty}`; updateQuoteCountDisplay(); }
     function loadQuote() { const arr = QUOTES_LIB[quoteSource]?.[difficulty] || QUOTES_LIB.programming.medium; currentQuoteText = arr[Math.floor(Math.random() * arr.length)]; updateQuoteUI(); resetTestState(); }
