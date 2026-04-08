@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>VelocityType | Advanced Typing Speed Test</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #1e40af;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+      --purple: #8b5cf6;
+      --pink: #ec4899;
+    }
+
+    body {
+      transition: background-color 0.3s ease, color 0.2s ease;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', monospace;
+      min-height: 100vh;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 10px;
+    }
+
+    /* Light mode */
+    body.light {
+      background: linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%);
+      color: #1f2937;
+    }
+
+    body.light .typing-test {
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    body.light .stat {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+
+    body.light textarea {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      color: #1f2937;
+    }
+
+    body.light textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    body.light textarea::placeholder {
+      color: #9ca3af;
+    }
+
+    body.light .char.current {
+      background: #dbeafe !important;
+    }
+
+    body.light .settings-panel .bg-black\/5 {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    body.light .history-item.bg-white\/50 {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    body.light .key-hint {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    body.light .text-gray-600,
+    body.light .text-gray-500,
+    body.light .opacity-60,
+    body.light .stat p:first-child,
+    body.light .text-gray-700 {
+      color: #4b5563 !important;
+    }
+
+    body.light .dark\:text-gray-300 {
+      color: #4b5563 !important;
+    }
+
+    /* Dark mode */
+    body.dark {
+      background: radial-gradient(circle at 20% 30%, #0a0f1a, #030712);
+      color: #f3f4f6;
+    }
+
+    body.dark .typing-test {
+      background: rgba(17, 24, 39, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+    }
+
+    body.dark .stat {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid #334155;
+    }
+
+    body.dark textarea {
+      background: #0f172a;
+      border: 2px solid #334155;
+      color: #e2e8f0;
+    }
+
+    body.dark textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+    }
+
+    body.dark textarea::placeholder {
+      color: #6b7280;
+    }
+
+    body.dark .char.extra {
+      background: rgba(124, 45, 18, 0.3);
+      color: #fdba74;
+    }
+
+    body.dark .settings-panel .bg-black\/5 {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    body.dark .history-item.bg-white\/50 {
+      background: rgba(30, 41, 59, 0.5);
+    }
+
+    body.dark .key-hint {
+      background: #374151;
+      color: #e5e7eb;
+    }
+
+    body.dark #quoteDisplay {
+      background: rgba(0, 0, 0, 0.2);
+      color: #e5e7eb;
+    }
+
+    body.dark .result-card {
+      background: #1f2937;
+    }
+
+    body.dark .bg-gray-100 {
+      background: #374151 !important;
+    }
+
+    body.dark .text-gray-600,
+    body.dark .text-gray-500,
+    body.dark .opacity-60,
+    body.dark .stat p:first-child {
+      color: #9ca3af !important;
+    }
+
+    body.dark .text-gray-800 {
+      color: #f3f4f6 !important;
+    }
+
+    body.dark .dark\:text-white {
+      color: #f3f4f6 !important;
+    }
+
+    body.dark .dark\:text-gray-300 {
+      color: #d1d5db !important;
+    }
+
+    body.dark .dark\:text-gray-400 {
+      color: #9ca3af !important;
+    }
+
+    /* Character styling */
+    .char {
+      transition: all 0.05s linear;
+      display: inline-block;
+      border-radius: 3px;
+      padding: 0 1px;
+      white-space: pre-wrap;
+    }
+
+    .char.correct {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+    }
+
+    .char.incorrect {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.2);
+      text-decoration: underline wavy #ef4444;
+    }
+
+    .char.current {
+      background: rgba(59, 130, 246, 0.4) !important;
+      border-radius: 4px;
+      animation: pulse 1s infinite;
+    }
+
+    .char.extra {
+      color: #f97316;
+      background: #ffedd5;
+      text-decoration: line-through;
+    }
+
+    body.dark .char.extra {
+      background: rgba(249, 115, 22, 0.2);
+      color: #fdba74;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.7;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 1;
+        background: rgba(59, 130, 246, 0.6) !important;
+        transform: scale(1.02);
+      }
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+      background-size: 300% auto;
+      animation: shimmer 2s linear infinite;
+      transition: width 0.1s ease-out;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 0% 0%;
+      }
+
+      100% {
+        background-position: 200% 0%;
+      }
+    }
+
+    .difficulty-badge {
+      padding: 4px 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.75rem;
+      backdrop-filter: blur(4px);
+    }
+
+    .difficulty-easy {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border-left: 3px solid #10b981;
+    }
+
+    .difficulty-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border-left: 3px solid #f59e0b;
+    }
+
+    .difficulty-hard {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-left: 3px solid #ef4444;
+    }
+
+    .result-modal {
+      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.7);
+      transition: opacity 0.2s ease;
+    }
+
+    .result-card {
+      animation: slideUp 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px) scale(0.96);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .settings-panel {
+      transition: max-height 0.35s ease-out, opacity 0.25s ease;
+    }
+
+    .settings-panel.active {
+      max-height: 380px !important;
+      opacity: 1 !important;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(105deg, #2563eb, #1d4ed8);
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px -12px #2563eb;
+    }
+
+    button:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    #quoteDisplay {
+      line-height: 1.7;
+      word-break: break-word;
+      white-space: pre-wrap;
+      font-size: 1.2rem;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      #quoteDisplay {
+        font-size: 1rem;
+      }
+
+      .stat p:first-child {
+        font-size: 0.7rem;
+      }
+    }
+
+    .history-item {
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      transform: translateX(4px);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    @keyframes celebrate {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.02);
+        background: rgba(255, 215, 0, 0.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .celebration {
+      animation: celebrate 0.5s ease;
+    }
+
+    .stat-value {
+      transition: all 0.1s ease;
+    }
+
+    .key-hint {
+      transition: all 0.1s;
+    }
+
+    .key-hint:active {
+      transform: scale(0.95);
+    }
+
+    #themeToggle i {
+      transition: transform 0.3s ease;
+    }
+
+    #themeToggle:hover i {
+      transform: rotate(15deg);
+    }
+  </style>
+</head>
+
+<body class="light">
+  <div class="container max-w-6xl mx-auto">
+    <div class="typing-test rounded-3xl p-5 md:p-8 transition-all duration-300">
+
+      <!-- Header -->
+      <div class="flex flex-wrap justify-between items-start gap-4 mb-6">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-black tracking-tight flex items-center gap-3">
+            <i class="fas fa-keyboard text-blue-500"></i>
+            <span class="bg-gradient-to-r from-blue-600 to-purple-500 bg-clip-text text-transparent">VelocityType</span>
+            <span class="text-xs bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded-full">Pro</span>
+          </h1>
+          <p class="text-gray-600 dark:text-gray-400 text-sm mt-1 flex items-center gap-2">
+            <i class="fas fa-chart-line text-xs"></i> Measure · Improve · Master
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <button id="themeToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200"
+            aria-label="Toggle theme">
+            <i class="fas fa-sun text-yellow-500"></i>
+          </button>
+          <button id="settingsToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:rotate-45 transition-all duration-200"
+            aria-label="Settings">
+            <i class="fas fa-sliders-h"></i>
+          </button>
+          <button id="historyToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200"
+            aria-label="History">
+            <i class="fas fa-chart-simple"></i>
+          </button>
+          <button id="statsToggle"
+            class="p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition-all duration-200"
+            aria-label="Detailed Stats">
+            <i class="fas fa-chart-pie"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Settings Panel -->
+      <div id="settingsPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0">
+        <div class="bg-black/5 dark:bg-white/5 p-5 rounded-2xl backdrop-blur-sm grid grid-cols-1 md:grid-cols-4 gap-5">
+          <div>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-hourglass-half text-blue-500"></i> Duration</p>
+            <div class="flex gap-2 flex-wrap">
+              <button data-time="15"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">15s</button>
+              <button data-time="30"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">30s</button>
+              <button data-time="60" class="time-option bg-blue-500 text-white shadow-md">60s</button>
+              <button data-time="120"
+                class="time-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">120s</button>
+            </div>
+          </div>
+          <div>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-chart-line text-green-500"></i> Difficulty</p>
+            <div class="flex gap-2 flex-wrap">
+              <button data-difficulty="easy"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">Easy</button>
+              <button data-difficulty="medium"
+                class="difficulty-option bg-blue-500 text-white shadow-md">Medium</button>
+              <button data-difficulty="hard"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition">Hard</button>
+              <button data-difficulty="expert"
+                class="difficulty-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-fire text-orange-500 mr-1"></i>Expert</button>
+            </div>
+            <p class="text-xs mt-1 opacity-60 text-gray-600 dark:text-gray-400"><span id="quoteCountBadge"><i
+                  class="fas fa-book-open mr-1"></i>20+ quotes</span></p>
+          </div>
+          <div>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-quote-right text-purple-500"></i> Category</p>
+            <div class="flex gap-2 flex-wrap">
+              <button data-source="programming" class="source-option bg-blue-500 text-white shadow-md"><i
+                  class="fas fa-code mr-1"></i>Code</button>
+              <button data-source="literature"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-book mr-1"></i>Lit</button>
+              <button data-source="mixed"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-globe mr-1"></i>Wisdom</button>
+              <button data-source="science"
+                class="source-option px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-flask mr-1"></i>Science</button>
+            </div>
+          </div>
+          <div>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300"><i
+                class="fas fa-eye text-cyan-500"></i> Focus Mode</p>
+            <div class="flex gap-2">
+              <button id="focusModeToggle"
+                class="px-4 py-2 rounded-xl bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition"><i
+                  class="fas fa-eye-slash mr-1"></i>Focus Off</button>
+            </div>
+            <p class="text-xs mt-1 opacity-60 text-gray-600 dark:text-gray-400">Minimal interface for distraction-free
+              practice</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Panel -->
+      <div id="historyPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0 mb-4">
+        <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl backdrop-blur-sm">
+          <div class="flex justify-between items-center mb-3">
+            <p class="font-semibold text-gray-700 dark:text-gray-300"><i class="fas fa-history mr-2"></i>Recent Results
+            </p>
+            <button id="clearHistoryBtn" class="text-xs text-red-500 hover:text-red-700 transition">Clear All</button>
+          </div>
+          <div id="historyList" class="max-h-48 overflow-y-auto space-y-2">
+            <p class="text-center text-sm opacity-50 text-gray-600 dark:text-gray-400">No history yet. Complete a test!
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detailed Stats Panel -->
+      <div id="statsPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0 mb-4">
+        <div class="bg-black/5 dark:bg-white/5 p-4 rounded-2xl backdrop-blur-sm">
+          <p class="font-semibold mb-3 text-gray-700 dark:text-gray-300"><i
+              class="fas fa-chart-pie mr-2 text-purple-500"></i>Performance Summary</p>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+            <div class="p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
+              <p class="text-xs opacity-60 text-gray-600 dark:text-gray-400">Best WPM</p>
+              <p id="bestWpm" class="text-xl font-bold text-blue-500">0</p>
+            </div>
+            <div class="p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
+              <p class="text-xs opacity-60 text-gray-600 dark:text-gray-400">Avg WPM</p>
+              <p id="avgWpm" class="text-xl font-bold text-emerald-500">0</p>
+            </div>
+            <div class="p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
+              <p class="text-xs opacity-60 text-gray-600 dark:text-gray-400">Total Tests</p>
+              <p id="totalTests" class="text-xl font-bold text-purple-500">0</p>
+            </div>
+            <div class="p-2 rounded-lg bg-white/50 dark:bg-gray-800/50">
+              <p class="text-xs opacity-60 text-gray-600 dark:text-gray-400">Avg Accuracy</p>
+              <p id="avgAccuracy" class="text-xl font-bold text-orange-500">0%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar h-2 rounded-full bg-gray-300 dark:bg-gray-700 mb-5 overflow-hidden">
+        <div id="progressFill" class="progress-fill h-full w-0 transition-all duration-100"></div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+        <div class="stat rounded-2xl p-4 text-center shadow-sm transition-all hover:scale-[1.02]">
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="far fa-clock mr-1"></i>Time</p>
+          <p id="time" class="time-value text-3xl font-mono font-bold text-gray-800 dark:text-white">60s</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-bolt mr-1"></i>WPM</p>
+          <p id="wpm" class="stat-value text-3xl font-bold text-blue-500">0</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-gauge-high mr-1"></i>Raw WPM</p>
+          <p id="rawWpm" class="stat-value text-2xl font-bold text-purple-500">0</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-bullseye mr-1"></i>Accuracy</p>
+          <p id="accuracy" class="stat-value text-3xl font-bold text-emerald-500">0%</p>
+        </div>
+        <div class="stat rounded-2xl p-4 text-center transition-all hover:scale-[1.02]">
+          <p class="text-xs uppercase tracking-wider opacity-60 text-gray-600 dark:text-gray-400"><i
+              class="fas fa-times-circle mr-1"></i>Errors</p>
+          <p id="errors" class="stat-value text-3xl font-bold text-rose-400">0</p>
+        </div>
+      </div>
+
+      <!-- Quote Meta -->
+      <div class="flex justify-between items-center mb-3 flex-wrap gap-2">
+        <div class="flex gap-3 items-center flex-wrap">
+          <span id="difficultyBadge" class="difficulty-badge difficulty-medium">Medium</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="far fa-file-alt"></i> <span
+              id="wordsCount">0</span> words</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-i-cursor"></i> <span
+              id="quoteLength">0</span> chars</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-tachometer-alt"></i> <span
+              id="charPerSec">0</span> CPS</span>
+          <span class="text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-clock"></i> <span
+              id="timeElapsed">0</span>s elapsed</span>
+        </div>
+        <div class="text-xs opacity-60 flex items-center gap-2 text-gray-600 dark:text-gray-400">
+          <i class="fas fa-keyboard"></i>
+          <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs key-hint">Ctrl+Enter</kbd> restart
+          <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs key-hint ml-1">Esc</kbd> clear
+          <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs key-hint ml-1">Tab</kbd> focus
+        </div>
+      </div>
+
+      <!-- Quote Display Area -->
+      <div id="quoteDisplay"
+        class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px] transition-all duration-300 bg-black/5 dark:bg-black/20 text-gray-800 dark:text-gray-200">
+        Loading...
+      </div>
+
+      <!-- Input Area -->
+      <div class="relative mb-5">
+        <textarea id="quoteInput" rows="3"
+          class="w-full p-4 rounded-2xl resize-none text-lg font-mono focus:outline-none transition-all duration-200"
+          placeholder="Start typing to begin the test..."></textarea>
+        <div class="absolute bottom-3 right-3 flex gap-2">
+          <span id="charCount"
+            class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur text-white">0/0</span>
+          <button id="clearBtn" class="p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition"
+            title="Clear input">
+            <i class="fas fa-eraser text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-3 justify-center">
+        <button id="restartBtn"
+          class="btn-primary px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md text-white">
+          <i class="fas fa-arrows-rotate"></i>Restart
+        </button>
+        <button id="newQuoteBtn"
+          class="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
+          <i class="fas fa-dice-d6"></i>New Quote
+        </button>
+        <button id="practiceBtn"
+          class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold flex gap-2 items-center shadow-md transition">
+          <i class="fas fa-infinity"></i>Practice Mode
+        </button>
+      </div>
+
+      <div
+        class="mt-6 text-center text-xs opacity-60 flex justify-center gap-4 flex-wrap text-gray-600 dark:text-gray-400">
+        <span><i class="fas fa-brain mr-1"></i>Focus on accuracy first</span>
+        <span><i class="fas fa-chart-simple mr-1"></i>WPM = (correct chars/5) / minutes</span>
+        <span><i class="fas fa-fire mr-1"></i>Raw WPM includes all typed chars</span>
+        <span><i class="fas fa-trophy mr-1"></i>Beat your personal best!</span>
+      </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="resultModal" class="result-modal fixed inset-0 hidden items-center justify-center z-50">
+      <div
+        class="result-card rounded-3xl shadow-2xl max-w-md w-full p-7 text-center border border-white/20 mx-4 transition-all duration-300 bg-white dark:bg-gray-900">
+        <div
+          class="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <i class="fas fa-crown text-4xl text-white"></i>
+        </div>
+        <h2 class="text-2xl font-black text-gray-800 dark:text-white">Test Complete!</h2>
+        <p class="text-sm opacity-70 mt-1 text-gray-600 dark:text-gray-400">Great effort! Check your stats below</p>
+        <div class="grid grid-cols-2 gap-4 my-6">
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl transition-all duration-300">
+            <p class="text-xs text-gray-600 dark:text-gray-400">WPM</p>
+            <p id="resultWPM" class="text-3xl font-bold text-blue-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl transition-all duration-300">
+            <p class="text-xs text-gray-600 dark:text-gray-400">Raw WPM</p>
+            <p id="resultRawWPM" class="text-2xl font-bold text-purple-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl transition-all duration-300">
+            <p class="text-xs text-gray-600 dark:text-gray-400">Accuracy</p>
+            <p id="resultAccuracy" class="text-3xl font-bold text-emerald-500">0%</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl transition-all duration-300">
+            <p class="text-xs text-gray-600 dark:text-gray-400">Errors</p>
+            <p id="resultErrors" class="text-3xl font-bold text-rose-500">0</p>
+          </div>
+          <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-2xl col-span-2 transition-all duration-300">
+            <p class="text-xs text-gray-600 dark:text-gray-400">Time</p>
+            <p id="resultTime" class="text-2xl font-bold text-gray-800 dark:text-white">0s</p>
+          </div>
+        </div>
+        <div id="achievementBadge"
+          class="mb-4 hidden p-2 rounded-lg bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30">
+          <i class="fas fa-trophy text-yellow-500 mr-2"></i><span id="achievementText"
+            class="text-gray-800 dark:text-white">New Personal Best!</span>
+        </div>
+        <div class="flex gap-3">
+          <button id="closeResultBtn" class="btn-primary flex-1 py-3 rounded-xl font-semibold text-white">Close</button>
+          <button id="shareResultBtn"
+            class="bg-gray-200 dark:bg-gray-700 flex-1 py-3 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition text-gray-800 dark:text-white"><i
+              class="fab fa-twitter mr-2"></i>Share</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/script.js">
+
+  </script>
+</body>
+
+</html>
