@@ -160,72 +160,72 @@ function updateQuoteUI() { elements.quoteDisplay.innerHTML = "";[...currentQuote
 function loadQuote() { const arr = QUOTES_LIB[quoteSource]?.[difficulty] || QUOTES_LIB.programming.medium; currentQuoteText = arr[Math.floor(Math.random() * arr.length)]; updateQuoteUI(); resetTestState(); }
 function resetTestState() { clearInterval(timer); isTyping = false; testDone = false; errors = 0; totalTypedChars = 0; correctCharsTyped = 0; elements.quoteInput.value = ""; elements.quoteInput.disabled = false; timeLeft = practiceActive ? 9999 : totalDuration; if (!practiceActive) elements.timeElem.innerText = timeLeft + "s"; else elements.timeElem.innerText = "∞"; elements.wpmElem.innerText = "0"; elements.rawWpmElem.innerText = "0"; elements.accuracyElem.innerText = "0%"; elements.errorsElem.innerText = "0"; elements.charPerSecElem.innerText = "0"; elements.timeElapsedElem.innerText = "0"; elements.charCountSpan.innerText = `0/${currentQuoteText.length}`; elements.progressFill.style.width = "0%"; startTime = null; const quoteChars = elements.quoteDisplay.querySelectorAll(".char"); quoteChars.forEach(c => c.classList.remove("correct", "incorrect", "current", "extra")); if (currentQuoteText.length) quoteChars[0]?.classList.add("current"); elements.quoteInput.focus(); }
 function computeAndUpdateMetrics() { const elapsed = startTime ? (Date.now() - startTime) / 1000 : 0; elements.timeElapsedElem.innerText = Math.floor(elapsed); const minutes = Math.max(0.01, elapsed / 60); const wpm = Math.floor((correctCharsTyped / 5) / minutes); const rawWpm = Math.floor((totalTypedChars / 5) / minutes); const accuracy = totalTypedChars ? Math.floor((correctCharsTyped / totalTypedChars) * 100) : 0; const cps = elapsed > 0 ? (totalTypedChars / elapsed).toFixed(1) : 0; elements.wpmElem.innerText = wpm || 0; elements.rawWpmElem.innerText = rawWpm || 0; elements.accuracyElem.innerText = accuracy + "%"; elements.errorsElem.innerText = errors; elements.charPerSecElem.innerText = cps; }
-    function handleInput() { 
-      if (!isTyping && elements.quoteInput.value.length > 0 && !testDone) { 
-        startTime = Date.now(); 
-        isTyping = true; 
-        startTimer();
-        // Initialize sound on first keystroke (browser requires user interaction)
-        SoundManager.init();
-        SoundManager.playKeypress();
-      } 
-      
-      // Play sound on each keystroke (optional - can be toggled)
-      if (isTyping && !testDone && elements.quoteInput.value.length > 0) {
-        // Only play on actual new character (not backspace)
-        const lastChar = elements.quoteInput.value[elements.quoteInput.value.length - 1];
-        if (lastChar && lastChar !== '') {
-          SoundManager.playKeypress();
-        }
-      }
-      
-      // Rest of your existing handleInput code...
-      const inputVal = elements.quoteInput.value;
-      const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
-      let correctCount = 0, errCount = 0;
-      totalTypedChars = inputVal.length;
-      
-      // Track if this input caused any new errors
-      let hadNewError = false;
-      
-      quoteChars.forEach((span, idx) => {
-        span.classList.remove("correct", "incorrect", "current", "extra");
-        if (idx < inputVal.length) {
-          if (inputVal[idx] === span.innerText) {
-            span.classList.add("correct");
-            correctCount++;
-          } else {
-            span.classList.add("incorrect");
-            errCount++;
-            hadNewError = true;
-          }
-        }
-      });
-      
-      // Play error sound if there's a mistake
-      if (hadNewError && isTyping && !testDone) {
-        SoundManager.playError();
-      }
-      
-      // Rest of your existing code...
-      if (inputVal.length > quoteChars.length) {
-        for (let i = quoteChars.length; i < inputVal.length; i++) {
-          let extra = document.createElement("span");
-          extra.className = "char extra";
-          extra.innerText = inputVal[i];
-          elements.quoteDisplay.appendChild(extra);
-          errCount++;
-        }
-      }
-      if (inputVal.length < quoteChars.length) quoteChars[inputVal.length]?.classList.add("current");
-      correctCharsTyped = correctCount;
-      errors = errCount;
-      const progress = Math.min(100, (inputVal.length / currentQuoteText.length) * 100);
-      elements.progressFill.style.width = `${progress}%`;
-      elements.charCountSpan.innerText = `${inputVal.length}/${currentQuoteText.length}`;
-      computeAndUpdateMetrics();
-      if (inputVal.length >= currentQuoteText.length && !testDone) finishTest();
+function handleInput() {
+  if (!isTyping && elements.quoteInput.value.length > 0 && !testDone) {
+    startTime = Date.now();
+    isTyping = true;
+    startTimer();
+    // Initialize sound on first keystroke (browser requires user interaction)
+    SoundManager.init();
+    SoundManager.playKeypress();
+  }
+
+  // Play sound on each keystroke (optional - can be toggled)
+  if (isTyping && !testDone && elements.quoteInput.value.length > 0) {
+    // Only play on actual new character (not backspace)
+    const lastChar = elements.quoteInput.value[elements.quoteInput.value.length - 1];
+    if (lastChar && lastChar !== '') {
+      SoundManager.playKeypress();
     }
+  }
+
+  // Rest of your existing handleInput code...
+  const inputVal = elements.quoteInput.value;
+  const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
+  let correctCount = 0, errCount = 0;
+  totalTypedChars = inputVal.length;
+
+  // Track if this input caused any new errors
+  let hadNewError = false;
+
+  quoteChars.forEach((span, idx) => {
+    span.classList.remove("correct", "incorrect", "current", "extra");
+    if (idx < inputVal.length) {
+      if (inputVal[idx] === span.innerText) {
+        span.classList.add("correct");
+        correctCount++;
+      } else {
+        span.classList.add("incorrect");
+        errCount++;
+        hadNewError = true;
+      }
+    }
+  });
+
+  // Play error sound if there's a mistake
+  if (hadNewError && isTyping && !testDone) {
+    SoundManager.playError();
+  }
+
+  // Rest of your existing code...
+  if (inputVal.length > quoteChars.length) {
+    for (let i = quoteChars.length; i < inputVal.length; i++) {
+      let extra = document.createElement("span");
+      extra.className = "char extra";
+      extra.innerText = inputVal[i];
+      elements.quoteDisplay.appendChild(extra);
+      errCount++;
+    }
+  }
+  if (inputVal.length < quoteChars.length) quoteChars[inputVal.length]?.classList.add("current");
+  correctCharsTyped = correctCount;
+  errors = errCount;
+  const progress = Math.min(100, (inputVal.length / currentQuoteText.length) * 100);
+  elements.progressFill.style.width = `${progress}%`;
+  elements.charCountSpan.innerText = `${inputVal.length}/${currentQuoteText.length}`;
+  computeAndUpdateMetrics();
+  if (inputVal.length >= currentQuoteText.length && !testDone) finishTest();
+}
 function startTimer() { if (timer) clearInterval(timer); timer = setInterval(() => { if (practiceActive) return; if (timeLeft <= 1) finishTest(); else { timeLeft--; elements.timeElem.innerText = timeLeft + "s"; if (!testDone) { const timeProgress = ((totalDuration - timeLeft) / totalDuration) * 100; elements.progressFill.style.width = `${Math.max(timeProgress, parseFloat(elements.progressFill.style.width) || 0)}%`; } } }, 1000); }
 function finishTest() { if (testDone) return; testDone = true; isTyping = false; clearInterval(timer); elements.quoteInput.disabled = true; const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft; const finalWPM = parseInt(elements.wpmElem.innerText), finalRawWPM = parseInt(elements.rawWpmElem.innerText), finalAccuracy = elements.accuracyElem.innerText, finalErrors = elements.errorsElem.innerText; elements.resultWPM.innerText = finalWPM; elements.resultRawWPM.innerText = finalRawWPM; elements.resultAccuracy.innerText = finalAccuracy; elements.resultErrors.innerText = finalErrors; elements.resultTime.innerText = Math.floor(usedTime) + "s"; const isNewBest = finalWPM > bestWpm && finalWPM > 0; if (isNewBest) { elements.achievementBadge.classList.remove("hidden"); elements.achievementText.innerText = "New Personal Best! 🏆"; } else { elements.achievementBadge.classList.add("hidden"); } elements.resultModal.classList.add("active", "flex"); elements.resultModal.classList.remove("hidden"); const historyEntry = { wpm: finalWPM, rawWpm: finalRawWPM, accuracy: finalAccuracy, errors: finalErrors, time: Math.floor(usedTime), difficulty, source: quoteSource, date: new Date().toISOString() }; testHistory.unshift(historyEntry); if (testHistory.length > 15) testHistory.pop(); localStorage.setItem("velocityHistory", JSON.stringify(testHistory)); updateHistoryDisplay(); updateStatsSummary(); document.querySelector(".typing-test").classList.add("celebration"); setTimeout(() => document.querySelector(".typing-test").classList.remove("celebration"), 500); }
 function updateHistoryDisplay() { if (testHistory.length === 0) { elements.historyList.innerHTML = '<p class="text-center text-sm opacity-50 text-gray-600 dark:text-gray-400">No history yet. Complete a test!</p>'; return; } elements.historyList.innerHTML = testHistory.slice(0, 10).map(entry => `<div class="history-item bg-white/50 dark:bg-gray-800/50 rounded-lg p-2 flex justify-between items-center text-sm"><span><span class="font-bold text-blue-500">${entry.wpm}</span> WPM</span><span class="text-emerald-500">${entry.accuracy}</span><span class="text-xs opacity-60 text-gray-600 dark:text-gray-400">${new Date(entry.date).toLocaleTimeString()}</span></div>`).join(''); }
@@ -284,95 +284,95 @@ function toggleThemeGlobal() {
   });
 }
 
-    function finishTest() { 
-      if (testDone) return; 
-      
-      // Play completion fanfare
-      SoundManager.playComplete();
-      
-      testDone = true; 
-      isTyping = false; 
-      clearInterval(timer); 
-      elements.quoteInput.disabled = true; 
-      const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft; 
-      const finalWPM = parseInt(elements.wpmElem.innerText), finalRawWPM = parseInt(elements.rawWpmElem.innerText), finalAccuracy = elements.accuracyElem.innerText, finalErrors = elements.errorsElem.innerText; 
-      elements.resultWPM.innerText = finalWPM; 
-      elements.resultRawWPM.innerText = finalRawWPM; 
-      elements.resultAccuracy.innerText = finalAccuracy; 
-      elements.resultErrors.innerText = finalErrors; 
-      elements.resultTime.innerText = Math.floor(usedTime) + "s"; 
-      const isNewBest = finalWPM > bestWpm && finalWPM > 0; 
-      if (isNewBest) { 
-        elements.achievementBadge.classList.remove("hidden"); 
-        elements.achievementText.innerText = "New Personal Best! 🏆";
-        // Play achievement sound for new best
-        SoundManager.playAchievement();
-      } else { 
-        elements.achievementBadge.classList.add("hidden"); 
-      } 
-      elements.resultModal.classList.add("active", "flex"); 
-      elements.resultModal.classList.remove("hidden"); 
-      const historyEntry = { wpm: finalWPM, rawWpm: finalRawWPM, accuracy: finalAccuracy, errors: finalErrors, time: Math.floor(usedTime), difficulty, source: quoteSource, date: new Date().toISOString() }; 
-      testHistory.unshift(historyEntry); 
-      if (testHistory.length > 15) testHistory.pop(); 
-      localStorage.setItem("velocityHistory", JSON.stringify(testHistory)); 
-      updateHistoryDisplay(); 
-      updateStatsSummary(); 
-      document.querySelector(".typing-test").classList.add("celebration"); 
-      setTimeout(() => document.querySelector(".typing-test").classList.remove("celebration"), 500); 
-    }
+function finishTest() {
+  if (testDone) return;
+
+  // Play completion fanfare
+  SoundManager.playComplete();
+
+  testDone = true;
+  isTyping = false;
+  clearInterval(timer);
+  elements.quoteInput.disabled = true;
+  const usedTime = practiceActive ? (startTime ? (Date.now() - startTime) / 1000 : totalDuration) : totalDuration - timeLeft;
+  const finalWPM = parseInt(elements.wpmElem.innerText), finalRawWPM = parseInt(elements.rawWpmElem.innerText), finalAccuracy = elements.accuracyElem.innerText, finalErrors = elements.errorsElem.innerText;
+  elements.resultWPM.innerText = finalWPM;
+  elements.resultRawWPM.innerText = finalRawWPM;
+  elements.resultAccuracy.innerText = finalAccuracy;
+  elements.resultErrors.innerText = finalErrors;
+  elements.resultTime.innerText = Math.floor(usedTime) + "s";
+  const isNewBest = finalWPM > bestWpm && finalWPM > 0;
+  if (isNewBest) {
+    elements.achievementBadge.classList.remove("hidden");
+    elements.achievementText.innerText = "New Personal Best! 🏆";
+    // Play achievement sound for new best
+    SoundManager.playAchievement();
+  } else {
+    elements.achievementBadge.classList.add("hidden");
+  }
+  elements.resultModal.classList.add("active", "flex");
+  elements.resultModal.classList.remove("hidden");
+  const historyEntry = { wpm: finalWPM, rawWpm: finalRawWPM, accuracy: finalAccuracy, errors: finalErrors, time: Math.floor(usedTime), difficulty, source: quoteSource, date: new Date().toISOString() };
+  testHistory.unshift(historyEntry);
+  if (testHistory.length > 15) testHistory.pop();
+  localStorage.setItem("velocityHistory", JSON.stringify(testHistory));
+  updateHistoryDisplay();
+  updateStatsSummary();
+  document.querySelector(".typing-test").classList.add("celebration");
+  setTimeout(() => document.querySelector(".typing-test").classList.remove("celebration"), 500);
+}
 
 function attachEvents() {
-        // Sound controls
-      const soundToggle = document.getElementById('soundToggle');
-      const hapticsToggle = document.getElementById('hapticsToggle');
-      const volumeSlider = document.getElementById('volumeSlider');
-      const volumeValue = document.getElementById('volumeValue');
-      
-      if (soundToggle) {
-        soundToggle.textContent = SoundManager.enabled ? 'ON' : 'OFF';
-        soundToggle.className = SoundManager.enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
-        soundToggle.onclick = () => {
-          const enabled = SoundManager.toggle();
-          soundToggle.textContent = enabled ? 'ON' : 'OFF';
-          soundToggle.className = enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
-          localStorage.setItem('velocitySoundSettings', JSON.stringify({
-            enabled: SoundManager.enabled,
-            hapticsEnabled: SoundManager.hapticsEnabled,
-            volume: SoundManager.volume
-          }));
-        };
-      }
-      
-      if (hapticsToggle) {
-        hapticsToggle.textContent = SoundManager.hapticsEnabled ? 'ON' : 'OFF';
-        hapticsToggle.className = SoundManager.hapticsEnabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
-        hapticsToggle.onclick = () => {
-          const enabled = SoundManager.toggleHaptics();
-          hapticsToggle.textContent = enabled ? 'ON' : 'OFF';
-          hapticsToggle.className = enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
-          localStorage.setItem('velocitySoundSettings', JSON.stringify({
-            enabled: SoundManager.enabled,
-            hapticsEnabled: SoundManager.hapticsEnabled,
-            volume: SoundManager.volume
-          }));
-        };
-      }
-      
-      if (volumeSlider) {
-        volumeSlider.value = SoundManager.volume * 100;
-        volumeValue.textContent = Math.round(SoundManager.volume * 100) + '%';
-        volumeSlider.oninput = (e) => {
-          const val = parseInt(e.target.value) / 100;
-          SoundManager.setVolume(val);
-          volumeValue.textContent = Math.round(val * 100) + '%';
-          localStorage.setItem('velocitySoundSettings', JSON.stringify({
-            enabled: SoundManager.enabled,
-            hapticsEnabled: SoundManager.hapticsEnabled,
-            volume: SoundManager.volume
-          }));
-        };
-      }
+  // Sound controls
+  const soundToggle = document.getElementById('soundToggle');
+  const hapticsToggle = document.getElementById('hapticsToggle');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeValue = document.getElementById('volumeValue');
+
+  if (soundToggle) {
+    soundToggle.textContent = SoundManager.enabled ? 'ON' : 'OFF';
+    soundToggle.className = SoundManager.enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+    soundToggle.onclick = () => {
+      const enabled = SoundManager.toggle();
+      soundToggle.textContent = enabled ? 'ON' : 'OFF';
+      soundToggle.className = enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+      localStorage.setItem('velocitySoundSettings', JSON.stringify({
+        enabled: SoundManager.enabled,
+        hapticsEnabled: SoundManager.hapticsEnabled,
+        volume: SoundManager.volume
+      }));
+    };
+  }
+
+  if (hapticsToggle) {
+    hapticsToggle.textContent = SoundManager.hapticsEnabled ? 'ON' : 'OFF';
+    hapticsToggle.className = SoundManager.hapticsEnabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+    hapticsToggle.onclick = () => {
+      const enabled = SoundManager.toggleHaptics();
+      hapticsToggle.textContent = enabled ? 'ON' : 'OFF';
+      hapticsToggle.className = enabled ? 'px-3 py-1 rounded-lg text-sm bg-green-500 text-white' : 'px-3 py-1 rounded-lg text-sm bg-gray-500 text-white';
+      localStorage.setItem('velocitySoundSettings', JSON.stringify({
+        enabled: SoundManager.enabled,
+        hapticsEnabled: SoundManager.hapticsEnabled,
+        volume: SoundManager.volume
+      }));
+    };
+  }
+
+  if (volumeSlider) {
+    volumeSlider.value = SoundManager.volume * 100;
+    volumeValue.textContent = Math.round(SoundManager.volume * 100) + '%';
+    volumeSlider.oninput = (e) => {
+      const val = parseInt(e.target.value) / 100;
+      SoundManager.setVolume(val);
+      volumeValue.textContent = Math.round(val * 100) + '%';
+      localStorage.setItem('velocitySoundSettings', JSON.stringify({
+        enabled: SoundManager.enabled,
+        hapticsEnabled: SoundManager.hapticsEnabled,
+        volume: SoundManager.volume
+      }));
+    };
+  }
   elements.restartBtn.onclick = resetTest; elements.newQuoteBtn.onclick = newQuote; elements.practiceBtn.onclick = togglePractice; elements.clearBtn.onclick = clearInputField;
   elements.themeToggle.onclick = toggleThemeGlobal; elements.focusModeToggle.onclick = toggleFocusMode; elements.clearHistoryBtn.onclick = clearHistory;
   elements.settingsToggle.onclick = () => { elements.settingsPanel.classList.toggle("active"); if (elements.historyPanel.classList.contains("active")) elements.historyPanel.classList.remove("active"); if (elements.statsPanel.classList.contains("active")) elements.statsPanel.classList.remove("active"); };
