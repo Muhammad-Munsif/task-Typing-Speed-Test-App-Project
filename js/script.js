@@ -669,3 +669,12 @@ const KeyboardShortcuts = {
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   }
 };
+
+// Initialize keyboard shortcuts
+KeyboardShortcuts.init();
+
+// Add shortcuts help button
+const shortcutsHelpBtn = document.getElementById('shortcutsHelpBtn');
+if (shortcutsHelpBtn) {
+  shortcutsHelpBtn.onclick = () => KeyboardShortcuts.showShortcutsModal();
+}
