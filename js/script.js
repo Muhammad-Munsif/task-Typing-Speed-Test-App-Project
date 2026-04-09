@@ -678,3 +678,303 @@ const shortcutsHelpBtn = document.getElementById('shortcutsHelpBtn');
 if (shortcutsHelpBtn) {
   shortcutsHelpBtn.onclick = () => KeyboardShortcuts.showShortcutsModal();
 }
+
+    // ==================== ACHIEVEMENT BADGES SYSTEM (DAY 3) ====================
+    const AchievementSystem = {
+      // All available achievements
+      achievements: {
+        // Speed-based achievements
+        'speed_30': { id: 'speed_30', name: 'Getting Started', description: 'Reach 30 WPM', icon: 'fas fa-tachometer-alt', requirement: (stats) => stats.bestWpm >= 30, points: 10, color: 'bronze' },
+        'speed_50': { id: 'speed_50', name: 'Intermediate', description: 'Reach 50 WPM', icon: 'fas fa-tachometer-alt', requirement: (stats) => stats.bestWpm >= 50, points: 20, color: 'silver' },
+        'speed_75': { id: 'speed_75', name: 'Fast Typer', description: 'Reach 75 WPM', icon: 'fas fa-rocket', requirement: (stats) => stats.bestWpm >= 75, points: 35, color: 'gold' },
+        'speed_100': { id: 'speed_100', name: 'Speed Demon', description: 'Reach 100 WPM', icon: 'fas fa-bolt', requirement: (stats) => stats.bestWpm >= 100, points: 50, color: 'diamond' },
+        'speed_120': { id: 'speed_120', name: 'Velocity Master', description: 'Reach 120 WPM', icon: 'fas fa-crown', requirement: (stats) => stats.bestWpm >= 120, points: 75, color: 'legendary' },
+        
+        // Accuracy-based achievements
+        'accuracy_90': { id: 'accuracy_90', name: 'Precise', description: 'Achieve 90% accuracy', icon: 'fas fa-bullseye', requirement: (stats) => stats.bestAccuracy >= 90, points: 15, color: 'bronze' },
+        'accuracy_95': { id: 'accuracy_95', name: 'Sharpshooter', description: 'Achieve 95% accuracy', icon: 'fas fa-bullseye', requirement: (stats) => stats.bestAccuracy >= 95, points: 25, color: 'silver' },
+        'accuracy_99': { id: 'accuracy_99', name: 'Perfectionist', description: 'Achieve 99% accuracy', icon: 'fas fa-star', requirement: (stats) => stats.bestAccuracy >= 99, points: 40, color: 'gold' },
+        'accuracy_100': { id: 'accuracy_100', name: 'Perfect Score!', description: 'Achieve 100% accuracy', icon: 'fas fa-crown', requirement: (stats) => stats.perfectAccuracy === true, points: 100, color: 'legendary' },
+        
+        // Streak-based achievements
+        'streak_5': { id: 'streak_5', name: 'On a Roll', description: 'Complete 5 tests without errors', icon: 'fas fa-fire', requirement: (stats) => stats.bestStreak >= 5, points: 20, color: 'bronze' },
+        'streak_10': { id: 'streak_10', name: 'Unstoppable', description: 'Complete 10 tests without errors', icon: 'fas fa-fire', requirement: (stats) => stats.bestStreak >= 10, points: 40, color: 'silver' },
+        'streak_25': { id: 'streak_25', name: 'Legendary Streak', description: 'Complete 25 tests without errors', icon: 'fas fa-crown', requirement: (stats) => stats.bestStreak >= 25, points: 100, color: 'gold' },
+        
+        // Volume-based achievements
+        'tests_10': { id: 'tests_10', name: 'Dedicated', description: 'Complete 10 tests total', icon: 'fas fa-chart-line', requirement: (stats) => stats.totalTests >= 10, points: 15, color: 'bronze' },
+        'tests_50': { id: 'tests_50', name: 'Enthusiast', description: 'Complete 50 tests total', icon: 'fas fa-chart-line', requirement: (stats) => stats.totalTests >= 50, points: 30, color: 'silver' },
+        'tests_100': { id: 'tests_100', name: 'Master Typist', description: 'Complete 100 tests total', icon: 'fas fa-trophy', requirement: (stats) => stats.totalTests >= 100, points: 60, color: 'gold' },
+        'tests_500': { id: 'tests_500', name: 'Legend', description: 'Complete 500 tests total', icon: 'fas fa-crown', requirement: (stats) => stats.totalTests >= 500, points: 200, color: 'legendary' },
+        
+        // Category mastery
+        'master_code': { id: 'master_code', name: 'Code Warrior', description: 'Complete 20 programming quotes', icon: 'fas fa-code', requirement: (stats) => stats.categoryCounts.programming >= 20, points: 25, color: 'silver' },
+        'master_lit': { id: 'master_lit', name: 'Literary Genius', description: 'Complete 20 literature quotes', icon: 'fas fa-book', requirement: (stats) => stats.categoryCounts.literature >= 20, points: 25, color: 'silver' },
+        'master_science': { id: 'master_science', name: 'Science Explorer', description: 'Complete 20 science quotes', icon: 'fas fa-flask', requirement: (stats) => stats.categoryCounts.science >= 20, points: 25, color: 'silver' },
+        
+        // Special achievements
+        'night_owl': { id: 'night_owl', name: 'Night Owl', description: 'Complete a test after midnight', icon: 'fas fa-moon', requirement: (stats) => stats.nightTest === true, points: 15, color: 'bronze' },
+        'early_bird': { id: 'early_bird', name: 'Early Bird', description: 'Complete a test before 6 AM', icon: 'fas fa-sun', requirement: (stats) => stats.earlyTest === true, points: 15, color: 'bronze' },
+        'marathon': { id: 'marathon', name: 'Marathoner', description: 'Complete a 120-second test', icon: 'fas fa-hourglass-half', requirement: (stats) => stats.completedLongTest === true, points: 20, color: 'silver' },
+        'expert_mode': { id: 'expert_mode', name: 'Expert Challenger', description: 'Complete a test on Expert difficulty', icon: 'fas fa-fire', requirement: (stats) => stats.expertTest === true, points: 30, color: 'gold' },
+        
+        // Practice mode
+        'practice_10': { id: 'practice_10', name: 'Practice Makes Perfect', description: 'Spend 10 minutes in practice mode', icon: 'fas fa-dumbbell', requirement: (stats) => stats.practiceTime >= 10, points: 20, color: 'bronze' },
+        'practice_60': { id: 'practice_60', name: 'Dedicated Practice', description: 'Spend 60 minutes in practice mode', icon: 'fas fa-dumbbell', requirement: (stats) => stats.practiceTime >= 60, points: 50, color: 'gold' }
+      },
+      
+      // User progress
+      userProgress: {
+        unlockedAchievements: [],
+        totalPoints: 0,
+        bestWpm: 0,
+        bestAccuracy: 0,
+        bestStreak: 0,
+        currentStreak: 0,
+        totalTests: 0,
+        categoryCounts: { programming: 0, literature: 0, mixed: 0, science: 0 },
+        nightTest: false,
+        earlyTest: false,
+        completedLongTest: false,
+        expertTest: false,
+        perfectAccuracy: false,
+        practiceTime: 0,
+        lastTestTime: null
+      },
+      
+      // Load saved progress
+      loadProgress() {
+        const saved = localStorage.getItem('velocityAchievements');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          this.userProgress = { ...this.userProgress, ...parsed };
+        }
+        this.updateBadgeDisplay();
+      },
+      
+      // Save progress
+      saveProgress() {
+        localStorage.setItem('velocityAchievements', JSON.stringify(this.userProgress));
+      },
+      
+      // Check and unlock achievements
+      checkAchievements(testResult) {
+        let newAchievements = [];
+        
+        // Update user stats based on test result
+        this.userProgress.totalTests++;
+        this.userProgress.bestWpm = Math.max(this.userProgress.bestWpm, testResult.wpm);
+        this.userProgress.bestAccuracy = Math.max(this.userProgress.bestAccuracy, testResult.accuracy);
+        
+        // Update category count
+        if (this.userProgress.categoryCounts[testResult.source] !== undefined) {
+          this.userProgress.categoryCounts[testResult.source]++;
+        }
+        
+        // Update streak
+        if (testResult.errors === 0) {
+          this.userProgress.currentStreak++;
+          this.userProgress.bestStreak = Math.max(this.userProgress.bestStreak, this.userProgress.currentStreak);
+        } else {
+          this.userProgress.currentStreak = 0;
+        }
+        
+        // Check for perfect accuracy
+        if (testResult.accuracy === 100) {
+          this.userProgress.perfectAccuracy = true;
+        }
+        
+        // Check for time-based achievements
+        const testHour = new Date(testResult.date).getHours();
+        if (testHour >= 0 && testHour < 5) this.userProgress.nightTest = true;
+        if (testHour >= 4 && testHour < 6) this.userProgress.earlyTest = true;
+        
+        // Check for long test
+        if (testResult.duration >= 120) this.userProgress.completedLongTest = true;
+        
+        // Check for expert mode
+        if (testResult.difficulty === 'expert') this.userProgress.expertTest = true;
+        
+        // Update practice time
+        if (testResult.practiceMode) {
+          this.userProgress.practiceTime += testResult.duration / 60;
+        }
+        
+        // Check each achievement
+        for (const [id, achievement] of Object.entries(this.achievements)) {
+          if (!this.userProgress.unlockedAchievements.includes(id)) {
+            const stats = {
+              bestWpm: this.userProgress.bestWpm,
+              bestAccuracy: this.userProgress.bestAccuracy,
+              bestStreak: this.userProgress.bestStreak,
+              totalTests: this.userProgress.totalTests,
+              categoryCounts: this.userProgress.categoryCounts,
+              nightTest: this.userProgress.nightTest,
+              earlyTest: this.userProgress.earlyTest,
+              completedLongTest: this.userProgress.completedLongTest,
+              expertTest: this.userProgress.expertTest,
+              perfectAccuracy: this.userProgress.perfectAccuracy,
+              practiceTime: this.userProgress.practiceTime
+            };
+            
+            if (achievement.requirement(stats)) {
+              this.userProgress.unlockedAchievements.push(id);
+              this.userProgress.totalPoints += achievement.points;
+              newAchievements.push(achievement);
+              
+              // Play achievement sound
+              SoundManager.playAchievement();
+            }
+          }
+        }
+        
+        // Save progress
+        this.saveProgress();
+        
+        // Show notifications for new achievements
+        if (newAchievements.length > 0) {
+          this.showAchievementNotifications(newAchievements);
+        }
+        
+        this.updateBadgeDisplay();
+      },
+      
+      // Show achievement notification
+      showAchievementNotifications(achievements) {
+        achievements.forEach((achievement, index) => {
+          setTimeout(() => {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-20 right-5 bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-xl shadow-2xl z-50 animate-bounce';
+            notification.style.animation = 'slideIn 0.5s ease, fadeOut 0.5s ease 3s forwards';
+            notification.innerHTML = `
+              <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                  <i class="${achievement.icon} text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-xs opacity-90">Achievement Unlocked!</p>
+                  <p class="font-bold text-sm">${achievement.name}</p>
+                  <p class="text-xs opacity-90">+${achievement.points} points</p>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3500);
+          }, index * 500);
+        });
+      },
+      
+      // Update badge display in UI
+      updateBadgeDisplay() {
+        const badgeContainer = document.getElementById('achievementsContainer');
+        if (!badgeContainer) return;
+        
+        const unlockedCount = this.userProgress.unlockedAchievements.length;
+        const totalCount = Object.keys(this.achievements).length;
+        
+        // Update header
+        const header = badgeContainer.querySelector('.achievements-header');
+        if (header) {
+          header.innerHTML = `
+            <div class="flex justify-between items-center mb-3">
+              <h3 class="font-semibold text-gray-700 dark:text-gray-300">
+                <i class="fas fa-trophy mr-2 text-yellow-500"></i>Achievements
+                <span class="text-sm ml-2">(${unlockedCount}/${totalCount})</span>
+              </h3>
+              <span class="text-sm font-bold text-yellow-500">${this.userProgress.totalPoints} pts</span>
+            </div>
+          `;
+        }
+        
+        // Update badges grid
+        const badgesGrid = badgeContainer.querySelector('.badges-grid');
+        if (badgesGrid) {
+          badgesGrid.innerHTML = Object.entries(this.achievements).map(([id, ach]) => {
+            const isUnlocked = this.userProgress.unlockedAchievements.includes(id);
+            const colorClass = this.getBadgeColor(ach.color, isUnlocked);
+            return `
+              <div class="badge-item ${isUnlocked ? 'unlocked' : 'locked'} p-3 rounded-xl text-center transition-all hover:scale-105 ${colorClass} ${!isUnlocked ? 'opacity-50 grayscale' : ''}" title="${ach.description}">
+                <i class="${ach.icon} text-2xl mb-1"></i>
+                <p class="text-xs font-semibold">${ach.name}</p>
+                <p class="text-xs opacity-75">+${ach.points}</p>
+              </div>
+            `;
+          }).join('');
+        }
+      },
+      
+      getBadgeColor(color, unlocked) {
+        if (!unlocked) return 'bg-gray-200 dark:bg-gray-700 text-gray-500';
+        switch(color) {
+          case 'bronze': return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-2 border-amber-500';
+          case 'silver': return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-400';
+          case 'gold': return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-2 border-yellow-500';
+          case 'diamond': return 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500';
+          case 'legendary': return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-2 border-purple-500';
+          default: return 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+        }
+      },
+      
+      // Show achievements modal
+      showAchievementsModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        const unlockedCount = this.userProgress.unlockedAchievements.length;
+        const totalCount = Object.keys(this.achievements).length;
+        const progressPercent = (unlockedCount / totalCount) * 100;
+        
+        const badgesHtml = Object.entries(this.achievements).map(([id, ach]) => {
+          const isUnlocked = this.userProgress.unlockedAchievements.includes(id);
+          const colorClass = this.getBadgeColor(ach.color, isUnlocked);
+          return `
+            <div class="badge-item ${isUnlocked ? 'unlocked' : 'locked'} p-3 rounded-xl text-center transition-all ${colorClass} ${!isUnlocked ? 'opacity-60 grayscale' : ''}" title="${ach.description}">
+              <i class="${ach.icon} text-3xl mb-2"></i>
+              <p class="text-sm font-semibold">${ach.name}</p>
+              <p class="text-xs opacity-75 mt-1">${ach.description}</p>
+              <p class="text-xs font-bold mt-1">+${ach.points} pts</p>
+            </div>
+          `;
+        }).join('');
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
+              <div>
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                  <i class="fas fa-trophy mr-2 text-yellow-500"></i>Achievements
+                </h3>
+                <div class="mt-2">
+                  <div class="flex justify-between text-sm mb-1">
+                    <span>Progress</span>
+                    <span>${unlockedCount}/${totalCount} (${Math.floor(progressPercent)}%)</span>
+                  </div>
+                  <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all" style="width: ${progressPercent}%"></div>
+                  </div>
+                </div>
+              </div>
+              <button id="closeAchievementsModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+              ${badgesHtml}
+            </div>
+            <div class="mt-6 text-center">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                <i class="fas fa-star text-yellow-500 mr-1"></i>
+                Total Points: <span class="font-bold text-yellow-500">${this.userProgress.totalPoints}</span>
+              </p>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const closeBtn = modal.querySelector('#closeAchievementsModal');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      }
+    };
