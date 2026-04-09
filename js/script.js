@@ -394,12 +394,11 @@ function attachEvents() {
 initTheme(); attachEvents(); loadQuote(); updateHistoryDisplay(); updateStatsSummary();
 
 // Initialize keyboard shortcuts
-    KeyboardShortcuts.init();
-    
-    // Add shortcuts help button
-    const shortcutsHelpBtn = document.getElementById('shortcutsHelpBtn');
-    if (shortcutsHelpBtn) {
-      shortcutsHelpBtn.onclick = () => KeyboardShortcuts.showShortcutsModal();
-    }
+KeyboardShortcuts.init();
 
-    
+// Add shortcuts help button
+const shortcutsHelpBtn = document.getElementById('shortcutsHelpBtn');
+if (shortcutsHelpBtn) {
+  shortcutsHelpBtn.onclick = () => KeyboardShortcuts.showShortcutsModal();
+}
+
