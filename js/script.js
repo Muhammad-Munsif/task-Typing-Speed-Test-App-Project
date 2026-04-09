@@ -441,7 +441,9 @@ function attachEvents() {
 
 initTheme(); attachEvents(); loadQuote(); updateHistoryDisplay(); updateStatsSummary();
 
-
+    // Initialize achievement system
+    AchievementSystem.loadProgress();
+    AchievementSystem.updateBadgeDisplay();
 
 // ==================== KEYBOARD SHORTCUTS SYSTEM (DAY 2) ====================
 const KeyboardShortcuts = {
