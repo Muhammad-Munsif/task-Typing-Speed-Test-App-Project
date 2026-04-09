@@ -385,5 +385,12 @@ function attachEvents() {
   document.querySelectorAll(".difficulty-option").forEach(btn => { btn.onclick = () => { document.querySelectorAll(".difficulty-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md")); btn.classList.add("bg-blue-500", "text-white", "shadow-md"); difficulty = btn.dataset.difficulty; newQuote(); }; });
   document.querySelectorAll(".source-option").forEach(btn => { btn.onclick = () => { document.querySelectorAll(".source-option").forEach(b => b.classList.remove("bg-blue-500", "text-white", "shadow-md")); btn.classList.add("bg-blue-500", "text-white", "shadow-md"); quoteSource = btn.dataset.source; newQuote(); }; });
 }
-
+    // Initialize keyboard shortcuts
+    KeyboardShortcuts.init();
+    
+    // Add shortcuts help button
+    const shortcutsHelpBtn = document.getElementById('shortcutsHelpBtn');
+    if (shortcutsHelpBtn) {
+      shortcutsHelpBtn.onclick = () => KeyboardShortcuts.showShortcutsModal();
+    }
 initTheme(); attachEvents(); loadQuote(); updateHistoryDisplay(); updateStatsSummary();
