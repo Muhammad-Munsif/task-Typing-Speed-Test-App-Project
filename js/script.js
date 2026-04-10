@@ -369,13 +369,13 @@ function attachEvents() {
   // Achievements
   const achievementsToggle = document.getElementById('achievementsToggle');
   const viewAllAchievementsBtn = document.getElementById('viewAllAchievementsBtn');
-      // Export button
-      const exportBtn = document.getElementById('exportBtn');
-      if (exportBtn) {
-        exportBtn.onclick = () => {
-          ExportSystem.showExportModal();
-        };
-      }
+  // Export button
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) {
+    exportBtn.onclick = () => {
+      ExportSystem.showExportModal();
+    };
+  }
   if (achievementsToggle) {
     achievementsToggle.onclick = () => {
       AchievementSystem.showAchievementsModal();
