@@ -271,7 +271,16 @@
           <kbd class="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs key-hint ml-1">Tab</kbd> focus
         </div>
       </div>
-
+      <!-- Custom Mode Indicator -->
+      <div id="customModeIndicator" class="hidden mb-3 p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-center">
+        <p class="text-sm text-purple-700 dark:text-purple-300">
+          <i class="fas fa-file-alt mr-2"></i>
+          Custom Mode: <span id="customTextName">Loading...</span>
+          <button id="exitCustomModeBtn" class="ml-3 text-xs bg-purple-500 hover:bg-purple-600 text-white px-2 py-1 rounded transition">
+            Exit
+          </button>
+        </p>
+      </div>
       <!-- Quote Display Area -->
       <div id="quoteDisplay"
         class="mb-5 p-5 rounded-2xl text-lg md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[150px] transition-all duration-300 bg-black/5 dark:bg-black/20 text-gray-800 dark:text-gray-200">
