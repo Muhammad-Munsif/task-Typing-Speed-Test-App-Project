@@ -1472,3 +1472,351 @@ const ExportSystem = {
     modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
   }
 };
+
+    // ==================== CUSTOM TEXT IMPORT SYSTEM (DAY 5) ====================
+    const CustomTextSystem = {
+      // Storage for custom texts
+      customTexts: [],
+      currentCustomText: null,
+      isCustomMode: false,
+      
+      // Initialize
+      init() {
+        this.loadCustomTexts();
+        this.setupEventListeners();
+      },
+      
+      // Load saved custom texts from localStorage
+      loadCustomTexts() {
+        const saved = localStorage.getItem('velocityCustomTexts');
+        if (saved) {
+          this.customTexts = JSON.parse(saved);
+        } else {
+          // Add some example texts
+          this.customTexts = [
+            { id: 'example1', name: 'Programming Quote', text: 'The only way to learn a new programming language is by writing programs in it.', date: new Date().toISOString() },
+            { id: 'example2', name: 'Motivation', text: 'The future depends on what you do today. Make it count.', date: new Date().toISOString() },
+            { id: 'example3', name: 'Technology', text: 'Technology is best when it brings people together and empowers human potential.', date: new Date().toISOString() }
+          ];
+          this.saveCustomTexts();
+        }
+      },
+      
+      // Save custom texts to localStorage
+      saveCustomTexts() {
+        localStorage.setItem('velocityCustomTexts', JSON.stringify(this.customTexts));
+      },
+      
+      // Add new custom text
+      addCustomText(name, text) {
+        if (!name.trim()) name = `Custom Text ${this.customTexts.length + 1}`;
+        if (!text.trim()) {
+          this.showNotification('Please enter some text to save!', 'error');
+          return false;
+        }
+        
+        const newText = {
+          id: Date.now().toString(),
+          name: name.trim(),
+          text: text.trim(),
+          wordCount: text.trim().split(/\s+/).length,
+          charCount: text.trim().length,
+          date: new Date().toISOString()
+        };
+        
+        this.customTexts.unshift(newText);
+        this.saveCustomTexts();
+        this.showNotification('Custom text saved successfully!', 'success');
+        SoundManager.playKeypress();
+        return true;
+      },
+      
+      // Delete custom text
+      deleteCustomText(id) {
+        this.customTexts = this.customTexts.filter(t => t.id !== id);
+        this.saveCustomTexts();
+        this.showNotification('Custom text deleted!', 'success');
+        SoundManager.playKeypress();
+        this.updateCustomTextsList();
+      },
+      
+      // Use custom text for typing
+      useCustomText(customText) {
+        this.currentCustomText = customText;
+        this.isCustomMode = true;
+        currentQuoteText = customText.text;
+        updateQuoteUI();
+        resetTestState();
+        this.showNotification(`Now typing: ${customText.name}`, 'success');
+        SoundManager.playKeypress();
+      },
+      
+      // Exit custom mode and return to normal quotes
+      exitCustomMode() {
+        this.isCustomMode = false;
+        this.currentCustomText = null;
+        loadQuote();
+        this.showNotification('Returned to normal quotes', 'info');
+        SoundManager.playKeypress();
+      },
+      
+      // Import from text file
+      importFromFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const content = e.target.result;
+          const fileName = file.name.replace('.txt', '');
+          this.addCustomText(fileName, content);
+          this.showCustomTextModal();
+        };
+        reader.readAsText(file);
+      },
+      
+      // Analyze text statistics
+      analyzeText(text) {
+        const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+        const chars = text.length;
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+        const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0).length;
+        const avgWordLength = chars / (words.length || 1);
+        
+        // Calculate difficulty score (0-100)
+        let difficultyScore = 0;
+        difficultyScore += Math.min(30, (avgWordLength - 3) * 10); // Longer words = harder
+        difficultyScore += Math.min(30, words.length / 5); // More words = harder
+        difficultyScore += text.split(/[.,;:!?()[\]{}'"]/).length * 2; // Punctuation
+        difficultyScore = Math.min(100, Math.max(0, difficultyScore));
+        
+        let difficultyLabel = 'Easy';
+        if (difficultyScore > 70) difficultyLabel = 'Hard';
+        else if (difficultyScore > 40) difficultyLabel = 'Medium';
+        
+        return {
+          words: words.length,
+          chars: chars,
+          sentences: sentences,
+          paragraphs: paragraphs,
+          avgWordLength: avgWordLength.toFixed(1),
+          difficultyScore: Math.round(difficultyScore),
+          difficultyLabel: difficultyLabel
+        };
+      },
+      
+      // Show custom text modal
+      showCustomTextModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-file-alt mr-2 text-green-500"></i>Custom Texts
+              </h3>
+              <button id="closeCustomModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+            
+            <!-- Add New Text Section -->
+            <div class="mb-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">Add New Text</h4>
+              <input type="text" id="customTextName" placeholder="Text name (optional)" class="w-full p-2 rounded-lg mb-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500">
+              <textarea id="customTextContent" rows="4" placeholder="Paste your text here..." class="w-full p-2 rounded-lg mb-2 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500"></textarea>
+              <div class="flex gap-2">
+                <button id="saveCustomTextBtn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition flex-1">
+                  <i class="fas fa-save mr-1"></i>Save Text
+                </button>
+                <label class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition cursor-pointer text-center flex-1">
+                  <i class="fas fa-upload mr-1"></i>Upload .txt
+                  <input type="file" id="uploadTxtFile" accept=".txt" class="hidden">
+                </label>
+              </div>
+            </div>
+            
+            <!-- Statistics for current text -->
+            <div id="textStats" class="mb-4 p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg hidden">
+              <p class="text-sm font-semibold mb-2 text-purple-700 dark:text-purple-300">Text Analysis</p>
+              <div class="grid grid-cols-3 gap-2 text-xs" id="statsContent"></div>
+            </div>
+            
+            <!-- My Texts Library -->
+            <div class="mb-4">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-library mr-2"></i>My Library (${this.customTexts.length})
+              </h4>
+              <div id="customTextsList" class="max-h-64 overflow-y-auto space-y-2">
+                ${this.renderCustomTextsList()}
+              </div>
+            </div>
+            
+            <!-- Exit Custom Mode Button -->
+            ${this.isCustomMode ? `
+              <div class="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
+                  <i class="fas fa-info-circle"></i> Currently using custom text: "${this.currentCustomText?.name}"
+                </p>
+                <button id="exitCustomModeBtn" class="w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition">
+                  <i class="fas fa-times-circle mr-1"></i>Exit Custom Mode
+                </button>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Event listeners for modal
+        const closeBtn = modal.querySelector('#closeCustomModal');
+        closeBtn.onclick = () => modal.remove();
+        
+        const saveBtn = modal.querySelector('#saveCustomTextBtn');
+        const nameInput = modal.querySelector('#customTextName');
+        const contentTextarea = modal.querySelector('#customTextContent');
+        const statsDiv = modal.querySelector('#textStats');
+        const statsContent = modal.querySelector('#statsContent');
+        
+        // Real-time text analysis
+        contentTextarea.addEventListener('input', () => {
+          const text = contentTextarea.value;
+          if (text.length > 0) {
+            const stats = this.analyzeText(text);
+            statsDiv.classList.remove('hidden');
+            statsContent.innerHTML = `
+              <div><strong>Words:</strong> ${stats.words}</div>
+              <div><strong>Chars:</strong> ${stats.chars}</div>
+              <div><strong>Sentences:</strong> ${stats.sentences}</div>
+              <div><strong>Avg Word:</strong> ${stats.avgWordLength}</div>
+              <div><strong>Difficulty:</strong> <span class="font-bold ${
+                stats.difficultyLabel === 'Easy' ? 'text-green-500' : 
+                stats.difficultyLabel === 'Medium' ? 'text-yellow-500' : 'text-red-500'
+              }">${stats.difficultyLabel}</span></div>
+              <div><strong>Score:</strong> ${stats.difficultyScore}%</div>
+            `;
+          } else {
+            statsDiv.classList.add('hidden');
+          }
+        });
+        
+        saveBtn.onclick = () => {
+          const name = nameInput.value;
+          const text = contentTextarea.value;
+          if (this.addCustomText(name, text)) {
+            nameInput.value = '';
+            contentTextarea.value = '';
+            statsDiv.classList.add('hidden');
+            this.updateCustomTextsList();
+            modal.querySelector('#customTextsList').innerHTML = this.renderCustomTextsList();
+            this.attachListEventListeners(modal);
+          }
+        };
+        
+        const fileInput = modal.querySelector('#uploadTxtFile');
+        fileInput.onchange = (e) => {
+          const file = e.target.files[0];
+          if (file && file.name.endsWith('.txt')) {
+            this.importFromFile(file);
+            modal.remove();
+          } else {
+            this.showNotification('Please select a .txt file', 'error');
+          }
+        };
+        
+        const exitBtn = modal.querySelector('#exitCustomModeBtn');
+        if (exitBtn) {
+          exitBtn.onclick = () => {
+            this.exitCustomMode();
+            modal.remove();
+          };
+        }
+        
+        this.attachListEventListeners(modal);
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Render custom texts list
+      renderCustomTextsList() {
+        if (this.customTexts.length === 0) {
+          return '<p class="text-center text-sm text-gray-500 py-4">No custom texts yet. Add one above!</p>';
+        }
+        
+        return this.customTexts.map(text => `
+          <div class="custom-text-item p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition group">
+            <div class="flex justify-between items-start">
+              <div class="flex-1 cursor-pointer" data-action="use" data-id="${text.id}">
+                <p class="font-semibold text-sm text-gray-800 dark:text-white">${this.escapeHtml(text.name)}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">${text.text.substring(0, 60)}${text.text.length > 60 ? '...' : ''}</p>
+                <p class="text-xs text-gray-400 mt-1">${text.wordCount} words • ${text.charCount} chars</p>
+              </div>
+              <button data-action="delete" data-id="${text.id}" class="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition ml-2">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+        `).join('');
+      },
+      
+      // Attach event listeners to list items
+      attachListEventListeners(modal) {
+        modal.querySelectorAll('.custom-text-item').forEach(item => {
+          const useBtn = item.querySelector('[data-action="use"]');
+          const deleteBtn = item.querySelector('[data-action="delete"]');
+          
+          if (useBtn) {
+            useBtn.onclick = () => {
+              const id = useBtn.dataset.id;
+              const customText = this.customTexts.find(t => t.id === id);
+              if (customText) {
+                this.useCustomText(customText);
+                modal.remove();
+              }
+            };
+          }
+          
+          if (deleteBtn) {
+            deleteBtn.onclick = () => {
+              const id = deleteBtn.dataset.id;
+              this.deleteCustomText(id);
+              modal.querySelector('#customTextsList').innerHTML = this.renderCustomTextsList();
+              this.attachListEventListeners(modal);
+            };
+          }
+        });
+      },
+      
+      // Update custom texts list in modal
+      updateCustomTextsList() {
+        const listContainer = document.querySelector('#customTextsList');
+        if (listContainer) {
+          listContainer.innerHTML = this.renderCustomTextsList();
+        }
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.style.animation = 'slideUp 0.3s ease';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Escape HTML to prevent XSS
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      },
+      
+      setupEventListeners() {
+        // Add custom text button to UI (will be created)
+        const customTextBtn = document.getElementById('customTextBtn');
+        if (customTextBtn) {
+          customTextBtn.onclick = () => this.showCustomTextModal();
+        }
+      }
+    };
