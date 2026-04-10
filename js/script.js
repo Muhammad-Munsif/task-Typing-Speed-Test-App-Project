@@ -1030,92 +1030,92 @@ const AchievementSystem = {
 AchievementSystem.loadProgress();
 AchievementSystem.updateBadgeDisplay();
 
-        // ==================== EXPORT RESULTS SYSTEM (DAY 4) ====================
-    const ExportSystem = {
-      // Export formats
-      formats: ['CSV', 'JSON', 'HTML Report', 'PDF'],
-      
-      // Export test history
-      exportHistory(format) {
-        const history = testHistory;
-        if (history.length === 0) {
-          this.showNotification('No data to export. Complete some tests first!', 'error');
-          return;
-        }
-        
-        switch(format) {
-          case 'CSV':
-            this.exportToCSV(history);
-            break;
-          case 'JSON':
-            this.exportToJSON(history);
-            break;
-          case 'HTML Report':
-            this.exportToHTML(history);
-            break;
-          case 'PDF':
-            this.exportToPDF(history);
-            break;
-        }
-      },
-      
-      // Export to CSV
-      exportToCSV(history) {
-        const headers = ['Date', 'Time', 'WPM', 'Raw WPM', 'Accuracy', 'Errors', 'Duration (s)', 'Difficulty', 'Category'];
-        const rows = history.map(entry => [
-          new Date(entry.date).toLocaleDateString(),
-          new Date(entry.date).toLocaleTimeString(),
-          entry.wpm,
-          entry.rawWpm || entry.wpm,
-          entry.accuracy,
-          entry.errors,
-          entry.time,
-          entry.difficulty,
-          entry.source
-        ]);
-        
-        const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `velocitytype_history_${new Date().toISOString().slice(0,19)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        this.showNotification('CSV exported successfully!', 'success');
-        SoundManager.playKeypress();
-      },
-      
-      // Export to JSON
-      exportToJSON(history) {
-        const exportData = {
-          exportDate: new Date().toISOString(),
-          totalTests: history.length,
-          bestWPM: bestWpm,
-          averageWPM: Math.round(history.reduce((sum, h) => sum + h.wpm, 0) / history.length),
-          history: history,
-          achievements: AchievementSystem.userProgress.unlockedAchievements,
-          totalPoints: AchievementSystem.userProgress.totalPoints
-        };
-        
-        const jsonStr = JSON.stringify(exportData, null, 2);
-        const blob = new Blob([jsonStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `velocitytype_data_${new Date().toISOString().slice(0,19)}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        this.showNotification('JSON exported successfully!', 'success');
-        SoundManager.playKeypress();
-      },
-      
-      // Export to HTML Report
-      exportToHTML(history) {
-        const stats = this.generateStats(history);
-        const htmlContent = `
+// ==================== EXPORT RESULTS SYSTEM (DAY 4) ====================
+const ExportSystem = {
+  // Export formats
+  formats: ['CSV', 'JSON', 'HTML Report', 'PDF'],
+
+  // Export test history
+  exportHistory(format) {
+    const history = testHistory;
+    if (history.length === 0) {
+      this.showNotification('No data to export. Complete some tests first!', 'error');
+      return;
+    }
+
+    switch (format) {
+      case 'CSV':
+        this.exportToCSV(history);
+        break;
+      case 'JSON':
+        this.exportToJSON(history);
+        break;
+      case 'HTML Report':
+        this.exportToHTML(history);
+        break;
+      case 'PDF':
+        this.exportToPDF(history);
+        break;
+    }
+  },
+
+  // Export to CSV
+  exportToCSV(history) {
+    const headers = ['Date', 'Time', 'WPM', 'Raw WPM', 'Accuracy', 'Errors', 'Duration (s)', 'Difficulty', 'Category'];
+    const rows = history.map(entry => [
+      new Date(entry.date).toLocaleDateString(),
+      new Date(entry.date).toLocaleTimeString(),
+      entry.wpm,
+      entry.rawWpm || entry.wpm,
+      entry.accuracy,
+      entry.errors,
+      entry.time,
+      entry.difficulty,
+      entry.source
+    ]);
+
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `velocitytype_history_${new Date().toISOString().slice(0, 19)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    this.showNotification('CSV exported successfully!', 'success');
+    SoundManager.playKeypress();
+  },
+
+  // Export to JSON
+  exportToJSON(history) {
+    const exportData = {
+      exportDate: new Date().toISOString(),
+      totalTests: history.length,
+      bestWPM: bestWpm,
+      averageWPM: Math.round(history.reduce((sum, h) => sum + h.wpm, 0) / history.length),
+      history: history,
+      achievements: AchievementSystem.userProgress.unlockedAchievements,
+      totalPoints: AchievementSystem.userProgress.totalPoints
+    };
+
+    const jsonStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `velocitytype_data_${new Date().toISOString().slice(0, 19)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    this.showNotification('JSON exported successfully!', 'success');
+    SoundManager.playKeypress();
+  },
+
+  // Export to HTML Report
+  exportToHTML(history) {
+    const stats = this.generateStats(history);
+    const htmlContent = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1269,24 +1269,24 @@ AchievementSystem.updateBadgeDisplay();
 </body>
 </html>
         `;
-        
-        const blob = new Blob([htmlContent], { type: 'text/html' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `velocitytype_report_${new Date().toISOString().slice(0,19)}.html`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        this.showNotification('HTML Report exported successfully!', 'success');
-        SoundManager.playKeypress();
-      },
-      
-      // Export to PDF (using browser print)
-      exportToPDF(history) {
-        const stats = this.generateStats(history);
-        const printWindow = window.open('', '_blank');
-        printWindow.document.write(`
+
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `velocitytype_report_${new Date().toISOString().slice(0, 19)}.html`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    this.showNotification('HTML Report exported successfully!', 'success');
+    SoundManager.playKeypress();
+  },
+
+  // Export to PDF (using browser print)
+  exportToPDF(history) {
+    const stats = this.generateStats(history);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
           <!DOCTYPE html>
           <html>
           <head>
@@ -1329,82 +1329,81 @@ AchievementSystem.updateBadgeDisplay();
           </body>
           </html>
         `);
-        printWindow.document.close();
-        
-        this.showNotification('PDF report opened. Use Ctrl+P to save as PDF.', 'info');
-        SoundManager.playKeypress();
-      },
-      
-      // Generate statistics from history
-      generateStats(history) {
-        if (history.length === 0) {
-          return {
-            totalTests: 0,
-            bestWPM: 0,
-            avgWPM: 0,
-            bestAccuracy: 0,
-            avgAccuracy: 0
-          };
-        }
-        
-        const wpmValues = history.map(h => h.wpm);
-        const accuracyValues = history.map(h => parseInt(h.accuracy));
-        
-        return {
-          totalTests: history.length,
-          bestWPM: Math.max(...wpmValues),
-          avgWPM: Math.round(wpmValues.reduce((a,b) => a+b, 0) / history.length),
-          bestAccuracy: Math.max(...accuracyValues),
-          avgAccuracy: Math.round(accuracyValues.reduce((a,b) => a+b, 0) / history.length)
-        };
-      },
-      
-      // Share results on social media
-      shareResults() {
-        const stats = this.generateStats(testHistory);
-        const shareText = `I just scored ${stats.bestWPM} WPM with ${stats.bestAccuracy}% accuracy on VelocityType! Can you beat my score? 🚀`;
-        
-        if (navigator.share) {
-          navigator.share({
-            title: 'VelocityType Typing Results',
-            text: shareText,
-            url: window.location.href
-          }).catch(() => {
-            this.copyToClipboard(shareText);
-          });
-        } else {
-          this.copyToClipboard(shareText);
-        }
-        
-        SoundManager.playKeypress();
-      },
-      
-      // Copy to clipboard
-      copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-          this.showNotification('Results copied to clipboard!', 'success');
-        });
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-        }`;
-        notification.style.animation = 'slideUp 0.3s ease';
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Show export modal
-      showExportModal() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+    printWindow.document.close();
+
+    this.showNotification('PDF report opened. Use Ctrl+P to save as PDF.', 'info');
+    SoundManager.playKeypress();
+  },
+
+  // Generate statistics from history
+  generateStats(history) {
+    if (history.length === 0) {
+      return {
+        totalTests: 0,
+        bestWPM: 0,
+        avgWPM: 0,
+        bestAccuracy: 0,
+        avgAccuracy: 0
+      };
+    }
+
+    const wpmValues = history.map(h => h.wpm);
+    const accuracyValues = history.map(h => parseInt(h.accuracy));
+
+    return {
+      totalTests: history.length,
+      bestWPM: Math.max(...wpmValues),
+      avgWPM: Math.round(wpmValues.reduce((a, b) => a + b, 0) / history.length),
+      bestAccuracy: Math.max(...accuracyValues),
+      avgAccuracy: Math.round(accuracyValues.reduce((a, b) => a + b, 0) / history.length)
+    };
+  },
+
+  // Share results on social media
+  shareResults() {
+    const stats = this.generateStats(testHistory);
+    const shareText = `I just scored ${stats.bestWPM} WPM with ${stats.bestAccuracy}% accuracy on VelocityType! Can you beat my score? 🚀`;
+
+    if (navigator.share) {
+      navigator.share({
+        title: 'VelocityType Typing Results',
+        text: shareText,
+        url: window.location.href
+      }).catch(() => {
+        this.copyToClipboard(shareText);
+      });
+    } else {
+      this.copyToClipboard(shareText);
+    }
+
+    SoundManager.playKeypress();
+  },
+
+  // Copy to clipboard
+  copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      this.showNotification('Results copied to clipboard!', 'success');
+    });
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+      }`;
+    notification.style.animation = 'slideUp 0.3s ease';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Show export modal
+  showExportModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-xl font-bold text-gray-800 dark:text-white">
@@ -1443,27 +1442,27 @@ AchievementSystem.updateBadgeDisplay();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeExportModal');
-        closeBtn.onclick = () => modal.remove();
-        
-        const exportBtns = modal.querySelectorAll('.export-option');
-        exportBtns.forEach(btn => {
-          btn.onclick = () => {
-            const format = btn.dataset.format;
-            this.exportHistory(format);
-            modal.remove();
-          };
-        });
-        
-        const shareBtn = modal.querySelector('#shareResultsBtn');
-        shareBtn.onclick = () => {
-          this.shareResults();
-          modal.remove();
-        };
-        
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      }
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeExportModal');
+    closeBtn.onclick = () => modal.remove();
+
+    const exportBtns = modal.querySelectorAll('.export-option');
+    exportBtns.forEach(btn => {
+      btn.onclick = () => {
+        const format = btn.dataset.format;
+        this.exportHistory(format);
+        modal.remove();
+      };
+    });
+
+    const shareBtn = modal.querySelector('#shareResultsBtn');
+    shareBtn.onclick = () => {
+      this.shareResults();
+      modal.remove();
     };
+
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  }
+};
