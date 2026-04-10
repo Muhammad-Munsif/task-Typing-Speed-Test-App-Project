@@ -1029,3 +1029,441 @@ const AchievementSystem = {
 // Initialize achievement system
 AchievementSystem.loadProgress();
 AchievementSystem.updateBadgeDisplay();
+
+        // ==================== EXPORT RESULTS SYSTEM (DAY 4) ====================
+    const ExportSystem = {
+      // Export formats
+      formats: ['CSV', 'JSON', 'HTML Report', 'PDF'],
+      
+      // Export test history
+      exportHistory(format) {
+        const history = testHistory;
+        if (history.length === 0) {
+          this.showNotification('No data to export. Complete some tests first!', 'error');
+          return;
+        }
+        
+        switch(format) {
+          case 'CSV':
+            this.exportToCSV(history);
+            break;
+          case 'JSON':
+            this.exportToJSON(history);
+            break;
+          case 'HTML Report':
+            this.exportToHTML(history);
+            break;
+          case 'PDF':
+            this.exportToPDF(history);
+            break;
+        }
+      },
+      
+      // Export to CSV
+      exportToCSV(history) {
+        const headers = ['Date', 'Time', 'WPM', 'Raw WPM', 'Accuracy', 'Errors', 'Duration (s)', 'Difficulty', 'Category'];
+        const rows = history.map(entry => [
+          new Date(entry.date).toLocaleDateString(),
+          new Date(entry.date).toLocaleTimeString(),
+          entry.wpm,
+          entry.rawWpm || entry.wpm,
+          entry.accuracy,
+          entry.errors,
+          entry.time,
+          entry.difficulty,
+          entry.source
+        ]);
+        
+        const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `velocitytype_history_${new Date().toISOString().slice(0,19)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('CSV exported successfully!', 'success');
+        SoundManager.playKeypress();
+      },
+      
+      // Export to JSON
+      exportToJSON(history) {
+        const exportData = {
+          exportDate: new Date().toISOString(),
+          totalTests: history.length,
+          bestWPM: bestWpm,
+          averageWPM: Math.round(history.reduce((sum, h) => sum + h.wpm, 0) / history.length),
+          history: history,
+          achievements: AchievementSystem.userProgress.unlockedAchievements,
+          totalPoints: AchievementSystem.userProgress.totalPoints
+        };
+        
+        const jsonStr = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `velocitytype_data_${new Date().toISOString().slice(0,19)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('JSON exported successfully!', 'success');
+        SoundManager.playKeypress();
+      },
+      
+      // Export to HTML Report
+      exportToHTML(history) {
+        const stats = this.generateStats(history);
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VelocityType - Typing Test Report</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+    .header p { opacity: 0.9; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 40px;
+      background: #f8f9fa;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .stat-card h3 { font-size: 0.9em; color: #666; margin-bottom: 10px; text-transform: uppercase; }
+    .stat-card .value { font-size: 2.5em; font-weight: bold; color: #667eea; }
+    .history-table {
+      padding: 40px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    th {
+      background: #667eea;
+      color: white;
+      font-weight: 600;
+    }
+    tr:hover { background: #f5f5f5; }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.75em;
+      font-weight: 600;
+    }
+    .badge-easy { background: #10b98120; color: #10b981; }
+    .badge-medium { background: #f59e0b20; color: #f59e0b; }
+    .badge-hard { background: #ef444420; color: #ef4444; }
+    .footer {
+      text-align: center;
+      padding: 20px;
+      background: #f8f9fa;
+      color: #666;
+      font-size: 0.85em;
+    }
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .history-table { padding: 20px; }
+      th, td { padding: 8px; font-size: 0.85em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>⚡ VelocityType Report</h1>
+      <p>Generated on ${new Date().toLocaleString()}</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Total Tests</h3>
+        <div class="value">${stats.totalTests}</div>
+      </div>
+      <div class="stat-card">
+        <h3>Best WPM</h3>
+        <div class="value">${stats.bestWPM}</div>
+      </div>
+      <div class="stat-card">
+        <h3>Average WPM</h3>
+        <div class="value">${stats.avgWPM}</div>
+      </div>
+      <div class="stat-card">
+        <h3>Best Accuracy</h3>
+        <div class="value">${stats.bestAccuracy}%</div>
+      </div>
+      <div class="stat-card">
+        <h3>Average Accuracy</h3>
+        <div class="value">${stats.avgAccuracy}%</div>
+      </div>
+      <div class="stat-card">
+        <h3>Total Points</h3>
+        <div class="value">${AchievementSystem.userProgress.totalPoints}</div>
+      </div>
+    </div>
+    
+    <div class="history-table">
+      <h2 style="margin-bottom: 20px;">📊 Test History</h2>
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Time</th><th>WPM</th><th>Accuracy</th><th>Errors</th><th>Duration</th><th>Difficulty</th></tr>
+        </thead>
+        <tbody>
+          ${history.map(entry => `
+            <tr>
+              <td>${new Date(entry.date).toLocaleDateString()}</td>
+              <td>${new Date(entry.date).toLocaleTimeString()}</td>
+              <td><strong>${entry.wpm}</strong></td>
+              <td>${entry.accuracy}</td>
+              <td>${entry.errors}</td>
+              <td>${entry.time}s</td>
+              <td><span class="badge badge-${entry.difficulty}">${entry.difficulty}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+    
+    <div class="footer">
+      <p>Generated by VelocityType Typing Speed Test</p>
+      <p>Keep practicing to improve your typing speed! 🚀</p>
+    </div>
+  </div>
+</body>
+</html>
+        `;
+        
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `velocitytype_report_${new Date().toISOString().slice(0,19)}.html`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        this.showNotification('HTML Report exported successfully!', 'success');
+        SoundManager.playKeypress();
+      },
+      
+      // Export to PDF (using browser print)
+      exportToPDF(history) {
+        const stats = this.generateStats(history);
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>VelocityType Report</title>
+            <style>
+              body { font-family: Arial, sans-serif; padding: 40px; }
+              h1 { color: #667eea; }
+              .stats { display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
+              .stat { background: #f0f0f0; padding: 15px; border-radius: 10px; min-width: 150px; }
+              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+              th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+              th { background: #667eea; color: white; }
+              @media print { .no-print { display: none; } }
+            </style>
+          </head>
+          <body>
+            <h1>VelocityType Typing Test Report</h1>
+            <p>Generated: ${new Date().toLocaleString()}</p>
+            <div class="stats">
+              <div class="stat"><strong>Total Tests:</strong><br>${stats.totalTests}</div>
+              <div class="stat"><strong>Best WPM:</strong><br>${stats.bestWPM}</div>
+              <div class="stat"><strong>Avg WPM:</strong><br>${stats.avgWPM}</div>
+              <div class="stat"><strong>Best Accuracy:</strong><br>${stats.bestAccuracy}%</div>
+            </div>
+            <h2>Test History</h2>
+            <table>
+              <tr><th>Date</th><th>WPM</th><th>Accuracy</th><th>Errors</th><th>Duration</th></tr>
+              ${history.map(entry => `
+                <tr>
+                  <td>${new Date(entry.date).toLocaleDateString()}</td>
+                  <td>${entry.wpm}</td>
+                  <td>${entry.accuracy}</td>
+                  <td>${entry.errors}</td>
+                  <td>${entry.time}s</td>
+                </tr>
+              `).join('')}
+            </table>
+            <button class="no-print" onclick="window.print()">Print / Save as PDF</button>
+            <script>setTimeout(() => window.print(), 500);<\/script>
+          </body>
+          </html>
+        `);
+        printWindow.document.close();
+        
+        this.showNotification('PDF report opened. Use Ctrl+P to save as PDF.', 'info');
+        SoundManager.playKeypress();
+      },
+      
+      // Generate statistics from history
+      generateStats(history) {
+        if (history.length === 0) {
+          return {
+            totalTests: 0,
+            bestWPM: 0,
+            avgWPM: 0,
+            bestAccuracy: 0,
+            avgAccuracy: 0
+          };
+        }
+        
+        const wpmValues = history.map(h => h.wpm);
+        const accuracyValues = history.map(h => parseInt(h.accuracy));
+        
+        return {
+          totalTests: history.length,
+          bestWPM: Math.max(...wpmValues),
+          avgWPM: Math.round(wpmValues.reduce((a,b) => a+b, 0) / history.length),
+          bestAccuracy: Math.max(...accuracyValues),
+          avgAccuracy: Math.round(accuracyValues.reduce((a,b) => a+b, 0) / history.length)
+        };
+      },
+      
+      // Share results on social media
+      shareResults() {
+        const stats = this.generateStats(testHistory);
+        const shareText = `I just scored ${stats.bestWPM} WPM with ${stats.bestAccuracy}% accuracy on VelocityType! Can you beat my score? 🚀`;
+        
+        if (navigator.share) {
+          navigator.share({
+            title: 'VelocityType Typing Results',
+            text: shareText,
+            url: window.location.href
+          }).catch(() => {
+            this.copyToClipboard(shareText);
+          });
+        } else {
+          this.copyToClipboard(shareText);
+        }
+        
+        SoundManager.playKeypress();
+      },
+      
+      // Copy to clipboard
+      copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+          this.showNotification('Results copied to clipboard!', 'success');
+        });
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.style.animation = 'slideUp 0.3s ease';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Show export modal
+      showExportModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-download mr-2 text-blue-500"></i>Export Results
+              </h3>
+              <button id="closeExportModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+            
+            <div class="space-y-3">
+              <button data-format="CSV" class="export-option w-full p-3 rounded-xl bg-green-500 hover:bg-green-600 text-white font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-file-excel"></i> Export as CSV
+              </button>
+              <button data-format="JSON" class="export-option w-full p-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-code"></i> Export as JSON
+              </button>
+              <button data-format="HTML Report" class="export-option w-full p-3 rounded-xl bg-purple-500 hover:bg-purple-600 text-white font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-file-alt"></i> Export as HTML Report
+              </button>
+              <button data-format="PDF" class="export-option w-full p-3 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-file-pdf"></i> Export as PDF
+              </button>
+            </div>
+            
+            <div class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <button id="shareResultsBtn" class="w-full p-3 rounded-xl bg-indigo-500 hover:bg-indigo-600 text-white font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-share-alt"></i> Share Results
+              </button>
+            </div>
+            
+            <div class="mt-4 text-center">
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                <i class="fas fa-info-circle"></i> ${testHistory.length} tests available for export
+              </p>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const closeBtn = modal.querySelector('#closeExportModal');
+        closeBtn.onclick = () => modal.remove();
+        
+        const exportBtns = modal.querySelectorAll('.export-option');
+        exportBtns.forEach(btn => {
+          btn.onclick = () => {
+            const format = btn.dataset.format;
+            this.exportHistory(format);
+            modal.remove();
+          };
+        });
+        
+        const shareBtn = modal.querySelector('#shareResultsBtn');
+        shareBtn.onclick = () => {
+          this.shareResults();
+          modal.remove();
+        };
+        
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      }
+    };
