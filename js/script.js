@@ -1847,3 +1847,427 @@ if (customIndicator && customTextNameSpan) {
     customIndicator.classList.add('hidden');
   }
 }
+      // ==================== PROGRESS GRAPHS & ANALYTICS (DAY 6) ====================
+    const AnalyticsSystem = {
+      charts: {},
+      
+      // Show analytics dashboard
+      showAnalyticsDashboard() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-5xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-chart-line mr-2 text-blue-500"></i>Progress Analytics
+              </h3>
+              <button id="closeAnalyticsModal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+              <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 text-white text-center">
+                <p class="text-xs opacity-90">Best WPM</p>
+                <p id="analyticsBestWpm" class="text-2xl font-bold">0</p>
+              </div>
+              <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-3 text-white text-center">
+                <p class="text-xs opacity-90">Avg WPM</p>
+                <p id="analyticsAvgWpm" class="text-2xl font-bold">0</p>
+              </div>
+              <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-3 text-white text-center">
+                <p class="text-xs opacity-90">Total Tests</p>
+                <p id="analyticsTotalTests" class="text-2xl font-bold">0</p>
+              </div>
+              <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-3 text-white text-center">
+                <p class="text-xs opacity-90">Best Streak</p>
+                <p id="analyticsBestStreak" class="text-2xl font-bold">0</p>
+              </div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 dark:border-gray-700 mb-4">
+              <button class="analytics-tab px-4 py-2 text-sm font-medium border-b-2 border-blue-500 text-blue-500" data-tab="wpm">
+                <i class="fas fa-tachometer-alt mr-1"></i>WPM Progress
+              </button>
+              <button class="analytics-tab px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400" data-tab="accuracy">
+                <i class="fas fa-bullseye mr-1"></i>Accuracy Trend
+              </button>
+              <button class="analytics-tab px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400" data-tab="distribution">
+                <i class="fas fa-chart-bar mr-1"></i>Score Distribution
+              </button>
+              <button class="analytics-tab px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400" data-tab="heatmap">
+                <i class="fas fa-calendar mr-1"></i>Activity Heatmap
+              </button>
+            </div>
+            
+            <!-- Chart Containers -->
+            <div id="wpmChartContainer" class="chart-container">
+              <canvas id="wpmChart" height="300"></canvas>
+              <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                <div><span class="text-gray-500">Trend:</span> <span id="wpmTrend" class="font-bold"></span></div>
+                <div><span class="text-gray-500">Improvement:</span> <span id="wpmImprovement" class="font-bold"></span></div>
+                <div><span class="text-gray-500">Best Session:</span> <span id="bestSession" class="font-bold"></span></div>
+              </div>
+            </div>
+            
+            <div id="accuracyChartContainer" class="chart-container hidden">
+              <canvas id="accuracyChart" height="300"></canvas>
+              <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                <div><span class="text-gray-500">Average:</span> <span id="avgAccuracyDisplay" class="font-bold"></span></div>
+                <div><span class="text-gray-500">Best:</span> <span id="bestAccuracyDisplay" class="font-bold"></span></div>
+                <div><span class="text-gray-500">Consistency:</span> <span id="consistencyScore" class="font-bold"></span></div>
+              </div>
+            </div>
+            
+            <div id="distributionChartContainer" class="chart-container hidden">
+              <canvas id="distributionChart" height="300"></canvas>
+              <div class="mt-4 text-center text-sm">
+                <p class="text-gray-600 dark:text-gray-400">Most common WPM range: <span id="commonRange" class="font-bold text-blue-500"></span></p>
+              </div>
+            </div>
+            
+            <div id="heatmapContainer" class="chart-container hidden">
+              <div id="activityHeatmap" class="grid grid-cols-7 gap-1 mb-4"></div>
+              <div class="text-center text-sm text-gray-500 mt-2">
+                <span class="inline-block w-3 h-3 bg-gray-200 dark:bg-gray-700 rounded mr-1"></span> No activity
+                <span class="inline-block w-3 h-3 bg-green-300 dark:bg-green-800 rounded ml-2 mr-1"></span> Low
+                <span class="inline-block w-3 h-3 bg-green-500 rounded ml-2 mr-1"></span> Medium
+                <span class="inline-block w-3 h-3 bg-green-700 rounded ml-2 mr-1"></span> High
+              </div>
+            </div>
+            
+            <!-- Insights -->
+            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+              <h4 class="font-semibold mb-2 text-blue-700 dark:text-blue-300">
+                <i class="fas fa-lightbulb mr-1"></i>Insights & Recommendations
+              </h4>
+              <div id="insightsList" class="space-y-1 text-sm">
+                <!-- Insights will be populated here -->
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Generate all charts
+        this.generateWPMLineChart();
+        this.generateAccuracyChart();
+        this.generateDistributionChart();
+        this.generateActivityHeatmap();
+        this.updateSummaryStats();
+        this.generateInsights();
+        
+        // Tab switching
+        const tabs = modal.querySelectorAll('.analytics-tab');
+        tabs.forEach(tab => {
+          tab.onclick = () => {
+            // Update tab styles
+            tabs.forEach(t => {
+              t.classList.remove('border-blue-500', 'text-blue-500');
+              t.classList.add('text-gray-500', 'dark:text-gray-400');
+            });
+            tab.classList.add('border-blue-500', 'text-blue-500');
+            tab.classList.remove('text-gray-500', 'dark:text-gray-400');
+            
+            // Show/hide containers
+            const tabName = tab.dataset.tab;
+            const containers = ['wpmChartContainer', 'accuracyChartContainer', 'distributionChartContainer', 'heatmapContainer'];
+            containers.forEach(container => {
+              const el = modal.querySelector(`#${container}`);
+              if (el) el.classList.add('hidden');
+            });
+            
+            const activeContainer = modal.querySelector(`#${tabName}ChartContainer`) || modal.querySelector(`#${tabName}Container`);
+            if (activeContainer) activeContainer.classList.remove('hidden');
+          };
+        });
+        
+        const closeBtn = modal.querySelector('#closeAnalyticsModal');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        
+        SoundManager.playKeypress();
+      },
+      
+      // Generate WPM Line Chart
+      generateWPMLineChart() {
+        const ctx = document.getElementById('wpmChart')?.getContext('2d');
+        if (!ctx) return;
+        
+        const history = testHistory.slice().reverse();
+        const wpmData = history.map(h => h.wpm);
+        const labels = history.map((_, i) => `Test ${i + 1}`);
+        
+        // Calculate trend
+        let trend = 'Stable';
+        let improvement = 0;
+        if (wpmData.length >= 2) {
+          const firstHalf = wpmData.slice(0, Math.floor(wpmData.length / 2));
+          const secondHalf = wpmData.slice(Math.floor(wpmData.length / 2));
+          const avgFirst = firstHalf.reduce((a,b) => a+b, 0) / firstHalf.length;
+          const avgSecond = secondHalf.reduce((a,b) => a+b, 0) / secondHalf.length;
+          improvement = ((avgSecond - avgFirst) / avgFirst * 100).toFixed(1);
+          trend = improvement > 5 ? 'Upward 📈' : improvement < -5 ? 'Downward 📉' : 'Stable ➡️';
+        }
+        
+        // Find best session
+        const bestWpm = Math.max(...wpmData);
+        const bestIndex = wpmData.indexOf(bestWpm);
+        
+        document.getElementById('wpmTrend').innerHTML = trend;
+        document.getElementById('wpmImprovement').innerHTML = `${improvement > 0 ? '+' : ''}${improvement}%`;
+        document.getElementById('bestSession').innerHTML = `${bestWpm} WPM (Test ${bestIndex + 1})`;
+        
+        if (this.charts.wpm) this.charts.wpm.destroy();
+        
+        this.charts.wpm = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'WPM Score',
+              data: wpmData,
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4,
+              pointHoverRadius: 6,
+              pointBackgroundColor: '#3b82f6',
+              pointBorderColor: '#ffffff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              legend: { position: 'top' },
+              tooltip: { callbacks: { label: (ctx) => `${ctx.raw} WPM` } }
+            },
+            scales: {
+              y: { title: { display: true, text: 'Words Per Minute' }, beginAtZero: true },
+              x: { title: { display: true, text: 'Test Number' } }
+            }
+          }
+        });
+      },
+      
+      // Generate Accuracy Chart
+      generateAccuracyChart() {
+        const ctx = document.getElementById('accuracyChart')?.getContext('2d');
+        if (!ctx) return;
+        
+        const history = testHistory.slice().reverse();
+        const accuracyData = history.map(h => parseInt(h.accuracy));
+        const labels = history.map((_, i) => `Test ${i + 1}`);
+        
+        const avgAccuracy = (accuracyData.reduce((a,b) => a+b, 0) / accuracyData.length).toFixed(1);
+        const bestAccuracy = Math.max(...accuracyData);
+        const consistency = (100 - (this.standardDeviation(accuracyData))).toFixed(1);
+        
+        document.getElementById('avgAccuracyDisplay').innerHTML = `${avgAccuracy}%`;
+        document.getElementById('bestAccuracyDisplay').innerHTML = `${bestAccuracy}%`;
+        document.getElementById('consistencyScore').innerHTML = `${consistency}%`;
+        
+        if (this.charts.accuracy) this.charts.accuracy.destroy();
+        
+        this.charts.accuracy = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Accuracy %',
+              data: accuracyData,
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              borderWidth: 3,
+              fill: true,
+              tension: 0.3,
+              pointRadius: 4,
+              pointBackgroundColor: '#10b981'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              tooltip: { callbacks: { label: (ctx) => `${ctx.raw}%` } }
+            },
+            scales: {
+              y: { title: { display: true, text: 'Accuracy (%)' }, min: 0, max: 100 },
+              x: { title: { display: true, text: 'Test Number' } }
+            }
+          }
+        });
+      },
+      
+      // Generate Distribution Chart (Histogram)
+      generateDistributionChart() {
+        const ctx = document.getElementById('distributionChart')?.getContext('2d');
+        if (!ctx) return;
+        
+        const wpmData = testHistory.map(h => h.wpm);
+        const bins = [0, 30, 50, 70, 90, 110, 130, 150];
+        const labels = ['0-30', '31-50', '51-70', '71-90', '91-110', '111-130', '131-150'];
+        const counts = new Array(7).fill(0);
+        
+        wpmData.forEach(wpm => {
+          for (let i = 0; i < bins.length - 1; i++) {
+            if (wpm >= bins[i] && wpm < bins[i+1]) {
+              counts[i]++;
+              break;
+            }
+          }
+        });
+        
+        // Find most common range
+        const maxCount = Math.max(...counts);
+        const commonIndex = counts.indexOf(maxCount);
+        document.getElementById('commonRange').innerHTML = labels[commonIndex];
+        
+        if (this.charts.distribution) this.charts.distribution.destroy();
+        
+        this.charts.distribution = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'Number of Tests',
+              data: counts,
+              backgroundColor: 'rgba(139, 92, 246, 0.7)',
+              borderColor: '#8b5cf6',
+              borderWidth: 2,
+              borderRadius: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+              tooltip: { callbacks: { label: (ctx) => `${ctx.raw} tests` } }
+            },
+            scales: {
+              y: { title: { display: true, text: 'Frequency' }, beginAtZero: true, stepSize: 1 }
+            }
+          }
+        });
+      },
+      
+      // Generate Activity Heatmap
+      generateActivityHeatmap() {
+        const heatmapContainer = document.getElementById('activityHeatmap');
+        if (!heatmapContainer) return;
+        
+        // Get last 7 days of activity
+        const activityMap = {};
+        testHistory.forEach(test => {
+          const date = new Date(test.date).toLocaleDateString();
+          activityMap[date] = (activityMap[date] || 0) + 1;
+        });
+        
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const today = new Date();
+        const heatmapHTML = [];
+        
+        // Create header
+        heatmapHTML.push(`<div class="col-span-1"></div>`);
+        days.forEach(day => {
+          heatmapHTML.push(`<div class="text-center text-xs font-semibold py-1">${day}</div>`);
+        });
+        
+        // Create 4 weeks of data
+        for (let week = 3; week >= 0; week--) {
+          heatmapHTML.push(`<div class="text-right text-xs pr-1 py-1">Week ${4-week}</div>`);
+          for (let day = 0; day < 7; day++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() - (week * 7 + (6 - day)));
+            const dateStr = date.toLocaleDateString();
+            const count = activityMap[dateStr] || 0;
+            
+            let intensity = '';
+            if (count === 0) intensity = 'bg-gray-200 dark:bg-gray-700';
+            else if (count <= 2) intensity = 'bg-green-300 dark:bg-green-800';
+            else if (count <= 5) intensity = 'bg-green-500';
+            else intensity = 'bg-green-700';
+            
+            heatmapHTML.push(`<div class="w-full aspect-square ${intensity} rounded-sm" title="${dateStr}: ${count} tests"></div>`);
+          }
+        }
+        
+        heatmapContainer.innerHTML = heatmapHTML.join('');
+      },
+      
+      // Update summary statistics
+      updateSummaryStats() {
+        const wpmData = testHistory.map(h => h.wpm);
+        const avgWpm = wpmData.length > 0 ? Math.round(wpmData.reduce((a,b) => a+b, 0) / wpmData.length) : 0;
+        const bestWpm = Math.max(...wpmData, 0);
+        const bestStreak = AchievementSystem.userProgress.bestStreak;
+        
+        document.getElementById('analyticsBestWpm').innerHTML = bestWpm;
+        document.getElementById('analyticsAvgWpm').innerHTML = avgWpm;
+        document.getElementById('analyticsTotalTests').innerHTML = testHistory.length;
+        document.getElementById('analyticsBestStreak').innerHTML = bestStreak;
+      },
+      
+      // Generate insights and recommendations
+      generateInsights() {
+        const insights = [];
+        const wpmData = testHistory.map(h => h.wpm);
+        const accuracyData = testHistory.map(h => parseInt(h.accuracy));
+        
+        if (wpmData.length >= 5) {
+          const recentAvg = wpmData.slice(-5).reduce((a,b) => a+b, 0) / 5;
+          const overallAvg = wpmData.reduce((a,b) => a+b, 0) / wpmData.length;
+          
+          if (recentAvg > overallAvg * 1.1) {
+            insights.push('📈 Your recent tests show significant improvement! Keep up the momentum!');
+          } else if (recentAvg < overallAvg * 0.9) {
+            insights.push('⚠️ Your recent performance has dipped. Consider taking a short break or practicing easier texts.');
+          } else {
+            insights.push('✅ Your performance is consistent. Try increasing difficulty to challenge yourself!');
+          }
+        }
+        
+        if (accuracyData.length > 0) {
+          const avgAccuracy = accuracyData.reduce((a,b) => a+b, 0) / accuracyData.length;
+          if (avgAccuracy < 85) {
+            insights.push('🎯 Focus on accuracy before speed. Try slowing down to reduce errors.');
+          } else if (avgAccuracy > 95) {
+            insights.push('🌟 Excellent accuracy! You\'re ready to push for higher speeds.');
+          }
+        }
+        
+        if (testHistory.length < 10) {
+          insights.push('💪 Complete more tests to unlock detailed insights about your typing journey!');
+        }
+        
+        if (bestWpm > 0 && bestWpm < 50) {
+          insights.push('🚀 You\'re on your way! Regular practice will help you break 50 WPM.');
+        } else if (bestWpm >= 100) {
+          insights.push('🏆 You\'re in the elite tier! Consider competing in typing tournaments.');
+        }
+        
+        if (insights.length === 0) {
+          insights.push('📊 Keep practicing and check back for personalized insights!');
+        }
+        
+        const insightsList = document.getElementById('insightsList');
+        if (insightsList) {
+          insightsList.innerHTML = insights.map(i => `<p><i class="fas fa-chart-line mr-2 text-blue-500"></i>${i}</p>`).join('');
+        }
+      },
+      
+      // Helper: Calculate standard deviation
+      standardDeviation(values) {
+        const mean = values.reduce((a,b) => a+b, 0) / values.length;
+        const variance = values.reduce((a,b) => a + Math.pow(b - mean, 2), 0) / values.length;
+        return Math.sqrt(variance);
+      }
+    };
