@@ -454,99 +454,104 @@ button:active:not(:disabled) {
 
 #themeToggle:hover i {
   transform: rotate(15deg);
-}   
+}
 
-       /* Loader animation */
-    .loader {
-      width: 20px;
-      height: 20px;
-      border: 2px solid #e5e7eb;
-      border-top-color: #3b82f6;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Touch device optimizations */
-    .touch-device button,
-    .touch-device .btn-primary,
-    .touch-device .stat {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    
-    /* Reduced motion preference */
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-      }
-    }
-    
-    /* Print styles */
-    @media print {
-      .settings-panel,
-      .result-modal,
-      .action-buttons,
-      #themeToggle,
-      #settingsToggle,
-      #historyToggle,
-      #statsToggle,
-      #achievementsToggle,
-      #exportBtn,
-      #customTextBtn,
-      #analyticsBtn,
-      #shortcutsHelpBtn {
-        display: none !important;
-      }
-      
-      .typing-test {
-        box-shadow: none !important;
-        background: white !important;
-        color: black !important;
-      }
-      
-      #quoteDisplay {
-        border: 1px solid #ccc !important;
-      }
-    }
-    
-    /* Focus visible for accessibility */
-    .js-focus-visible :focus:not(.focus-visible) {
-      outline: none;
-    }
-    
-    .js-focus-visible .focus-visible {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-    
-    /* Smooth scrolling */
-    html {
-      scroll-behavior: smooth;
-    }
-    
-    /* Prevent text selection on buttons */
-    button {
-      user-select: none;
-    }
-    
-    /* Improved mobile tap targets */
-    @media (max-width: 640px) {
-      button,
-      .btn-primary,
-      .stat {
-        min-height: 44px;
-      }
-      
-      .key-hint {
-        min-height: auto;
-      }
-    }
+/* Loader animation */
+.loader {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Touch device optimizations */
+.touch-device button,
+.touch-device .btn-primary,
+.touch-device .stat {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print styles */
+@media print {
+
+  .settings-panel,
+  .result-modal,
+  .action-buttons,
+  #themeToggle,
+  #settingsToggle,
+  #historyToggle,
+  #statsToggle,
+  #achievementsToggle,
+  #exportBtn,
+  #customTextBtn,
+  #analyticsBtn,
+  #shortcutsHelpBtn {
+    display: none !important;
+  }
+
+  .typing-test {
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  #quoteDisplay {
+    border: 1px solid #ccc !important;
+  }
+}
+
+/* Focus visible for accessibility */
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
+
+.js-focus-visible .focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent text selection on buttons */
+button {
+  user-select: none;
+}
+
+/* Improved mobile tap targets */
+@media (max-width: 640px) {
+
+  button,
+  .btn-primary,
+  .stat {
+    min-height: 44px;
+  }
+
+  .key-hint {
+    min-height: auto;
+  }
+}
