@@ -375,6 +375,14 @@ function attachEvents() {
     customTextBtn.onclick = () => CustomTextSystem.showCustomTextModal();
   }
 
+        // Analytics button
+      const analyticsBtn = document.getElementById('analyticsBtn');
+      if (analyticsBtn) {
+        analyticsBtn.onclick = () => {
+          AnalyticsSystem.showAnalyticsDashboard();
+        };
+      }
+
   // Exit custom mode button
   const exitCustomModeBtn = document.getElementById('exitCustomModeBtn');
   if (exitCustomModeBtn) {
@@ -2271,3 +2279,4 @@ if (customIndicator && customTextNameSpan) {
         return Math.sqrt(variance);
       }
     };
+
