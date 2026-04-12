@@ -3221,3 +3221,5 @@ const MultiplayerSystem = {
     setTimeout(() => notification.remove(), 3000);
   }
 };
+    // Initialize Multiplayer System
+    MultiplayerSystem.init();
