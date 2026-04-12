@@ -2645,3 +2645,573 @@ function finalInit() {
 
 // Call final initialization
 finalInit();
+
+    // ==================== MULTIPLAYER RACING SYSTEM (DAY 8) ====================
+    const MultiplayerSystem = {
+      // State
+      isInRace: false,
+      raceId: null,
+      playerName: '',
+      players: [],
+      raceStartTime: null,
+      raceQuote: '',
+      playerProgress: {},
+      raceInterval: null,
+      
+      // Available race rooms
+      activeRooms: [],
+      
+      // Initialize
+      init() {
+        this.loadPlayerName();
+        this.setupEventListeners();
+      },
+      
+      // Load saved player name
+      loadPlayerName() {
+        const saved = localStorage.getItem('velocityPlayerName');
+        this.playerName = saved || this.generateRandomName();
+      },
+      
+      // Generate random name for anonymous players
+      generateRandomName() {
+        const adjectives = ['Swift', 'Fast', 'Quick', 'Rapid', 'Nimble', 'Turbo', 'Lightning', 'Speed', 'Flash', 'Rocket'];
+        const nouns = ['Typer', 'Typist', 'Keyboard', 'Keymaster', 'Clicker', 'Writer', 'Scribe', 'Phantom', 'Shadow', 'Master'];
+        return `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}`;
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        // Will be called from main attachEvents
+      },
+      
+      // Show multiplayer lobby
+      showLobby() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-users mr-2 text-purple-500"></i>Multiplayer Racing
+              </h3>
+              <button id="closeLobbyBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-xl"></i>
+              </button>
+            </div>
+            
+            <!-- Player Name Section -->
+            <div class="mb-6 p-4 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+              <p class="text-sm font-semibold mb-2 text-purple-700 dark:text-purple-300">Your Racing Name</p>
+              <div class="flex gap-2">
+                <input type="text" id="playerNameInput" value="${this.playerName}" class="flex-1 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                <button id="updateNameBtn" class="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition">
+                  <i class="fas fa-save"></i>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Create Race Section -->
+            <div class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 rounded-xl">
+              <p class="text-sm font-semibold mb-2 text-green-700 dark:text-green-300">Create New Race</p>
+              <div class="flex gap-2">
+                <select id="raceDifficulty" class="flex-1 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                  <option value="easy">Easy</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="hard">Hard</option>
+                  <option value="expert">Expert</option>
+                </select>
+                <select id="raceDuration" class="flex-1 p-2 rounded-lg bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                  <option value="30">30 seconds</option>
+                  <option value="60" selected>60 seconds</option>
+                  <option value="120">120 seconds</option>
+                </select>
+                <button id="createRaceBtn" class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition font-semibold">
+                  <i class="fas fa-plus"></i> Create
+                </button>
+              </div>
+            </div>
+            
+            <!-- Active Races Section -->
+            <div class="mb-4">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-door-open mr-2"></i>Active Races (${this.activeRooms.length})
+              </h4>
+              <div id="activeRacesList" class="max-h-64 overflow-y-auto space-y-2">
+                ${this.renderActiveRooms()}
+              </div>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-sm">
+              <p class="text-blue-700 dark:text-blue-300">
+                <i class="fas fa-info-circle mr-1"></i>
+                How to race: Create a race or join an existing one. All players race the same text. First to finish or highest WPM wins!
+              </p>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Event listeners
+        const closeBtn = modal.querySelector('#closeLobbyBtn');
+        closeBtn.onclick = () => modal.remove();
+        
+        const updateNameBtn = modal.querySelector('#updateNameBtn');
+        const playerNameInput = modal.querySelector('#playerNameInput');
+        updateNameBtn.onclick = () => {
+          const newName = playerNameInput.value.trim();
+          if (newName) {
+            this.playerName = newName;
+            localStorage.setItem('velocityPlayerName', newName);
+            this.showNotification(`Name updated to ${newName}!`, 'success');
+          }
+        };
+        
+        const createRaceBtn = modal.querySelector('#createRaceBtn');
+        createRaceBtn.onclick = () => {
+          const difficulty = modal.querySelector('#raceDifficulty').value;
+          const duration = parseInt(modal.querySelector('#raceDuration').value);
+          this.createRace(difficulty, duration);
+          modal.remove();
+        };
+        
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Render active rooms
+      renderActiveRooms() {
+        if (this.activeRooms.length === 0) {
+          return '<p class="text-center text-sm text-gray-500 py-4">No active races. Create one to start!</p>';
+        }
+        
+        return this.activeRooms.map(room => `
+          <div class="race-room p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-semibold text-sm">Room: ${room.id}</p>
+                <p class="text-xs text-gray-500">${room.difficulty} • ${room.duration}s • ${room.players.length}/8 players</p>
+              </div>
+              <button class="join-race-btn px-4 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm" data-room-id="${room.id}">
+                <i class="fas fa-sign-in-alt"></i> Join
+              </button>
+            </div>
+          </div>
+        `).join('');
+      },
+      
+      // Create a new race
+      createRace(difficulty, duration) {
+        this.raceId = 'race_' + Date.now();
+        this.players = [{ name: this.playerName, progress: 0, wpm: 0, completed: false, joinedAt: Date.now() }];
+        this.raceQuote = this.getRandomQuote(difficulty);
+        this.isInRace = true;
+        
+        // Add to active rooms
+        this.activeRooms.push({
+          id: this.raceId,
+          difficulty: difficulty,
+          duration: duration,
+          players: this.players,
+          createdAt: Date.now(),
+          host: this.playerName
+        });
+        
+        this.startRaceLobby();
+      },
+      
+      // Join an existing race
+      joinRace(roomId) {
+        const room = this.activeRooms.find(r => r.id === roomId);
+        if (!room) {
+          this.showNotification('Race no longer exists!', 'error');
+          return;
+        }
+        
+        if (room.players.length >= 8) {
+          this.showNotification('Race is full!', 'error');
+          return;
+        }
+        
+        this.raceId = roomId;
+        this.players = [...room.players];
+        this.players.push({ name: this.playerName, progress: 0, wpm: 0, completed: false, joinedAt: Date.now() });
+        this.raceQuote = this.getRandomQuote(room.difficulty);
+        this.isInRace = true;
+        
+        // Update room in activeRooms
+        room.players = this.players;
+        
+        this.startRaceLobby();
+      },
+      
+      // Get random quote for race
+      getRandomQuote(difficulty) {
+        const quotes = QUOTES_LIB.programming[difficulty] || QUOTES_LIB.programming.medium;
+        return quotes[Math.floor(Math.random() * quotes.length)];
+      },
+      
+      // Start race lobby (waiting for players)
+      startRaceLobby() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full mx-4 p-6 shadow-2xl">
+            <div class="text-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-flag-checkered mr-2 text-green-500"></i>Race Lobby
+              </h3>
+              <p class="text-sm text-gray-500">Race ID: <span class="font-mono font-bold">${this.raceId}</span></p>
+            </div>
+            
+            <div class="mb-4 p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+              <p class="text-sm text-center text-yellow-700 dark:text-yellow-300">
+                <i class="fas fa-users mr-1"></i>
+                Waiting for players... (${this.players.length}/8)
+              </p>
+            </div>
+            
+            <div class="mb-4">
+              <h4 class="font-semibold mb-2">Players in Lobby:</h4>
+              <div id="lobbyPlayersList" class="space-y-1 max-h-48 overflow-y-auto">
+                ${this.players.map(p => `
+                  <div class="flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                    <span><i class="fas fa-user-circle mr-2"></i>${p.name}</span>
+                    ${p.name === this.playerName ? '<span class="text-xs text-green-500">(You)</span>' : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+            
+            <div class="flex gap-3">
+              <button id="startRaceBtn" class="flex-1 px-6 py-3 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold transition ${this.players.length < 2 ? 'opacity-50 cursor-not-allowed' : ''}" ${this.players.length < 2 ? 'disabled' : ''}>
+                <i class="fas fa-play"></i> Start Race (min 2 players)
+              </button>
+              <button id="cancelRaceBtn" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+            </div>
+            
+            <p class="text-xs text-center text-gray-500 mt-4">Share this race ID with friends to join: <strong>${this.raceId}</strong></p>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const startBtn = modal.querySelector('#startRaceBtn');
+        startBtn.onclick = () => {
+          if (this.players.length >= 2) {
+            this.startRace();
+            modal.remove();
+          } else {
+            this.showNotification('Need at least 2 players to start!', 'error');
+          }
+        };
+        
+        const cancelBtn = modal.querySelector('#cancelRaceBtn');
+        cancelBtn.onclick = () => {
+          this.cancelRace();
+          modal.remove();
+        };
+        
+        // Simulate player joining (in real app, this would use WebSockets)
+        this.simulatePlayerJoins();
+      },
+      
+      // Simulate other players joining (demo mode)
+      simulatePlayerJoins() {
+        const demoPlayers = ['SpeedDemon', 'TurboTyper', 'KeyMaster', 'FlashFingers', 'RapidFire'];
+        let joinCount = 0;
+        
+        const interval = setInterval(() => {
+          if (joinCount < 3 && this.isInRace && document.querySelector('#lobbyPlayersList')) {
+            const demoName = demoPlayers[joinCount];
+            if (!this.players.find(p => p.name === demoName)) {
+              this.players.push({ name: demoName, progress: 0, wpm: 0, completed: false, joinedAt: Date.now() });
+              
+              // Update UI
+              const playersList = document.querySelector('#lobbyPlayersList');
+              if (playersList) {
+                playersList.innerHTML = this.players.map(p => `
+                  <div class="flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                    <span><i class="fas fa-user-circle mr-2"></i>${p.name}</span>
+                    ${p.name === this.playerName ? '<span class="text-xs text-green-500">(You)</span>' : ''}
+                  </div>
+                `).join('');
+              }
+              
+              const startBtn = document.querySelector('#startRaceBtn');
+              if (startBtn && this.players.length >= 2) {
+                startBtn.disabled = false;
+                startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+              }
+              
+              joinCount++;
+            }
+          } else {
+            clearInterval(interval);
+          }
+        }, 3000);
+      },
+      
+      // Start the actual race
+      startRace() {
+        this.raceStartTime = Date.now() + 3000; // 3 second countdown
+        this.playerProgress = {};
+        
+        // Show countdown and start race
+        this.showRaceCountdown();
+      },
+      
+      // Show countdown before race
+      showRaceCountdown() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
+        
+        let countdown = 3;
+        
+        const updateCountdown = () => {
+          modal.innerHTML = `
+            <div class="text-center">
+              <div class="text-8xl font-bold text-white mb-4 animate-pulse">${countdown}</div>
+              <p class="text-white text-xl">Get ready to race!</p>
+              <p class="text-gray-300 mt-2">Race against: ${this.players.map(p => p.name).join(', ')}</p>
+            </div>
+          `;
+          
+          if (countdown === 0) {
+            clearInterval(countdownInterval);
+            modal.remove();
+            this.runRace();
+          }
+          countdown--;
+        };
+        
+        const countdownInterval = setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        document.body.appendChild(modal);
+      },
+      
+      // Run the actual race
+      runRace() {
+        // Switch to race mode
+        currentQuoteText = this.raceQuote;
+        updateQuoteUI();
+        resetTestState();
+        
+        // Show race interface
+        this.showRaceInterface();
+        
+        // Start typing
+        isTyping = true;
+        startTime = Date.now();
+        startTimer();
+        
+        // Track player progress
+        this.trackRaceProgress();
+      },
+      
+      // Show race interface with player standings
+      showRaceInterface() {
+        const racePanel = document.createElement('div');
+        racePanel.id = 'racePanel';
+        racePanel.className = 'fixed top-20 right-5 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 z-40 border-2 border-purple-500';
+        racePanel.innerHTML = `
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="font-bold text-purple-600 dark:text-purple-400">
+              <i class="fas fa-flag-checkered mr-1"></i>Race Standings
+            </h4>
+            <span class="text-xs text-gray-500">Race ID: ${this.raceId}</span>
+          </div>
+          <div id="raceStandings" class="space-y-2 max-h-96 overflow-y-auto">
+            ${this.renderStandings()}
+          </div>
+        `;
+        
+        document.body.appendChild(racePanel);
+      },
+      
+      // Render current standings
+      renderStandings() {
+        const sortedPlayers = [...this.players].sort((a, b) => {
+          if (a.completed && !b.completed) return -1;
+          if (!a.completed && b.completed) return 1;
+          return b.wpm - a.wpm;
+        });
+        
+        return sortedPlayers.map((player, index) => `
+          <div class="flex justify-between items-center p-2 rounded ${player.name === this.playerName ? 'bg-purple-100 dark:bg-purple-900/30' : 'bg-gray-100 dark:bg-gray-700'}">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-sm w-6">${index + 1}</span>
+              <span class="text-sm">${player.name} ${player.name === this.playerName ? '(You)' : ''}</span>
+            </div>
+            <div class="text-right">
+              ${player.completed ? 
+                '<span class="text-xs text-green-500"><i class="fas fa-check-circle"></i> Finished!</span>' : 
+                `<span class="text-sm font-bold text-blue-500">${player.wpm} WPM</span>`
+              }
+              <div class="w-24 h-1 bg-gray-300 rounded-full mt-1">
+                <div class="h-1 bg-green-500 rounded-full transition-all" style="width: ${player.progress}%"></div>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      },
+      
+      // Track player progress during race
+      trackRaceProgress() {
+        const updateInterval = setInterval(() => {
+          if (!this.isInRace || testDone) {
+            clearInterval(updateInterval);
+            return;
+          }
+          
+          // Update current player's progress
+          const currentPlayer = this.players.find(p => p.name === this.playerName);
+          if (currentPlayer) {
+            const elapsed = (Date.now() - this.raceStartTime) / 1000;
+            const minutes = Math.max(0.01, elapsed / 60);
+            const wordsTyped = correctCharsTyped / 5;
+            const wpm = Math.floor(wordsTyped / minutes);
+            const progress = (totalTypedChars / currentQuoteText.length) * 100;
+            
+            currentPlayer.wpm = wpm || 0;
+            currentPlayer.progress = Math.min(100, progress);
+            
+            if (totalTypedChars >= currentQuoteText.length) {
+              currentPlayer.completed = true;
+              this.finishRace();
+            }
+          }
+          
+          // Update standings display
+          const standingsDiv = document.getElementById('raceStandings');
+          if (standingsDiv) {
+            standingsDiv.innerHTML = this.renderStandings();
+          }
+        }, 500);
+      },
+      
+      // Finish the race
+      finishRace() {
+        if (this.raceFinished) return;
+        this.raceFinished = true;
+        this.isInRace = false;
+        clearInterval(timer);
+        
+        // Calculate final results
+        const sortedPlayers = [...this.players].sort((a, b) => {
+          if (a.completed && !b.completed) return -1;
+          if (!a.completed && b.completed) return 1;
+          return b.wpm - a.wpm;
+        });
+        
+        const winner = sortedPlayers[0];
+        const isWinner = winner.name === this.playerName;
+        
+        // Show results
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 text-center shadow-2xl">
+            <div class="text-6xl mb-4">${isWinner ? '🏆' : '👍'}</div>
+            <h2 class="text-2xl font-bold mb-2">${isWinner ? 'You Won!' : 'Race Complete!'}</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+              ${isWinner ? 'Congratulations! You are the champion!' : `Winner: ${winner.name} with ${winner.wpm} WPM`}
+            </p>
+            
+            <div class="mb-4 max-h-64 overflow-y-auto">
+              ${sortedPlayers.map((p, i) => `
+                <div class="flex justify-between items-center p-2 border-b border-gray-200 dark:border-gray-700">
+                  <span>${i + 1}. ${p.name} ${p.name === winner.name ? '👑' : ''}</span>
+                  <span class="font-bold">${p.wpm} WPM</span>
+                  <span>${p.completed ? '✅' : '⏱️'}</span>
+                </div>
+              `).join('')}
+            </div>
+            
+            <button id="closeRaceResultsBtn" class="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-bold transition">
+              <i class="fas fa-check"></i> Close
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Play race completion sound
+        SoundManager.playComplete();
+        
+        // Award achievement for winning
+        if (isWinner) {
+          this.awardRaceWin();
+        }
+        
+        const closeBtn = modal.querySelector('#closeRaceResultsBtn');
+        closeBtn.onclick = () => {
+          modal.remove();
+          const racePanel = document.getElementById('racePanel');
+          if (racePanel) racePanel.remove();
+          this.resetRaceState();
+        };
+      },
+      
+      // Award achievement for winning a race
+      awardRaceWin() {
+        const raceWins = parseInt(localStorage.getItem('raceWins') || '0') + 1;
+        localStorage.setItem('raceWins', raceWins);
+        
+        if (raceWins === 1) {
+          AchievementSystem.showAchievementNotification({
+            id: 'first_race_win',
+            name: 'First Victory!',
+            description: 'Won your first multiplayer race',
+            icon: 'fas fa-trophy',
+            points: 50
+          });
+        } else if (raceWins === 10) {
+          AchievementSystem.showAchievementNotification({
+            id: 'race_champion',
+            name: 'Race Champion',
+            description: 'Won 10 multiplayer races',
+            icon: 'fas fa-crown',
+            points: 100
+          });
+        }
+      },
+      
+      // Cancel race
+      cancelRace() {
+        this.isInRace = false;
+        this.raceId = null;
+        this.players = [];
+        this.showNotification('Race cancelled', 'info');
+      },
+      
+      // Reset race state
+      resetRaceState() {
+        this.isInRace = false;
+        this.raceId = null;
+        this.players = [];
+        this.raceStartTime = null;
+        this.raceFinished = false;
+        loadQuote(); // Load normal quote
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.style.animation = 'slideUp 0.3s ease';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      }
+    };
