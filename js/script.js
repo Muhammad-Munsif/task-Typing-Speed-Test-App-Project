@@ -382,13 +382,13 @@ function attachEvents() {
       AnalyticsSystem.showAnalyticsDashboard();
     };
   }
-            // Multiplayer button
-      const multiplayerBtn = document.getElementById('multiplayerBtn');
-      if (multiplayerBtn) {
-        multiplayerBtn.onclick = () => {
-          MultiplayerSystem.showLobby();
-        };
-      }
+  // Multiplayer button
+  const multiplayerBtn = document.getElementById('multiplayerBtn');
+  if (multiplayerBtn) {
+    multiplayerBtn.onclick = () => {
+      MultiplayerSystem.showLobby();
+    };
+  }
 
   // Exit custom mode button
   const exitCustomModeBtn = document.getElementById('exitCustomModeBtn');
