@@ -4025,3 +4025,6 @@ const LeaderboardSystem = {
     }
   }
 };
+
+    // Initialize Leaderboard System
+    LeaderboardSystem.init();
