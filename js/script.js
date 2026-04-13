@@ -338,7 +338,8 @@ function finishTest() {
     practiceMode: practiceActive,
     date: new Date().toISOString()
   };
-
+      // Check daily challenge progress
+      DailyChallengeSystem.checkProgress(testResult);
   // Save to history
   const historyEntry = {
     wpm: finalWPM,
@@ -3648,3 +3649,5 @@ const DailyChallengeSystem = {
     }
   }
 };
+      // Initialize Daily Challenge System
+    DailyChallengeSystem.init();
