@@ -3652,208 +3652,208 @@ const DailyChallengeSystem = {
 // Initialize Daily Challenge System
 DailyChallengeSystem.init();
 
-      // ==================== LEADERBOARDS SYSTEM (DAY 10) ====================
-    const LeaderboardSystem = {
-      // Leaderboard data
-      globalLeaderboard: [],
-      weeklyLeaderboard: [],
-      monthlyLeaderboard: [],
-      friendLeaderboard: [],
-      
-      // Categories
-      categories: ['wpm', 'accuracy', 'tests', 'streak', 'points'],
-      
-      // Time periods
-      periods: {
-        weekly: 'weekly',
-        monthly: 'monthly',
-        allTime: 'allTime'
-      },
-      
-      // Initialize
-      init() {
-        this.loadLeaderboardData();
-        this.setupEventListeners();
-        this.updateLeaderboards();
-      },
-      
-      // Load leaderboard data from localStorage
-      loadLeaderboardData() {
-        const saved = localStorage.getItem('velocityLeaderboard');
-        if (saved) {
-          const data = JSON.parse(saved);
-          this.globalLeaderboard = data.global || [];
-          this.weeklyLeaderboard = data.weekly || [];
-          this.monthlyLeaderboard = data.monthly || [];
-        }
-      },
-      
-      // Save leaderboard data
-      saveLeaderboardData() {
-        localStorage.setItem('velocityLeaderboard', JSON.stringify({
-          global: this.globalLeaderboard,
-          weekly: this.weeklyLeaderboard,
-          monthly: this.monthlyLeaderboard
-        }));
-      },
-      
-      // Update leaderboards with new test results
-      updateLeaderboards() {
-        // Get current user's best stats
-        const userStats = this.getUserStats();
-        
-        // Update global leaderboard
-        this.updateGlobalLeaderboard(userStats);
-        
-        // Update weekly leaderboard
-        this.updateWeeklyLeaderboard(userStats);
-        
-        // Update monthly leaderboard
-        this.updateMonthlyLeaderboard(userStats);
-        
-        this.saveLeaderboardData();
-      },
-      
-      // Get current user's statistics
-      getUserStats() {
-        const wpmValues = testHistory.map(h => h.wpm);
-        const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
-        
-        return {
-          name: MultiplayerSystem?.playerName || 'You',
-          wpm: Math.max(...wpmValues, 0),
-          avgWpm: Math.round(wpmValues.reduce((a,b) => a+b, 0) / (wpmValues.length || 1)),
-          accuracy: Math.max(...accuracyValues, 0),
-          avgAccuracy: Math.round(accuracyValues.reduce((a,b) => a+b, 0) / (accuracyValues.length || 1)),
-          totalTests: testHistory.length,
-          bestStreak: AchievementSystem?.userProgress?.bestStreak || 0,
-          totalPoints: AchievementSystem?.userProgress?.totalPoints || 0,
-          lastActive: new Date().toISOString()
-        };
-      },
-      
-      // Update global leaderboard (all time)
-      updateGlobalLeaderboard(userStats) {
-        // Check if user already exists in leaderboard
-        const existingIndex = this.globalLeaderboard.findIndex(entry => entry.name === userStats.name);
-        
-        const entry = {
-          name: userStats.name,
-          wpm: userStats.wpm,
-          accuracy: userStats.accuracy,
-          totalTests: userStats.totalTests,
-          streak: userStats.bestStreak,
-          points: userStats.totalPoints,
-          lastActive: userStats.lastActive
-        };
-        
-        if (existingIndex !== -1) {
-          // Update existing entry
-          this.globalLeaderboard[existingIndex] = entry;
-        } else {
-          // Add new entry
-          this.globalLeaderboard.push(entry);
-        }
-        
-        // Sort by WPM (descending)
-        this.globalLeaderboard.sort((a, b) => b.wpm - a.wpm);
-        
-        // Keep only top 100
-        this.globalLeaderboard = this.globalLeaderboard.slice(0, 100);
-      },
-      
-      // Update weekly leaderboard
-      updateWeeklyLeaderboard(userStats) {
-        const oneWeekAgo = new Date();
-        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-        
-        const weeklyTests = testHistory.filter(t => new Date(t.date) >= oneWeekAgo);
-        
-        const weeklyStats = {
-          name: userStats.name,
-          wpm: Math.max(...weeklyTests.map(t => t.wpm), 0),
-          avgWpm: Math.round(weeklyTests.reduce((sum, t) => sum + t.wpm, 0) / (weeklyTests.length || 1)),
-          totalTests: weeklyTests.length,
-          lastActive: userStats.lastActive
-        };
-        
-        const existingIndex = this.weeklyLeaderboard.findIndex(entry => entry.name === userStats.name);
-        
-        if (existingIndex !== -1) {
-          this.weeklyLeaderboard[existingIndex] = weeklyStats;
-        } else {
-          this.weeklyLeaderboard.push(weeklyStats);
-        }
-        
-        this.weeklyLeaderboard.sort((a, b) => b.wpm - a.wpm);
-        this.weeklyLeaderboard = this.weeklyLeaderboard.slice(0, 100);
-      },
-      
-      // Update monthly leaderboard
-      updateMonthlyLeaderboard(userStats) {
-        const oneMonthAgo = new Date();
-        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-        
-        const monthlyTests = testHistory.filter(t => new Date(t.date) >= oneMonthAgo);
-        
-        const monthlyStats = {
-          name: userStats.name,
-          wpm: Math.max(...monthlyTests.map(t => t.wpm), 0),
-          avgWpm: Math.round(monthlyTests.reduce((sum, t) => sum + t.wpm, 0) / (monthlyTests.length || 1)),
-          totalTests: monthlyTests.length,
-          lastActive: userStats.lastActive
-        };
-        
-        const existingIndex = this.monthlyLeaderboard.findIndex(entry => entry.name === userStats.name);
-        
-        if (existingIndex !== -1) {
-          this.monthlyLeaderboard[existingIndex] = monthlyStats;
-        } else {
-          this.monthlyLeaderboard.push(monthlyStats);
-        }
-        
-        this.monthlyLeaderboard.sort((a, b) => b.wpm - a.wpm);
-        this.monthlyLeaderboard = this.monthlyLeaderboard.slice(0, 100);
-      },
-      
-      // Show leaderboard modal
-      showLeaderboard(category = 'wpm', period = 'allTime') {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        let leaderboardData = [];
-        let title = '';
-        
-        // Select appropriate leaderboard
-        switch(period) {
-          case 'weekly':
-            leaderboardData = this.weeklyLeaderboard;
-            title = 'Weekly Leaderboard';
-            break;
-          case 'monthly':
-            leaderboardData = this.monthlyLeaderboard;
-            title = 'Monthly Leaderboard';
-            break;
-          default:
-            leaderboardData = this.globalLeaderboard;
-            title = 'Global Leaderboard';
-        }
-        
-        // Sort by selected category
-        const sortedData = [...leaderboardData].sort((a, b) => {
-          if (category === 'wpm') return b.wpm - a.wpm;
-          if (category === 'accuracy') return b.accuracy - a.accuracy;
-          if (category === 'tests') return b.totalTests - a.totalTests;
-          if (category === 'streak') return b.streak - a.streak;
-          if (category === 'points') return b.points - a.points;
-          return 0;
-        });
-        
-        // Find user's rank
-        const userRank = sortedData.findIndex(entry => entry.name === (MultiplayerSystem?.playerName || 'You')) + 1;
-        
-        modal.innerHTML = `
+// ==================== LEADERBOARDS SYSTEM (DAY 10) ====================
+const LeaderboardSystem = {
+  // Leaderboard data
+  globalLeaderboard: [],
+  weeklyLeaderboard: [],
+  monthlyLeaderboard: [],
+  friendLeaderboard: [],
+
+  // Categories
+  categories: ['wpm', 'accuracy', 'tests', 'streak', 'points'],
+
+  // Time periods
+  periods: {
+    weekly: 'weekly',
+    monthly: 'monthly',
+    allTime: 'allTime'
+  },
+
+  // Initialize
+  init() {
+    this.loadLeaderboardData();
+    this.setupEventListeners();
+    this.updateLeaderboards();
+  },
+
+  // Load leaderboard data from localStorage
+  loadLeaderboardData() {
+    const saved = localStorage.getItem('velocityLeaderboard');
+    if (saved) {
+      const data = JSON.parse(saved);
+      this.globalLeaderboard = data.global || [];
+      this.weeklyLeaderboard = data.weekly || [];
+      this.monthlyLeaderboard = data.monthly || [];
+    }
+  },
+
+  // Save leaderboard data
+  saveLeaderboardData() {
+    localStorage.setItem('velocityLeaderboard', JSON.stringify({
+      global: this.globalLeaderboard,
+      weekly: this.weeklyLeaderboard,
+      monthly: this.monthlyLeaderboard
+    }));
+  },
+
+  // Update leaderboards with new test results
+  updateLeaderboards() {
+    // Get current user's best stats
+    const userStats = this.getUserStats();
+
+    // Update global leaderboard
+    this.updateGlobalLeaderboard(userStats);
+
+    // Update weekly leaderboard
+    this.updateWeeklyLeaderboard(userStats);
+
+    // Update monthly leaderboard
+    this.updateMonthlyLeaderboard(userStats);
+
+    this.saveLeaderboardData();
+  },
+
+  // Get current user's statistics
+  getUserStats() {
+    const wpmValues = testHistory.map(h => h.wpm);
+    const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
+
+    return {
+      name: MultiplayerSystem?.playerName || 'You',
+      wpm: Math.max(...wpmValues, 0),
+      avgWpm: Math.round(wpmValues.reduce((a, b) => a + b, 0) / (wpmValues.length || 1)),
+      accuracy: Math.max(...accuracyValues, 0),
+      avgAccuracy: Math.round(accuracyValues.reduce((a, b) => a + b, 0) / (accuracyValues.length || 1)),
+      totalTests: testHistory.length,
+      bestStreak: AchievementSystem?.userProgress?.bestStreak || 0,
+      totalPoints: AchievementSystem?.userProgress?.totalPoints || 0,
+      lastActive: new Date().toISOString()
+    };
+  },
+
+  // Update global leaderboard (all time)
+  updateGlobalLeaderboard(userStats) {
+    // Check if user already exists in leaderboard
+    const existingIndex = this.globalLeaderboard.findIndex(entry => entry.name === userStats.name);
+
+    const entry = {
+      name: userStats.name,
+      wpm: userStats.wpm,
+      accuracy: userStats.accuracy,
+      totalTests: userStats.totalTests,
+      streak: userStats.bestStreak,
+      points: userStats.totalPoints,
+      lastActive: userStats.lastActive
+    };
+
+    if (existingIndex !== -1) {
+      // Update existing entry
+      this.globalLeaderboard[existingIndex] = entry;
+    } else {
+      // Add new entry
+      this.globalLeaderboard.push(entry);
+    }
+
+    // Sort by WPM (descending)
+    this.globalLeaderboard.sort((a, b) => b.wpm - a.wpm);
+
+    // Keep only top 100
+    this.globalLeaderboard = this.globalLeaderboard.slice(0, 100);
+  },
+
+  // Update weekly leaderboard
+  updateWeeklyLeaderboard(userStats) {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    const weeklyTests = testHistory.filter(t => new Date(t.date) >= oneWeekAgo);
+
+    const weeklyStats = {
+      name: userStats.name,
+      wpm: Math.max(...weeklyTests.map(t => t.wpm), 0),
+      avgWpm: Math.round(weeklyTests.reduce((sum, t) => sum + t.wpm, 0) / (weeklyTests.length || 1)),
+      totalTests: weeklyTests.length,
+      lastActive: userStats.lastActive
+    };
+
+    const existingIndex = this.weeklyLeaderboard.findIndex(entry => entry.name === userStats.name);
+
+    if (existingIndex !== -1) {
+      this.weeklyLeaderboard[existingIndex] = weeklyStats;
+    } else {
+      this.weeklyLeaderboard.push(weeklyStats);
+    }
+
+    this.weeklyLeaderboard.sort((a, b) => b.wpm - a.wpm);
+    this.weeklyLeaderboard = this.weeklyLeaderboard.slice(0, 100);
+  },
+
+  // Update monthly leaderboard
+  updateMonthlyLeaderboard(userStats) {
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+    const monthlyTests = testHistory.filter(t => new Date(t.date) >= oneMonthAgo);
+
+    const monthlyStats = {
+      name: userStats.name,
+      wpm: Math.max(...monthlyTests.map(t => t.wpm), 0),
+      avgWpm: Math.round(monthlyTests.reduce((sum, t) => sum + t.wpm, 0) / (monthlyTests.length || 1)),
+      totalTests: monthlyTests.length,
+      lastActive: userStats.lastActive
+    };
+
+    const existingIndex = this.monthlyLeaderboard.findIndex(entry => entry.name === userStats.name);
+
+    if (existingIndex !== -1) {
+      this.monthlyLeaderboard[existingIndex] = monthlyStats;
+    } else {
+      this.monthlyLeaderboard.push(monthlyStats);
+    }
+
+    this.monthlyLeaderboard.sort((a, b) => b.wpm - a.wpm);
+    this.monthlyLeaderboard = this.monthlyLeaderboard.slice(0, 100);
+  },
+
+  // Show leaderboard modal
+  showLeaderboard(category = 'wpm', period = 'allTime') {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    let leaderboardData = [];
+    let title = '';
+
+    // Select appropriate leaderboard
+    switch (period) {
+      case 'weekly':
+        leaderboardData = this.weeklyLeaderboard;
+        title = 'Weekly Leaderboard';
+        break;
+      case 'monthly':
+        leaderboardData = this.monthlyLeaderboard;
+        title = 'Monthly Leaderboard';
+        break;
+      default:
+        leaderboardData = this.globalLeaderboard;
+        title = 'Global Leaderboard';
+    }
+
+    // Sort by selected category
+    const sortedData = [...leaderboardData].sort((a, b) => {
+      if (category === 'wpm') return b.wpm - a.wpm;
+      if (category === 'accuracy') return b.accuracy - a.accuracy;
+      if (category === 'tests') return b.totalTests - a.totalTests;
+      if (category === 'streak') return b.streak - a.streak;
+      if (category === 'points') return b.points - a.points;
+      return 0;
+    });
+
+    // Find user's rank
+    const userRank = sortedData.findIndex(entry => entry.name === (MultiplayerSystem?.playerName || 'You')) + 1;
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
               <div>
@@ -3909,7 +3909,7 @@ DailyChallengeSystem.init();
                     <span class="font-semibold">${MultiplayerSystem?.playerName || 'You'}</span>
                   </div>
                   <div class="text-right">
-                    <div class="font-bold text-blue-500">${this.getCategoryValue(sortedData[userRank-1], category)}</div>
+                    <div class="font-bold text-blue-500">${this.getCategoryValue(sortedData[userRank - 1], category)}</div>
                     <div class="text-xs text-gray-500">${category.toUpperCase()}</div>
                   </div>
                 </div>
@@ -3952,75 +3952,75 @@ DailyChallengeSystem.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Event listeners for period tabs
-        const periodTabs = modal.querySelectorAll('.period-tab');
-        periodTabs.forEach(tab => {
-          tab.onclick = () => {
-            const newPeriod = tab.dataset.period;
-            modal.remove();
-            this.showLeaderboard(category, newPeriod);
-          };
-        });
-        
-        // Event listeners for category buttons
-        const categoryBtns = modal.querySelectorAll('.category-btn');
-        categoryBtns.forEach(btn => {
-          btn.onclick = () => {
-            const newCategory = btn.dataset.category;
-            modal.remove();
-            this.showLeaderboard(newCategory, period);
-          };
-        });
-        
-        const closeBtn = modal.querySelector('#closeLeaderboardBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-        
-        SoundManager.playKeypress();
-      },
-      
-      // Get medal icon for top 3
-      getMedalIcon(rank) {
-        const medals = {
-          0: '<i class="fas fa-medal text-yellow-500"></i>',
-          1: '<i class="fas fa-medal text-gray-400"></i>',
-          2: '<i class="fas fa-medal text-amber-600"></i>'
-        };
-        return medals[rank] || '';
-      },
-      
-      // Get category label
-      getCategoryLabel(category) {
-        const labels = {
-          wpm: 'Best WPM',
-          accuracy: 'Best Accuracy',
-          tests: 'Total Tests',
-          streak: 'Best Streak',
-          points: 'Total Points'
-        };
-        return labels[category] || category.toUpperCase();
-      },
-      
-      // Get category value from entry
-      getCategoryValue(entry, category) {
-        switch(category) {
-          case 'wpm': return `${entry.wpm} WPM`;
-          case 'accuracy': return `${entry.accuracy}%`;
-          case 'tests': return entry.totalTests || 0;
-          case 'streak': return `${entry.streak || 0} days`;
-          case 'points': return entry.points || 0;
-          default: return '';
-        }
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const leaderboardBtn = document.getElementById('leaderboardBtn');
-        if (leaderboardBtn) {
-          leaderboardBtn.onclick = () => this.showLeaderboard();
-        }
-      }
+
+    document.body.appendChild(modal);
+
+    // Event listeners for period tabs
+    const periodTabs = modal.querySelectorAll('.period-tab');
+    periodTabs.forEach(tab => {
+      tab.onclick = () => {
+        const newPeriod = tab.dataset.period;
+        modal.remove();
+        this.showLeaderboard(category, newPeriod);
+      };
+    });
+
+    // Event listeners for category buttons
+    const categoryBtns = modal.querySelectorAll('.category-btn');
+    categoryBtns.forEach(btn => {
+      btn.onclick = () => {
+        const newCategory = btn.dataset.category;
+        modal.remove();
+        this.showLeaderboard(newCategory, period);
+      };
+    });
+
+    const closeBtn = modal.querySelector('#closeLeaderboardBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+    SoundManager.playKeypress();
+  },
+
+  // Get medal icon for top 3
+  getMedalIcon(rank) {
+    const medals = {
+      0: '<i class="fas fa-medal text-yellow-500"></i>',
+      1: '<i class="fas fa-medal text-gray-400"></i>',
+      2: '<i class="fas fa-medal text-amber-600"></i>'
     };
+    return medals[rank] || '';
+  },
+
+  // Get category label
+  getCategoryLabel(category) {
+    const labels = {
+      wpm: 'Best WPM',
+      accuracy: 'Best Accuracy',
+      tests: 'Total Tests',
+      streak: 'Best Streak',
+      points: 'Total Points'
+    };
+    return labels[category] || category.toUpperCase();
+  },
+
+  // Get category value from entry
+  getCategoryValue(entry, category) {
+    switch (category) {
+      case 'wpm': return `${entry.wpm} WPM`;
+      case 'accuracy': return `${entry.accuracy}%`;
+      case 'tests': return entry.totalTests || 0;
+      case 'streak': return `${entry.streak || 0} days`;
+      case 'points': return entry.points || 0;
+      default: return '';
+    }
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const leaderboardBtn = document.getElementById('leaderboardBtn');
+    if (leaderboardBtn) {
+      leaderboardBtn.onclick = () => this.showLeaderboard();
+    }
+  }
+};
