@@ -325,8 +325,8 @@ function finishTest() {
 
   elements.resultModal.classList.add("active", "flex");
   elements.resultModal.classList.remove("hidden");
-      // Update leaderboards
-      LeaderboardSystem.updateLeaderboards();
+  // Update leaderboards
+  LeaderboardSystem.updateLeaderboards();
   // Create test result object for achievements
   const testResult = {
     wpm: finalWPM,
