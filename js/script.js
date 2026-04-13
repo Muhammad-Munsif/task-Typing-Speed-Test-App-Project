@@ -3223,254 +3223,254 @@ const MultiplayerSystem = {
 };
 // Initialize Multiplayer System
 MultiplayerSystem.init();
-    // ==================== DAILY CHALLENGES SYSTEM (DAY 9) ====================
-    const DailyChallengeSystem = {
-      // Current challenge data
-      currentChallenge: null,
-      lastResetDate: null,
-      userProgress: {
-        completedChallenges: [],
-        currentStreak: 0,
-        longestStreak: 0,
-        totalRewards: 0,
-        lastCompletedDate: null
-      },
-      
-      // Challenge types and templates
-      challengeTypes: {
-        SPEED: 'speed',
-        ACCURACY: 'accuracy',
-        PERFECT: 'perfect',
-        STREAK: 'streak',
-        VOLUME: 'volume',
-        COMBO: 'combo'
-      },
-      
-      // Challenge templates
-      challengeTemplates: [
-        { type: 'speed', name: 'Speed Demon', description: 'Achieve {target} WPM', baseTarget: 60, increment: 5, reward: 50 },
-        { type: 'speed', name: 'Velocity Master', description: 'Reach {target} WPM', baseTarget: 80, increment: 5, reward: 75 },
-        { type: 'accuracy', name: 'Precision Typist', description: 'Achieve {target}% accuracy', baseTarget: 90, increment: 2, reward: 40 },
-        { type: 'accuracy', name: 'Perfectionist', description: 'Get {target}% accuracy', baseTarget: 95, increment: 2, reward: 60 },
-        { type: 'perfect', name: 'Flawless Victory', description: 'Complete a test with 0 errors', target: 0, reward: 100 },
-        { type: 'streak', name: 'On Fire', description: 'Complete {target} tests without errors', baseTarget: 3, increment: 1, reward: 45 },
-        { type: 'volume', name: 'Practice Makes Perfect', description: 'Complete {target} tests today', baseTarget: 5, increment: 2, reward: 55 },
-        { type: 'combo', name: 'Combo Master', description: 'Get {target} correct characters in a row', baseTarget: 100, increment: 25, reward: 65 }
-      ],
-      
-      // Initialize
-      init() {
-        this.loadProgress();
-        this.checkAndResetChallenge();
-        this.setupEventListeners();
-      },
-      
-      // Load saved progress
-      loadProgress() {
-        const saved = localStorage.getItem('dailyChallengeProgress');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          this.userProgress = { ...this.userProgress, ...parsed };
-        }
-        
-        const savedChallenge = localStorage.getItem('currentChallenge');
-        if (savedChallenge) {
-          this.currentChallenge = JSON.parse(savedChallenge);
-        }
-      },
-      
-      // Save progress
-      saveProgress() {
-        localStorage.setItem('dailyChallengeProgress', JSON.stringify(this.userProgress));
-        if (this.currentChallenge) {
-          localStorage.setItem('currentChallenge', JSON.stringify(this.currentChallenge));
-        }
-      },
-      
-      // Check and reset challenge for new day
-      checkAndResetChallenge() {
-        const today = new Date().toDateString();
-        
-        if (this.lastResetDate !== today) {
-          this.generateNewChallenge();
-          this.lastResetDate = today;
-          this.saveProgress();
-          
-          // Show notification about new challenge
-          setTimeout(() => {
-            this.showNewChallengeNotification();
-          }, 1000);
-        }
-      },
-      
-      // Generate new daily challenge
-      generateNewChallenge() {
-        // Select random challenge template
-        const template = this.challengeTemplates[Math.floor(Math.random() * this.challengeTemplates.length)];
-        
-        // Calculate target based on user's skill level
-        let target = template.baseTarget || template.target;
-        if (template.baseTarget) {
-          const userLevel = this.calculateUserLevel();
-          const increment = Math.floor(userLevel / 10) * (template.increment || 0);
-          target = template.baseTarget + increment;
-        }
-        
-        this.currentChallenge = {
-          id: Date.now(),
-          type: template.type,
-          name: template.name,
-          description: template.description.replace('{target}', target),
-          target: target,
-          reward: template.reward,
-          progress: 0,
-          completed: false,
-          date: new Date().toDateString(),
-          icon: this.getChallengeIcon(template.type)
-        };
-        
-        this.saveProgress();
-      },
-      
-      // Calculate user skill level based on history
-      calculateUserLevel() {
-        if (testHistory.length === 0) return 1;
-        
-        const avgWpm = testHistory.reduce((sum, t) => sum + t.wpm, 0) / testHistory.length;
-        const avgAccuracy = testHistory.reduce((sum, t) => sum + parseInt(t.accuracy), 0) / testHistory.length;
-        
-        let level = 1;
-        if (avgWpm >= 100 && avgAccuracy >= 95) level = 10;
-        else if (avgWpm >= 80 && avgAccuracy >= 90) level = 8;
-        else if (avgWpm >= 60 && avgAccuracy >= 85) level = 6;
-        else if (avgWpm >= 40 && avgAccuracy >= 80) level = 4;
-        else if (avgWpm >= 25) level = 2;
-        
-        return level;
-      },
-      
-      // Get icon for challenge type
-      getChallengeIcon(type) {
-        const icons = {
-          speed: 'fas fa-tachometer-alt',
-          accuracy: 'fas fa-bullseye',
-          perfect: 'fas fa-star',
-          streak: 'fas fa-fire',
-          volume: 'fas fa-chart-line',
-          combo: 'fas fa-link'
-        };
-        return icons[type] || 'fas fa-calendar-day';
-      },
-      
-      // Check challenge progress after each test
-      checkProgress(testResult) {
-        if (!this.currentChallenge || this.currentChallenge.completed) return;
-        
-        let progress = 0;
-        let completed = false;
-        
-        switch(this.currentChallenge.type) {
-          case 'speed':
-            progress = testResult.wpm;
-            completed = testResult.wpm >= this.currentChallenge.target;
-            break;
-            
-          case 'accuracy':
-            progress = testResult.accuracy;
-            completed = testResult.accuracy >= this.currentChallenge.target;
-            break;
-            
-          case 'perfect':
-            progress = testResult.errors === 0 ? 100 : 0;
-            completed = testResult.errors === 0;
-            break;
-            
-          case 'streak':
-            this.userProgress.currentStreak = testResult.errors === 0 ? this.userProgress.currentStreak + 1 : 0;
-            progress = this.userProgress.currentStreak;
-            completed = progress >= this.currentChallenge.target;
-            break;
-            
-          case 'volume':
-            const todayTests = testHistory.filter(t => 
-              new Date(t.date).toDateString() === new Date().toDateString()
-            ).length;
-            progress = todayTests;
-            completed = progress >= this.currentChallenge.target;
-            break;
-            
-          case 'combo':
-            // Track longest correct streak during test
-            progress = this.calculateLongestStreak(testResult);
-            completed = progress >= this.currentChallenge.target;
-            break;
-        }
-        
-        this.currentChallenge.progress = Math.min(100, (progress / this.currentChallenge.target) * 100);
-        
-        if (completed && !this.currentChallenge.completed) {
-          this.completeChallenge();
-        }
-        
-        this.saveProgress();
-        this.updateChallengeDisplay();
-      },
-      
-      // Calculate longest correct streak in a test
-      calculateLongestStreak(testResult) {
-        // This would need to track character-by-character correctness
-        // For now, return a simplified value
-        return testResult.accuracy === 100 ? testResult.wpm * 5 : Math.floor(testResult.wpm * 3);
-      },
-      
-      // Complete the daily challenge
-      completeChallenge() {
-        this.currentChallenge.completed = true;
-        
-        // Update streak
-        const today = new Date().toDateString();
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
-        
-        if (this.userProgress.lastCompletedDate === yesterday) {
-          this.userProgress.currentStreak++;
-        } else if (this.userProgress.lastCompletedDate !== today) {
-          this.userProgress.currentStreak = 1;
-        }
-        
-        if (this.userProgress.currentStreak > this.userProgress.longestStreak) {
-          this.userProgress.longestStreak = this.userProgress.currentStreak;
-        }
-        
-        this.userProgress.lastCompletedDate = today;
-        this.userProgress.totalRewards += this.currentChallenge.reward;
-        this.userProgress.completedChallenges.push({
-          id: this.currentChallenge.id,
-          date: today,
-          reward: this.currentChallenge.reward
-        });
-        
-        this.saveProgress();
-        
-        // Show celebration
-        this.showChallengeCompleteCelebration();
-        
-        // Play achievement sound
-        SoundManager.playAchievement();
-        
-        // Award bonus points to achievement system
-        if (AchievementSystem) {
-          AchievementSystem.userProgress.totalPoints += this.currentChallenge.reward;
-          AchievementSystem.saveProgress();
-        }
-      },
-      
-      // Show challenge complete celebration
-      showChallengeCompleteCelebration() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+// ==================== DAILY CHALLENGES SYSTEM (DAY 9) ====================
+const DailyChallengeSystem = {
+  // Current challenge data
+  currentChallenge: null,
+  lastResetDate: null,
+  userProgress: {
+    completedChallenges: [],
+    currentStreak: 0,
+    longestStreak: 0,
+    totalRewards: 0,
+    lastCompletedDate: null
+  },
+
+  // Challenge types and templates
+  challengeTypes: {
+    SPEED: 'speed',
+    ACCURACY: 'accuracy',
+    PERFECT: 'perfect',
+    STREAK: 'streak',
+    VOLUME: 'volume',
+    COMBO: 'combo'
+  },
+
+  // Challenge templates
+  challengeTemplates: [
+    { type: 'speed', name: 'Speed Demon', description: 'Achieve {target} WPM', baseTarget: 60, increment: 5, reward: 50 },
+    { type: 'speed', name: 'Velocity Master', description: 'Reach {target} WPM', baseTarget: 80, increment: 5, reward: 75 },
+    { type: 'accuracy', name: 'Precision Typist', description: 'Achieve {target}% accuracy', baseTarget: 90, increment: 2, reward: 40 },
+    { type: 'accuracy', name: 'Perfectionist', description: 'Get {target}% accuracy', baseTarget: 95, increment: 2, reward: 60 },
+    { type: 'perfect', name: 'Flawless Victory', description: 'Complete a test with 0 errors', target: 0, reward: 100 },
+    { type: 'streak', name: 'On Fire', description: 'Complete {target} tests without errors', baseTarget: 3, increment: 1, reward: 45 },
+    { type: 'volume', name: 'Practice Makes Perfect', description: 'Complete {target} tests today', baseTarget: 5, increment: 2, reward: 55 },
+    { type: 'combo', name: 'Combo Master', description: 'Get {target} correct characters in a row', baseTarget: 100, increment: 25, reward: 65 }
+  ],
+
+  // Initialize
+  init() {
+    this.loadProgress();
+    this.checkAndResetChallenge();
+    this.setupEventListeners();
+  },
+
+  // Load saved progress
+  loadProgress() {
+    const saved = localStorage.getItem('dailyChallengeProgress');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      this.userProgress = { ...this.userProgress, ...parsed };
+    }
+
+    const savedChallenge = localStorage.getItem('currentChallenge');
+    if (savedChallenge) {
+      this.currentChallenge = JSON.parse(savedChallenge);
+    }
+  },
+
+  // Save progress
+  saveProgress() {
+    localStorage.setItem('dailyChallengeProgress', JSON.stringify(this.userProgress));
+    if (this.currentChallenge) {
+      localStorage.setItem('currentChallenge', JSON.stringify(this.currentChallenge));
+    }
+  },
+
+  // Check and reset challenge for new day
+  checkAndResetChallenge() {
+    const today = new Date().toDateString();
+
+    if (this.lastResetDate !== today) {
+      this.generateNewChallenge();
+      this.lastResetDate = today;
+      this.saveProgress();
+
+      // Show notification about new challenge
+      setTimeout(() => {
+        this.showNewChallengeNotification();
+      }, 1000);
+    }
+  },
+
+  // Generate new daily challenge
+  generateNewChallenge() {
+    // Select random challenge template
+    const template = this.challengeTemplates[Math.floor(Math.random() * this.challengeTemplates.length)];
+
+    // Calculate target based on user's skill level
+    let target = template.baseTarget || template.target;
+    if (template.baseTarget) {
+      const userLevel = this.calculateUserLevel();
+      const increment = Math.floor(userLevel / 10) * (template.increment || 0);
+      target = template.baseTarget + increment;
+    }
+
+    this.currentChallenge = {
+      id: Date.now(),
+      type: template.type,
+      name: template.name,
+      description: template.description.replace('{target}', target),
+      target: target,
+      reward: template.reward,
+      progress: 0,
+      completed: false,
+      date: new Date().toDateString(),
+      icon: this.getChallengeIcon(template.type)
+    };
+
+    this.saveProgress();
+  },
+
+  // Calculate user skill level based on history
+  calculateUserLevel() {
+    if (testHistory.length === 0) return 1;
+
+    const avgWpm = testHistory.reduce((sum, t) => sum + t.wpm, 0) / testHistory.length;
+    const avgAccuracy = testHistory.reduce((sum, t) => sum + parseInt(t.accuracy), 0) / testHistory.length;
+
+    let level = 1;
+    if (avgWpm >= 100 && avgAccuracy >= 95) level = 10;
+    else if (avgWpm >= 80 && avgAccuracy >= 90) level = 8;
+    else if (avgWpm >= 60 && avgAccuracy >= 85) level = 6;
+    else if (avgWpm >= 40 && avgAccuracy >= 80) level = 4;
+    else if (avgWpm >= 25) level = 2;
+
+    return level;
+  },
+
+  // Get icon for challenge type
+  getChallengeIcon(type) {
+    const icons = {
+      speed: 'fas fa-tachometer-alt',
+      accuracy: 'fas fa-bullseye',
+      perfect: 'fas fa-star',
+      streak: 'fas fa-fire',
+      volume: 'fas fa-chart-line',
+      combo: 'fas fa-link'
+    };
+    return icons[type] || 'fas fa-calendar-day';
+  },
+
+  // Check challenge progress after each test
+  checkProgress(testResult) {
+    if (!this.currentChallenge || this.currentChallenge.completed) return;
+
+    let progress = 0;
+    let completed = false;
+
+    switch (this.currentChallenge.type) {
+      case 'speed':
+        progress = testResult.wpm;
+        completed = testResult.wpm >= this.currentChallenge.target;
+        break;
+
+      case 'accuracy':
+        progress = testResult.accuracy;
+        completed = testResult.accuracy >= this.currentChallenge.target;
+        break;
+
+      case 'perfect':
+        progress = testResult.errors === 0 ? 100 : 0;
+        completed = testResult.errors === 0;
+        break;
+
+      case 'streak':
+        this.userProgress.currentStreak = testResult.errors === 0 ? this.userProgress.currentStreak + 1 : 0;
+        progress = this.userProgress.currentStreak;
+        completed = progress >= this.currentChallenge.target;
+        break;
+
+      case 'volume':
+        const todayTests = testHistory.filter(t =>
+          new Date(t.date).toDateString() === new Date().toDateString()
+        ).length;
+        progress = todayTests;
+        completed = progress >= this.currentChallenge.target;
+        break;
+
+      case 'combo':
+        // Track longest correct streak during test
+        progress = this.calculateLongestStreak(testResult);
+        completed = progress >= this.currentChallenge.target;
+        break;
+    }
+
+    this.currentChallenge.progress = Math.min(100, (progress / this.currentChallenge.target) * 100);
+
+    if (completed && !this.currentChallenge.completed) {
+      this.completeChallenge();
+    }
+
+    this.saveProgress();
+    this.updateChallengeDisplay();
+  },
+
+  // Calculate longest correct streak in a test
+  calculateLongestStreak(testResult) {
+    // This would need to track character-by-character correctness
+    // For now, return a simplified value
+    return testResult.accuracy === 100 ? testResult.wpm * 5 : Math.floor(testResult.wpm * 3);
+  },
+
+  // Complete the daily challenge
+  completeChallenge() {
+    this.currentChallenge.completed = true;
+
+    // Update streak
+    const today = new Date().toDateString();
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+    if (this.userProgress.lastCompletedDate === yesterday) {
+      this.userProgress.currentStreak++;
+    } else if (this.userProgress.lastCompletedDate !== today) {
+      this.userProgress.currentStreak = 1;
+    }
+
+    if (this.userProgress.currentStreak > this.userProgress.longestStreak) {
+      this.userProgress.longestStreak = this.userProgress.currentStreak;
+    }
+
+    this.userProgress.lastCompletedDate = today;
+    this.userProgress.totalRewards += this.currentChallenge.reward;
+    this.userProgress.completedChallenges.push({
+      id: this.currentChallenge.id,
+      date: today,
+      reward: this.currentChallenge.reward
+    });
+
+    this.saveProgress();
+
+    // Show celebration
+    this.showChallengeCompleteCelebration();
+
+    // Play achievement sound
+    SoundManager.playAchievement();
+
+    // Award bonus points to achievement system
+    if (AchievementSystem) {
+      AchievementSystem.userProgress.totalPoints += this.currentChallenge.reward;
+      AchievementSystem.saveProgress();
+    }
+  },
+
+  // Show challenge complete celebration
+  showChallengeCompleteCelebration() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl max-w-md w-full mx-4 p-8 text-center shadow-2xl animate-bounce">
             <div class="text-6xl mb-4">🎉</div>
             <h2 class="text-2xl font-bold text-white mb-2">Daily Challenge Complete!</h2>
@@ -3484,22 +3484,22 @@ MultiplayerSystem.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeCelebrationBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Show new challenge notification
-      showNewChallengeNotification() {
-        if (!this.currentChallenge) return;
-        
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-20 right-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-xl shadow-2xl z-50';
-        notification.style.animation = 'slideIn 0.5s ease, fadeOut 0.5s ease 4s forwards';
-        notification.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeCelebrationBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Show new challenge notification
+  showNewChallengeNotification() {
+    if (!this.currentChallenge) return;
+
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-20 right-5 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-xl shadow-2xl z-50';
+    notification.style.animation = 'slideIn 0.5s ease, fadeOut 0.5s ease 4s forwards';
+    notification.innerHTML = `
           <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
               <i class="${this.currentChallenge.icon} text-2xl"></i>
@@ -3511,20 +3511,20 @@ MultiplayerSystem.init();
             </div>
           </div>
         `;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 4500);
-      },
-      
-      // Show challenge panel
-      showChallengePanel() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        const isCompleted = this.currentChallenge?.completed;
-        const progressPercent = this.currentChallenge?.progress || 0;
-        
-        modal.innerHTML = `
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 4500);
+  },
+
+  // Show challenge panel
+  showChallengePanel() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    const isCompleted = this.currentChallenge?.completed;
+    const progressPercent = this.currentChallenge?.progress || 0;
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -3594,33 +3594,33 @@ MultiplayerSystem.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeChallengePanel') || modal.querySelector('#closeChallengeBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Update challenge display in UI (mini widget)
-      updateChallengeDisplay() {
-        let widget = document.getElementById('dailyChallengeWidget');
-        
-        if (!this.currentChallenge) return;
-        
-        if (!widget) {
-          // Create widget if it doesn't exist
-          widget = document.createElement('div');
-          widget.id = 'dailyChallengeWidget';
-          widget.className = 'fixed bottom-5 left-5 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 z-30 cursor-pointer hover:scale-105 transition-all duration-200 border-2 border-purple-500';
-          widget.onclick = () => this.showChallengePanel();
-          document.body.appendChild(widget);
-        }
-        
-        const isCompleted = this.currentChallenge.completed;
-        const progressPercent = Math.floor(this.currentChallenge.progress || 0);
-        
-        widget.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeChallengePanel') || modal.querySelector('#closeChallengeBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Update challenge display in UI (mini widget)
+  updateChallengeDisplay() {
+    let widget = document.getElementById('dailyChallengeWidget');
+
+    if (!this.currentChallenge) return;
+
+    if (!widget) {
+      // Create widget if it doesn't exist
+      widget = document.createElement('div');
+      widget.id = 'dailyChallengeWidget';
+      widget.className = 'fixed bottom-5 left-5 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 z-30 cursor-pointer hover:scale-105 transition-all duration-200 border-2 border-purple-500';
+      widget.onclick = () => this.showChallengePanel();
+      document.body.appendChild(widget);
+    }
+
+    const isCompleted = this.currentChallenge.completed;
+    const progressPercent = Math.floor(this.currentChallenge.progress || 0);
+
+    widget.innerHTML = `
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
               <i class="${this.currentChallenge.icon} text-white text-sm"></i>
@@ -3637,14 +3637,14 @@ MultiplayerSystem.init();
             <div class="text-xs font-bold text-purple-500">${this.userProgress.currentStreak}🔥</div>
           </div>
         `;
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        // Add daily challenge button to UI
-        const challengeBtn = document.getElementById('dailyChallengeBtn');
-        if (challengeBtn) {
-          challengeBtn.onclick = () => this.showChallengePanel();
-        }
-      }
-    };
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    // Add daily challenge button to UI
+    const challengeBtn = document.getElementById('dailyChallengeBtn');
+    if (challengeBtn) {
+      challengeBtn.onclick = () => this.showChallengePanel();
+    }
+  }
+};
