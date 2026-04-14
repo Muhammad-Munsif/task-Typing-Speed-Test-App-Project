@@ -4558,3 +4558,6 @@ finishTest = function () {
   // Call after test hook
   if (window.afterTestComplete) window.afterTestComplete();
 };
+
+    // Initialize AI Typing Coach
+    AITypingCoach.init();
