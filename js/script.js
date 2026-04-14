@@ -4028,3 +4028,534 @@ const LeaderboardSystem = {
 
 // Initialize Leaderboard System
 LeaderboardSystem.init();
+
+    // ==================== AI TYPING COACH SYSTEM (DAY 11) ====================
+    const AITypingCoach = {
+      // User typing profile
+      userProfile: {
+        weakKeys: {},
+        strongKeys: {},
+        commonMistakes: {},
+        speedByTimeOfDay: {},
+        recommendedExercises: [],
+        lastAnalysis: null
+      },
+      
+      // Exercise library
+      exerciseLibrary: {
+        weakKeys: [
+          { name: "Home Row Focus", description: "Practice A S D F J K L ; keys", difficulty: "Easy" },
+          { name: "Top Row Mastery", description: "Master Q W E R T Y U I O P", difficulty: "Medium" },
+          { name: "Bottom Row Training", description: "Improve Z X C V B N M", difficulty: "Hard" },
+          { name: "Left Hand Dominance", description: "Strengthen your left hand", difficulty: "Medium" },
+          { name: "Right Hand Focus", description: "Improve right hand accuracy", difficulty: "Medium" }
+        ],
+        speed: [
+          { name: "Speed Burst", description: "Short phrases for quick typing", difficulty: "Easy" },
+          { name: "Endurance Test", description: "Long paragraphs for stamina", difficulty: "Hard" },
+          { name: "Rhythm Training", description: "Practice consistent pacing", difficulty: "Medium" }
+        ],
+        accuracy: [
+          { name: "Precision Practice", description: "Slow and accurate typing", difficulty: "Easy" },
+          { name: "Error Correction", description: "Fix common mistakes", difficulty: "Medium" },
+          { name: "Perfect Copy", description: "Match exactly with zero errors", difficulty: "Hard" }
+        ]
+      },
+      
+      // Initialize
+      init() {
+        this.loadProfile();
+        this.setupEventListeners();
+        this.startPeriodicAnalysis();
+      },
+      
+      // Load user profile
+      loadProfile() {
+        const saved = localStorage.getItem('aiCoachProfile');
+        if (saved) {
+          this.userProfile = JSON.parse(saved);
+        }
+      },
+      
+      // Save user profile
+      saveProfile() {
+        localStorage.setItem('aiCoachProfile', JSON.stringify(this.userProfile));
+      },
+      
+      // Analyze typing performance
+      analyzePerformance(testResult) {
+        // Track weak keys (characters with high error rates)
+        if (testResult.errors > 0 && testResult.wrongChars) {
+          testResult.wrongChars.forEach(char => {
+            this.userProfile.weakKeys[char] = (this.userProfile.weakKeys[char] || 0) + 1;
+          });
+        }
+        
+        // Track speed by time of day
+        const hour = new Date().getHours();
+        const timeSlot = this.getTimeSlot(hour);
+        this.userProfile.speedByTimeOfDay[timeSlot] = this.userProfile.speedByTimeOfDay[timeSlot] || [];
+        this.userProfile.speedByTimeOfDay[timeSlot].push(testResult.wpm);
+        
+        // Track common mistakes
+        if (testResult.commonMistakes) {
+          Object.entries(testResult.commonMistakes).forEach(([mistake, count]) => {
+            this.userProfile.commonMistakes[mistake] = (this.userProfile.commonMistakes[mistake] || 0) + count;
+          });
+        }
+        
+        // Update last analysis time
+        this.userProfile.lastAnalysis = new Date().toISOString();
+        
+        this.saveProfile();
+        this.generateRecommendations();
+      },
+      
+      // Get time slot based on hour
+      getTimeSlot(hour) {
+        if (hour < 6) return 'night';
+        if (hour < 12) return 'morning';
+        if (hour < 18) return 'afternoon';
+        return 'evening';
+      },
+      
+      // Generate personalized recommendations
+      generateRecommendations() {
+        const recommendations = [];
+        
+        // Analyze weak keys
+        const weakKeysEntries = Object.entries(this.userProfile.weakKeys);
+        if (weakKeysEntries.length > 0) {
+          const topWeakKeys = weakKeysEntries.sort((a,b) => b[1] - a[1]).slice(0, 3);
+          if (topWeakKeys.length > 0) {
+            recommendations.push({
+              type: 'weakKeys',
+              title: 'Focus on Problem Keys',
+              description: `You frequently mistype: ${topWeakKeys.map(k => `"${k[0]}"`).join(', ')}. Try practicing these specific keys.`,
+              priority: 'high'
+            });
+          }
+        }
+        
+        // Analyze best time to practice
+        let bestTimeSlot = null;
+        let bestAvgSpeed = 0;
+        for (const [slot, speeds] of Object.entries(this.userProfile.speedByTimeOfDay)) {
+          const avgSpeed = speeds.reduce((a,b) => a+b, 0) / speeds.length;
+          if (avgSpeed > bestAvgSpeed) {
+            bestAvgSpeed = avgSpeed;
+            bestTimeSlot = slot;
+          }
+        }
+        
+        if (bestTimeSlot && this.userProfile.speedByTimeOfDay[bestTimeSlot]?.length > 2) {
+          const timeNames = { morning: 'morning', afternoon: 'afternoon', evening: 'evening', night: 'night' };
+          recommendations.push({
+            type: 'timing',
+            title: 'Your Peak Performance Time',
+            description: `You type fastest during the ${timeNames[bestTimeSlot]}. Try to practice during this time for better results.`,
+            priority: 'medium'
+          });
+        }
+        
+        // Analyze accuracy trends
+        const recentTests = testHistory.slice(-10);
+        const recentAccuracy = recentTests.map(t => parseInt(t.accuracy));
+        const avgAccuracy = recentAccuracy.reduce((a,b) => a+b, 0) / recentAccuracy.length;
+        
+        if (avgAccuracy < 85) {
+          recommendations.push({
+            type: 'accuracy',
+            title: 'Focus on Accuracy First',
+            description: 'Your accuracy is below 85%. Slow down and focus on hitting the right keys. Speed will come naturally.',
+            priority: 'high'
+          });
+        } else if (avgAccuracy > 95) {
+          recommendations.push({
+            type: 'speed',
+            title: 'Ready to Speed Up',
+            description: 'Your accuracy is excellent! Try pushing for higher WPM while maintaining this precision.',
+            priority: 'medium'
+          });
+        }
+        
+        // Analyze consistency
+        if (recentTests.length >= 5) {
+          const wpmValues = recentTests.map(t => t.wpm);
+          const variance = this.calculateVariance(wpmValues);
+          if (variance > 100) {
+            recommendations.push({
+              type: 'consistency',
+              title: 'Work on Consistency',
+              description: 'Your typing speed varies a lot. Try to maintain a steady rhythm.',
+              priority: 'medium'
+            });
+          }
+        }
+        
+        // Add practice recommendations
+        if (recentTests.length < 10) {
+          recommendations.push({
+            type: 'practice',
+            title: 'Build a Routine',
+            description: 'Complete at least 10 tests to get detailed AI insights about your typing pattern.',
+            priority: 'low'
+          });
+        }
+        
+        this.userProfile.recommendedExercises = recommendations.slice(0, 5);
+        this.saveProfile();
+      },
+      
+      // Calculate variance
+      calculateVariance(values) {
+        const mean = values.reduce((a,b) => a+b, 0) / values.length;
+        const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
+        return squaredDiffs.reduce((a,b) => a+b, 0) / values.length;
+      },
+      
+      // Show AI coach panel
+      showCoachPanel() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        const recommendations = this.userProfile.recommendedExercises;
+        const weakKeys = Object.entries(this.userProfile.weakKeys).sort((a,b) => b[1] - a[1]).slice(0, 5);
+        const bestTimeSlot = this.getBestTimeSlot();
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-robot mr-2 text-purple-500"></i>AI Typing Coach
+              </h3>
+              <button id="closeCoachBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <!-- AI Avatar & Welcome -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white">
+              <div class="flex items-center gap-3">
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                  <i class="fas fa-brain text-3xl"></i>
+                </div>
+                <div>
+                  <p class="text-sm opacity-90">Your Personal AI Coach</p>
+                  <p class="font-bold text-lg">"Let's improve your typing skills!"</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Performance Summary -->
+            <div class="mb-6">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-chart-line mr-2 text-blue-500"></i>Performance Summary
+              </h4>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                  <p class="text-xs text-gray-500">Total Tests Analyzed</p>
+                  <p class="text-2xl font-bold">${testHistory.length}</p>
+                </div>
+                <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                  <p class="text-xs text-gray-500">Best WPM</p>
+                  <p class="text-2xl font-bold text-blue-500">${bestWpm}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Weak Keys Analysis -->
+            ${weakKeys.length > 0 ? `
+              <div class="mb-6">
+                <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                  <i class="fas fa-exclamation-triangle mr-2 text-red-500"></i>Keys to Practice
+                </h4>
+                <div class="flex flex-wrap gap-2">
+                  ${weakKeys.map(([key, count]) => `
+                    <div class="px-3 py-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                      <span class="font-mono font-bold text-lg">${key}</span>
+                      <span class="text-xs text-red-600 ml-1">${count} errors</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+            
+            <!-- Best Time to Practice -->
+            ${bestTimeSlot ? `
+              <div class="mb-6 p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <h4 class="font-semibold mb-2 text-green-700 dark:text-green-300">
+                  <i class="fas fa-clock mr-2"></i>Your Best Time to Practice
+                </h4>
+                <p class="text-sm">You type fastest during the <strong>${bestTimeSlot}</strong>. Schedule your practice sessions for better results!</p>
+              </div>
+            ` : ''}
+            
+            <!-- AI Recommendations -->
+            <div class="mb-6">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Personalized Recommendations
+              </h4>
+              <div class="space-y-3">
+                ${recommendations.length > 0 ? recommendations.map(rec => `
+                  <div class="p-3 border-l-4 ${rec.priority === 'high' ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : rec.priority === 'medium' ? 'border-yellow-500 bg-yellow-50 dark:bg-yellow-900/20' : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'} rounded-r-lg">
+                    <p class="font-semibold text-sm">${rec.title}</p>
+                    <p class="text-xs text-gray-600 dark:text-gray-400 mt-1">${rec.description}</p>
+                  </div>
+                `).join('') : '<p class="text-center text-gray-500 py-4">Complete more tests to receive personalized recommendations!</p>'}
+              </div>
+            </div>
+            
+            <!-- Exercise Suggestions -->
+            <div class="mb-6">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-dumbbell mr-2 text-orange-500"></i>Suggested Exercises
+              </h4>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                ${this.getSuggestedExercises().map(ex => `
+                  <button class="exercise-btn p-3 bg-gray-100 dark:bg-gray-700 rounded-lg text-left hover:bg-gray-200 dark:hover:bg-gray-600 transition" data-exercise="${ex.name}">
+                    <p class="font-semibold text-sm">${ex.name}</p>
+                    <p class="text-xs text-gray-500 mt-1">${ex.description}</p>
+                    <span class="text-xs ${ex.difficulty === 'Easy' ? 'text-green-500' : ex.difficulty === 'Medium' ? 'text-yellow-500' : 'text-red-500'}">${ex.difficulty}</span>
+                  </button>
+                `).join('')}
+              </div>
+            </div>
+            
+            <!-- Progress Over Time -->
+            <div class="mb-4">
+              <h4 class="font-semibold mb-3 text-gray-700 dark:text-gray-300">
+                <i class="fas fa-chart-simple mr-2 text-purple-500"></i>Progress Insights
+              </h4>
+              <canvas id="coachProgressChart" height="200"></canvas>
+            </div>
+            
+            <div class="text-center text-xs text-gray-500">
+              <p>AI analyzes your last ${Math.min(20, testHistory.length)} tests | Updated after each test</p>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Draw progress chart
+        this.drawProgressChart();
+        
+        // Exercise button handlers
+        const exerciseBtns = modal.querySelectorAll('.exercise-btn');
+        exerciseBtns.forEach(btn => {
+          btn.onclick = () => {
+            const exerciseName = btn.dataset.exercise;
+            this.loadExercise(exerciseName);
+            modal.remove();
+          };
+        });
+        
+        const closeBtn = modal.querySelector('#closeCoachBtn');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        
+        SoundManager.playKeypress();
+      },
+      
+      // Draw progress chart
+      drawProgressChart() {
+        const ctx = document.getElementById('coachProgressChart')?.getContext('2d');
+        if (!ctx) return;
+        
+        const last20Tests = testHistory.slice(-20);
+        const wpmData = last20Tests.map(t => t.wpm);
+        const labels = last20Tests.map((_, i) => `Test ${i + 1}`);
+        
+        if (window.coachChart) window.coachChart.destroy();
+        
+        window.coachChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [{
+              label: 'WPM Progress',
+              data: wpmData,
+              borderColor: '#8b5cf6',
+              backgroundColor: 'rgba(139, 92, 246, 0.1)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.3
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { position: 'top' } }
+          }
+        });
+      },
+      
+      // Get best time slot
+      getBestTimeSlot() {
+        let bestSlot = null;
+        let bestAvg = 0;
+        const slotNames = { morning: 'Morning', afternoon: 'Afternoon', evening: 'Evening', night: 'Night' };
+        
+        for (const [slot, speeds] of Object.entries(this.userProfile.speedByTimeOfDay)) {
+          if (speeds.length >= 2) {
+            const avg = speeds.reduce((a,b) => a+b, 0) / speeds.length;
+            if (avg > bestAvg) {
+              bestAvg = avg;
+              bestSlot = slotNames[slot];
+            }
+          }
+        }
+        
+        return bestSlot;
+      },
+      
+      // Get suggested exercises based on weak areas
+      getSuggestedExercises() {
+        const suggestions = [];
+        
+        // Add weak keys exercises
+        if (Object.keys(this.userProfile.weakKeys).length > 0) {
+          suggestions.push(this.exerciseLibrary.weakKeys[0]);
+          suggestions.push(this.exerciseLibrary.weakKeys[1]);
+        }
+        
+        // Add accuracy exercises
+        const recentTests = testHistory.slice(-10);
+        const avgAccuracy = recentTests.reduce((sum, t) => sum + parseInt(t.accuracy), 0) / (recentTests.length || 1);
+        if (avgAccuracy < 90) {
+          suggestions.push(this.exerciseLibrary.accuracy[0]);
+          suggestions.push(this.exerciseLibrary.accuracy[1]);
+        }
+        
+        // Add speed exercises
+        if (bestWpm > 50 && avgAccuracy > 90) {
+          suggestions.push(this.exerciseLibrary.speed[0]);
+          suggestions.push(this.exerciseLibrary.speed[1]);
+        }
+        
+        // Fill with default exercises if needed
+        while (suggestions.length < 4) {
+          suggestions.push(this.exerciseLibrary.accuracy[2]);
+          suggestions.push(this.exerciseLibrary.speed[2]);
+        }
+        
+        return suggestions.slice(0, 4);
+      },
+      
+      // Load specific exercise
+      loadExercise(exerciseName) {
+        // Create exercise text based on name
+        let exerciseText = '';
+        
+        switch(exerciseName) {
+          case "Home Row Focus":
+            exerciseText = "asdf jkl; asdf jkl; ask dad fall sad lad jak; a slad; a flask; a sad lad; a jak; fall asdf jkl;";
+            break;
+          case "Top Row Mastery":
+            exerciseText = "qwertyuiop qwertyuiop type writer quite quiet quote quit tire tire tire true true true";
+            break;
+          case "Bottom Row Training":
+            exerciseText = "zxcvbnm zxcvbnm vex vex vex next next next box box box zinc zinc zinc comma comma comma";
+            break;
+          case "Speed Burst":
+            exerciseText = "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump!";
+            break;
+          case "Precision Practice":
+            exerciseText = "Slow and steady wins the race. Every keystroke matters. Focus on accuracy first. Speed will follow naturally.";
+            break;
+          default:
+            exerciseText = "Practice makes perfect. Keep typing and you will improve. Focus on your weak keys and accuracy.";
+        }
+        
+        // Set as current quote
+        currentQuoteText = exerciseText;
+        updateQuoteUI();
+        resetTestState();
+        
+        this.showNotification(`Exercise loaded: ${exerciseName}`, 'success');
+      },
+      
+      // Start periodic analysis
+      startPeriodicAnalysis() {
+        // Analyze every 10 tests
+        let testCount = 0;
+        const originalFinishTest = window.finishTest;
+        
+        // This will be called after each test
+        window.afterTestComplete = () => {
+          testCount++;
+          if (testCount % 5 === 0) {
+            this.generateRecommendations();
+          }
+        };
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.style.animation = 'slideUp 0.3s ease';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        const coachBtn = document.getElementById('aiCoachBtn');
+        if (coachBtn) {
+          coachBtn.onclick = () => this.showCoachPanel();
+        }
+      }
+    };
+    
+    // Wrap original finishTest to capture mistake data
+    const originalHandleInput = handleInput;
+    window.handleInputWithTracking = function() {
+      // Track wrong characters for AI analysis
+      if (isTyping && !testDone) {
+        const inputVal = elements.quoteInput.value;
+        const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
+        const wrongChars = [];
+        const commonMistakes = {};
+        
+        quoteChars.forEach((span, idx) => {
+          if (idx < inputVal.length && inputVal[idx] !== span.innerText) {
+            wrongChars.push(inputVal[idx]);
+            const mistake = `${span.innerText}→${inputVal[idx]}`;
+            commonMistakes[mistake] = (commonMistakes[mistake] || 0) + 1;
+          }
+        });
+        
+        // Store for AI analysis
+        window.lastTestWrongChars = wrongChars;
+        window.lastTestCommonMistakes = commonMistakes;
+      }
+      
+      originalHandleInput();
+    };
+    
+    // Override handleInput to include tracking
+    handleInput = window.handleInputWithTracking;
+    
+    // Modify finishTest to pass AI data
+    const originalFinishTest = finishTest;
+    finishTest = function() {
+      const testResult = {
+        wpm: parseInt(elements.wpmElem.innerText),
+        accuracy: parseInt(elements.accuracyElem.innerText),
+        errors: parseInt(elements.errorsElem.innerText),
+        wrongChars: window.lastTestWrongChars || [],
+        commonMistakes: window.lastTestCommonMistakes || {}
+      };
+      
+      originalFinishTest();
+      AITypingCoach.analyzePerformance(testResult);
+      
+      // Call after test hook
+      if (window.afterTestComplete) window.afterTestComplete();
+    };
