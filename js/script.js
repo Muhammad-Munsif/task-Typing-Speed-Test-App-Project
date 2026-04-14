@@ -4559,5 +4559,5 @@ finishTest = function () {
   if (window.afterTestComplete) window.afterTestComplete();
 };
 
-    // Initialize AI Typing Coach
-    AITypingCoach.init();
+// Initialize AI Typing Coach
+AITypingCoach.init();
