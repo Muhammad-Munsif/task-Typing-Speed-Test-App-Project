@@ -4561,3 +4561,472 @@ finishTest = function () {
 
 // Initialize AI Typing Coach
 AITypingCoach.init();
+
+    // ==================== VOICE COMMANDS SYSTEM (DAY 12) ====================
+    const VoiceCommandSystem = {
+      // Voice recognition state
+      isListening: false,
+      recognition: null,
+      supported: false,
+      commandHistory: [],
+      
+      // Available voice commands
+      commands: {
+        'start test': () => this.startTest(),
+        'restart test': () => this.restartTest(),
+        'new quote': () => this.newQuote(),
+        'practice mode': () => this.togglePractice(),
+        'focus mode': () => this.toggleFocus(),
+        'show settings': () => this.showSettings(),
+        'show history': () => this.showHistory(),
+        'show stats': () => this.showStats(),
+        'show achievements': () => this.showAchievements(),
+        'show leaderboard': () => this.showLeaderboard(),
+        'show coach': () => this.showCoach(),
+        'dark mode': () => this.setTheme('dark'),
+        'light mode': () => this.setTheme('light'),
+        'easy mode': () => this.setDifficulty('easy'),
+        'medium mode': () => this.setDifficulty('medium'),
+        'hard mode': () => this.setDifficulty('hard'),
+        'expert mode': () => this.setDifficulty('expert'),
+        'clear text': () => this.clearInput(),
+        'what is my wpm': () => this.speakWPM(),
+        'what is my accuracy': () => this.speakAccuracy(),
+        'help': () => this.showVoiceHelp(),
+        'stop listening': () => this.stopListening(),
+        'exit voice mode': () => this.stopListening()
+      },
+      
+      // Initialize voice recognition
+      init() {
+        this.checkSupport();
+        this.setupEventListeners();
+        this.loadSettings();
+      },
+      
+      // Check if browser supports speech recognition
+      checkSupport() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+          this.supported = true;
+          this.recognition = new SpeechRecognition();
+          this.recognition.continuous = true;
+          this.recognition.interimResults = true;
+          this.recognition.lang = 'en-US';
+          this.setupRecognitionEvents();
+        } else {
+          console.warn('Speech recognition not supported in this browser');
+          this.showNotification('Voice commands not supported in your browser', 'error');
+        }
+      },
+      
+      // Setup recognition event handlers
+      setupRecognitionEvents() {
+        if (!this.recognition) return;
+        
+        this.recognition.onstart = () => {
+          this.isListening = true;
+          this.updateUI(true);
+          this.showNotification('Voice commands active - Say "help" for commands', 'success');
+          this.speak('Voice commands activated. Say help for available commands.');
+        };
+        
+        this.recognition.onend = () => {
+          this.isListening = false;
+          this.updateUI(false);
+          if (this.shouldRestart) {
+            this.startListening();
+            this.shouldRestart = false;
+          }
+        };
+        
+        this.recognition.onresult = (event) => {
+          const transcript = Array.from(event.results)
+            .map(result => result[0].transcript)
+            .join(' ');
+          
+          this.processCommand(transcript.toLowerCase());
+          this.updateLiveTranscript(transcript);
+        };
+        
+        this.recognition.onerror = (event) => {
+          console.error('Recognition error:', event.error);
+          if (event.error === 'not-allowed') {
+            this.showNotification('Microphone access denied. Please allow microphone access.', 'error');
+          }
+        };
+      },
+      
+      // Process voice command
+      processCommand(transcript) {
+        // Add to history
+        this.commandHistory.unshift({
+          text: transcript,
+          timestamp: new Date(),
+          processed: false
+        });
+        
+        // Keep only last 20 commands
+        if (this.commandHistory.length > 20) this.commandHistory.pop();
+        
+        // Check for matching commands
+        let commandExecuted = false;
+        
+        for (const [command, action] of Object.entries(this.commands)) {
+          if (transcript.includes(command)) {
+            action();
+            this.addToHistory(transcript, true);
+            commandExecuted = true;
+            
+            // Provide voice feedback
+            this.speak(`Executing: ${command}`);
+            break;
+          }
+        }
+        
+        if (!commandExecuted) {
+          this.addToHistory(transcript, false);
+          this.showNotification(`Command not recognized: "${transcript}"`, 'error');
+        }
+      },
+      
+      // Start listening for voice commands
+      startListening() {
+        if (!this.supported) {
+          this.showNotification('Voice commands not supported in your browser', 'error');
+          return;
+        }
+        
+        if (this.isListening) {
+          this.stopListening();
+        }
+        
+        try {
+          this.recognition.start();
+        } catch (e) {
+          console.error('Failed to start recognition:', e);
+        }
+      },
+      
+      // Stop listening
+      stopListening() {
+        if (this.recognition && this.isListening) {
+          this.recognition.stop();
+          this.isListening = false;
+          this.updateUI(false);
+          this.showNotification('Voice commands deactivated', 'info');
+          this.speak('Voice commands deactivated');
+        }
+      },
+      
+      // Toggle listening
+      toggleListening() {
+        if (this.isListening) {
+          this.stopListening();
+        } else {
+          this.startListening();
+        }
+      },
+      
+      // Update UI to show listening status
+      updateUI(isListening) {
+        const voiceBtn = document.getElementById('voiceCommandBtn');
+        if (voiceBtn) {
+          if (isListening) {
+            voiceBtn.classList.add('bg-red-500', 'animate-pulse');
+            voiceBtn.classList.remove('bg-white/80', 'dark:bg-gray-800/80');
+            voiceBtn.querySelector('i').className = 'fas fa-microphone-slash text-white';
+          } else {
+            voiceBtn.classList.remove('bg-red-500', 'animate-pulse');
+            voiceBtn.classList.add('bg-white/80', 'dark:bg-gray-800/80');
+            voiceBtn.querySelector('i').className = 'fas fa-microphone text-purple-500';
+          }
+        }
+        
+        // Show/hide voice indicator
+        let indicator = document.getElementById('voiceIndicator');
+        if (isListening && !indicator) {
+          indicator = document.createElement('div');
+          indicator.id = 'voiceIndicator';
+          indicator.className = 'fixed bottom-5 right-5 bg-purple-500 text-white px-4 py-2 rounded-full shadow-lg z-40 flex items-center gap-2 animate-pulse';
+          indicator.innerHTML = '<i class="fas fa-microphone"></i> Listening... <span id="liveTranscript" class="text-xs opacity-75 ml-2"></span>';
+          document.body.appendChild(indicator);
+        } else if (!isListening && indicator) {
+          indicator.remove();
+        }
+      },
+      
+      // Update live transcript display
+      updateLiveTranscript(transcript) {
+        const transcriptSpan = document.getElementById('liveTranscript');
+        if (transcriptSpan) {
+          transcriptSpan.textContent = transcript;
+          setTimeout(() => {
+            if (transcriptSpan.textContent === transcript) {
+              transcriptSpan.textContent = '';
+            }
+          }, 2000);
+        }
+      },
+      
+      // Add command to history
+      addToHistory(command, success) {
+        const historyEntry = this.commandHistory.find(h => h.text === command && !h.processed);
+        if (historyEntry) {
+          historyEntry.processed = success;
+          historyEntry.timestamp = new Date();
+        }
+        this.saveCommandHistory();
+      },
+      
+      // Save command history
+      saveCommandHistory() {
+        localStorage.setItem('voiceCommandHistory', JSON.stringify(this.commandHistory.slice(0, 20)));
+      },
+      
+      // Load command history
+      loadCommandHistory() {
+        const saved = localStorage.getItem('voiceCommandHistory');
+        if (saved) {
+          this.commandHistory = JSON.parse(saved);
+        }
+      },
+      
+      // Load settings
+      loadSettings() {
+        const saved = localStorage.getItem('voiceSettings');
+        if (saved) {
+          const settings = JSON.parse(saved);
+          // Apply settings if needed
+        }
+        this.loadCommandHistory();
+      },
+      
+      // Text to speech feedback
+      speak(text) {
+        if (!window.speechSynthesis) return;
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 0.8;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utterance);
+      },
+      
+      // Command Actions
+      startTest() {
+        if (elements.quoteInput.value.length === 0) {
+          elements.quoteInput.focus();
+          this.showNotification('Test ready. Start typing!', 'success');
+        }
+      },
+      
+      restartTest() {
+        resetTest();
+        this.showNotification('Test restarted', 'success');
+      },
+      
+      newQuote() {
+        newQuote();
+        this.showNotification('New quote loaded', 'success');
+      },
+      
+      togglePractice() {
+        togglePractice();
+        this.showNotification(`Practice mode ${practiceActive ? 'on' : 'off'}`, 'success');
+      },
+      
+      toggleFocus() {
+        toggleFocusMode();
+        this.showNotification(`Focus mode ${focusMode ? 'on' : 'off'}`, 'success');
+      },
+      
+      showSettings() {
+        elements.settingsPanel.classList.toggle('active');
+        this.showNotification('Settings panel toggled', 'info');
+      },
+      
+      showHistory() {
+        elements.historyPanel.classList.toggle('active');
+        updateHistoryDisplay();
+        this.showNotification('History panel toggled', 'info');
+      },
+      
+      showStats() {
+        elements.statsPanel.classList.toggle('active');
+        updateStatsSummary();
+        this.showNotification('Statistics panel toggled', 'info');
+      },
+      
+      showAchievements() {
+        if (AchievementSystem) {
+          AchievementSystem.showAchievementsModal();
+        }
+      },
+      
+      showLeaderboard() {
+        if (LeaderboardSystem) {
+          LeaderboardSystem.showLeaderboard();
+        }
+      },
+      
+      showCoach() {
+        if (AITypingCoach) {
+          AITypingCoach.showCoachPanel();
+        }
+      },
+      
+      setTheme(theme) {
+        document.body.classList.remove('light', 'dark');
+        document.body.classList.add(theme);
+        localStorage.setItem('theme', theme);
+        this.showNotification(`${theme} mode activated`, 'success');
+      },
+      
+      setDifficulty(level) {
+        difficulty = level;
+        document.querySelectorAll('.difficulty-option').forEach(btn => {
+          if (btn.dataset.difficulty === level) {
+            btn.classList.add('bg-blue-500', 'text-white', 'shadow-md');
+          } else {
+            btn.classList.remove('bg-blue-500', 'text-white', 'shadow-md');
+          }
+        });
+        newQuote();
+        this.showNotification(`Difficulty set to ${level}`, 'success');
+      },
+      
+      clearInput() {
+        clearInputField();
+        this.showNotification('Input cleared', 'success');
+      },
+      
+      speakWPM() {
+        const wpm = elements.wpmElem.innerText;
+        this.speak(`Your current words per minute is ${wpm}`);
+        this.showNotification(`WPM: ${wpm}`, 'info');
+      },
+      
+      speakAccuracy() {
+        const accuracy = elements.accuracyElem.innerText;
+        this.speak(`Your current accuracy is ${accuracy}`);
+        this.showNotification(`Accuracy: ${accuracy}`, 'info');
+      },
+      
+      // Show voice help modal
+      showVoiceHelp() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        const commandsList = Object.keys(this.commands).map(cmd => 
+          `<div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <span class="font-mono text-sm">🎤 "${cmd}"</span>
+            <span class="text-xs text-gray-500">→ ${this.getCommandDescription(cmd)}</span>
+          </div>`
+        ).join('');
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 shadow-2xl max-h-[80vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-microphone-alt mr-2 text-purple-500"></i>Voice Commands
+              </h3>
+              <button id="closeVoiceHelp" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <div class="mb-4 p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <p class="text-sm text-purple-700 dark:text-purple-300">
+                <i class="fas fa-info-circle mr-1"></i>
+                Click the microphone button and say any of these commands:
+              </p>
+            </div>
+            
+            <div class="space-y-1 max-h-96 overflow-y-auto">
+              ${commandsList}
+            </div>
+            
+            <div class="mt-4 p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <p class="text-sm text-green-700 dark:text-green-300">
+                <i class="fas fa-microphone mr-1"></i>
+                Click the microphone button to start/stop voice recognition
+              </p>
+            </div>
+            
+            ${this.commandHistory.length > 0 ? `
+              <div class="mt-4">
+                <h4 class="font-semibold mb-2 text-sm">Recent Commands:</h4>
+                <div class="space-y-1 max-h-32 overflow-y-auto">
+                  ${this.commandHistory.slice(0, 5).map(cmd => `
+                    <div class="text-xs ${cmd.processed ? 'text-green-500' : 'text-red-500'}">
+                      ${new Date(cmd.timestamp).toLocaleTimeString()}: "${cmd.text}"
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const closeBtn = modal.querySelector('#closeVoiceHelp');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        
+        SoundManager.playKeypress();
+      },
+      
+      // Get command description
+      getCommandDescription(command) {
+        const descriptions = {
+          'start test': 'Focus on typing area',
+          'restart test': 'Reset current test',
+          'new quote': 'Load different text',
+          'practice mode': 'Toggle unlimited time',
+          'focus mode': 'Toggle minimal UI',
+          'show settings': 'Open settings panel',
+          'show history': 'Show test history',
+          'show stats': 'Show statistics',
+          'show achievements': 'View badges',
+          'show leaderboard': 'View rankings',
+          'show coach': 'Open AI coach',
+          'dark mode': 'Switch to dark theme',
+          'light mode': 'Switch to light theme',
+          'easy mode': 'Set easy difficulty',
+          'medium mode': 'Set medium difficulty',
+          'hard mode': 'Set hard difficulty',
+          'expert mode': 'Set expert difficulty',
+          'clear text': 'Clear input field',
+          'what is my wpm': 'Speak current WPM',
+          'what is my accuracy': 'Speak current accuracy',
+          'help': 'Show this menu',
+          'stop listening': 'Deactivate voice mode',
+          'exit voice mode': 'Deactivate voice mode'
+        };
+        return descriptions[command] || 'Execute command';
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.style.animation = 'slideUp 0.3s ease';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        const voiceBtn = document.getElementById('voiceCommandBtn');
+        if (voiceBtn) {
+          voiceBtn.onclick = () => this.toggleListening();
+        }
+      }
+    };
