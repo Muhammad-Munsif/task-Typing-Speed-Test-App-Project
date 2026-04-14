@@ -5029,3 +5029,6 @@ const VoiceCommandSystem = {
     }
   }
 };
+
+    // Initialize Voice Command System
+    VoiceCommandSystem.init();
