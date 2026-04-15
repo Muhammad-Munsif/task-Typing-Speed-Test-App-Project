@@ -5615,3 +5615,9 @@ const SocialShareSystem = {
         setTimeout(() => notification.remove(), 3000);
       }
     };
+
+        // Initialize Day 13-16 Systems
+    ReplaySystem.init();
+    SocialShareSystem.setupEventListeners();
+    PWASystem.init();
+    GrammarCheckSystem.init();
