@@ -5530,94 +5530,93 @@ const SocialShareSystem = {
   }
 };
 
-    // ==================== PWA INSTALLATION (DAY 15) ====================
-    const PWASystem = {
-      deferredPrompt: null,
-      isInstalled: false,
-      
-      init() {
-        this.checkInstallation();
-        this.setupEventListeners();
-        this.registerServiceWorker();
-      },
-      
-      // Register service worker
-      registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').then(registration => {
-              console.log('ServiceWorker registered:', registration.scope);
-            }).catch(error => {
-              console.log('ServiceWorker registration failed:', error);
-            });
-          });
-        }
-      },
-      
-      // Check if already installed
-      checkInstallation() {
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-          this.isInstalled = true;
-        }
-      },
-      
-      // Setup beforeinstallprompt
-      setupEventListeners() {
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          this.deferredPrompt = e;
-          this.showInstallButton();
-        });
-        
-        window.addEventListener('appinstalled', () => {
-          this.isInstalled = true;
-          this.deferredPrompt = null;
-          this.showNotification('App installed successfully!', 'success');
-        });
-      },
-      
-      // Show install button
-      showInstallButton() {
-        let installBtn = document.getElementById('installPwaBtn');
-        if (!installBtn) {
-          installBtn = document.createElement('button');
-          installBtn.id = 'installPwaBtn';
-          installBtn.className = 'fixed bottom-5 left-5 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg z-40 flex items-center gap-2 animate-bounce';
-          installBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
-          installBtn.onclick = () => this.installApp();
-          document.body.appendChild(installBtn);
-        }
-      },
-      
-      // Install app
-      installApp() {
-        if (this.deferredPrompt) {
-          this.deferredPrompt.prompt();
-          this.deferredPrompt.userChoice.then((choiceResult) => {
-            if (choiceResult.outcome === 'accepted') {
-              console.log('User accepted install');
-            }
-            this.deferredPrompt = null;
-            const installBtn = document.getElementById('installPwaBtn');
-            if (installBtn) installBtn.remove();
-          });
-        }
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      }
-    };
+// ==================== PWA INSTALLATION (DAY 15) ====================
+const PWASystem = {
+  deferredPrompt: null,
+  isInstalled: false,
 
-        // Initialize Day 13-16 Systems
-    ReplaySystem.init();
-    SocialShareSystem.setupEventListeners();
-    PWASystem.init();
-    GrammarCheckSystem.init();
+  init() {
+    this.checkInstallation();
+    this.setupEventListeners();
+    this.registerServiceWorker();
+  },
+
+  // Register service worker
+  registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('ServiceWorker registered:', registration.scope);
+        }).catch(error => {
+          console.log('ServiceWorker registration failed:', error);
+        });
+      });
+    }
+  },
+
+  // Check if already installed
+  checkInstallation() {
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      this.isInstalled = true;
+    }
+  },
+
+  // Setup beforeinstallprompt
+  setupEventListeners() {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      this.deferredPrompt = e;
+      this.showInstallButton();
+    });
+
+    window.addEventListener('appinstalled', () => {
+      this.isInstalled = true;
+      this.deferredPrompt = null;
+      this.showNotification('App installed successfully!', 'success');
+    });
+  },
+
+  // Show install button
+  showInstallButton() {
+    let installBtn = document.getElementById('installPwaBtn');
+    if (!installBtn) {
+      installBtn = document.createElement('button');
+      installBtn.id = 'installPwaBtn';
+      installBtn.className = 'fixed bottom-5 left-5 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg z-40 flex items-center gap-2 animate-bounce';
+      installBtn.innerHTML = '<i class="fas fa-download"></i> Install App';
+      installBtn.onclick = () => this.installApp();
+      document.body.appendChild(installBtn);
+    }
+  },
+
+  // Install app
+  installApp() {
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      this.deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted install');
+        }
+        this.deferredPrompt = null;
+        const installBtn = document.getElementById('installPwaBtn');
+        if (installBtn) installBtn.remove();
+      });
+    }
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  }
+};
+
+// Initialize Day 13-16 Systems
+ReplaySystem.init();
+SocialShareSystem.setupEventListeners();
+PWASystem.init();
+GrammarCheckSystem.init();
