@@ -5375,37 +5375,37 @@ handleInput = function () {
   originalRecordHandleInput();
 };
 
-    // Initialize Typing Replay System
-    ReplaySystem.init();
+// Initialize Typing Replay System
+ReplaySystem.init();
 
-        // ==================== SOCIAL SHARING SYSTEM (DAY 14) ====================
-    const SocialShareSystem = {
-      // Share test result
-      shareResult(result) {
-        const shareData = {
-          title: 'VelocityType Typing Test',
-          text: `I just scored ${result.wpm} WPM with ${result.accuracy} accuracy on VelocityType! Can you beat my score?`,
-          url: window.location.href
-        };
-        
-        // Create beautiful share card
-        this.createShareCard(result);
-        
-        // Use native share if available
-        if (navigator.share) {
-          navigator.share(shareData).catch(() => {
-            this.copyToClipboard(shareData.text);
-          });
-        } else {
-          this.copyToClipboard(shareData.text);
-        }
-      },
-      
-      // Create share card image (HTML to image)
-      createShareCard(result) {
-        const card = document.createElement('div');
-        card.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        card.innerHTML = `
+// ==================== SOCIAL SHARING SYSTEM (DAY 14) ====================
+const SocialShareSystem = {
+  // Share test result
+  shareResult(result) {
+    const shareData = {
+      title: 'VelocityType Typing Test',
+      text: `I just scored ${result.wpm} WPM with ${result.accuracy} accuracy on VelocityType! Can you beat my score?`,
+      url: window.location.href
+    };
+
+    // Create beautiful share card
+    this.createShareCard(result);
+
+    // Use native share if available
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {
+        this.copyToClipboard(shareData.text);
+      });
+    } else {
+      this.copyToClipboard(shareData.text);
+    }
+  },
+
+  // Create share card image (HTML to image)
+  createShareCard(result) {
+    const card = document.createElement('div');
+    card.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    card.innerHTML = `
           <div id="shareCard" class="bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-8 text-center shadow-2xl max-w-sm w-full mx-4">
             <div class="text-white">
               <div class="text-5xl mb-3">⚡</div>
@@ -5444,89 +5444,88 @@ handleInput = function () {
             </div>
           </div>
         `;
-        
-        document.body.appendChild(card);
-        
-        const closeBtn = card.querySelector('#closeCardBtn');
-        closeBtn.onclick = () => card.remove();
-        
-        const downloadBtn = card.querySelector('#downloadCardBtn');
-        downloadBtn.onclick = () => {
-          this.captureShareCard();
-          card.remove();
-        };
-      },
-      
-      // Capture share card as image
-      captureShareCard() {
-        const card = document.getElementById('shareCard');
-        if (!card) return;
-        
-        html2canvas(card, {
-          scale: 2,
-          backgroundColor: null
-        }).then(canvas => {
-          const link = document.createElement('a');
-          link.download = 'velocitytype-result.png';
-          link.href = canvas.toDataURL();
-          link.click();
-          this.showNotification('Share card saved!', 'success');
-        }).catch(() => {
-          this.showNotification('Could not capture image', 'error');
-        });
-      },
-      
-      // Share achievement
-      shareAchievement(achievement) {
-        const text = `🏆 I just unlocked "${achievement.name}" on VelocityType! +${achievement.points} points!`;
-        this.copyToClipboard(text);
-        this.showNotification('Achievement shared!', 'success');
-      },
-      
-      // Share challenge completion
-      shareChallenge(challenge) {
-        const text = `🎯 Daily Challenge Complete! I earned ${challenge.reward} points on VelocityType. Join me!`;
-        this.copyToClipboard(text);
-      },
-      
-      // Share leaderboard rank
-      shareRank(rank, wpm) {
-        const text = `📊 I'm ranked #${rank} on VelocityType with ${wpm} WPM! Can you beat me?`;
-        this.copyToClipboard(text);
-      },
-      
-      // Copy to clipboard
-      copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-          this.showNotification('Copied to clipboard!', 'success');
-        });
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        // Add share button to result modal
-        const shareResultBtn = document.getElementById('shareResultBtn');
-        if (shareResultBtn) {
-          shareResultBtn.onclick = () => {
-            const result = {
-              wpm: elements.resultWPM.innerText,
-              accuracy: elements.resultAccuracy.innerText,
-              errors: elements.resultErrors.innerText,
-              time: elements.resultTime.innerText
-            };
-            this.shareResult(result);
-          };
-        }
-      }
+
+    document.body.appendChild(card);
+
+    const closeBtn = card.querySelector('#closeCardBtn');
+    closeBtn.onclick = () => card.remove();
+
+    const downloadBtn = card.querySelector('#downloadCardBtn');
+    downloadBtn.onclick = () => {
+      this.captureShareCard();
+      card.remove();
     };
+  },
+
+  // Capture share card as image
+  captureShareCard() {
+    const card = document.getElementById('shareCard');
+    if (!card) return;
+
+    html2canvas(card, {
+      scale: 2,
+      backgroundColor: null
+    }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'velocitytype-result.png';
+      link.href = canvas.toDataURL();
+      link.click();
+      this.showNotification('Share card saved!', 'success');
+    }).catch(() => {
+      this.showNotification('Could not capture image', 'error');
+    });
+  },
+
+  // Share achievement
+  shareAchievement(achievement) {
+    const text = `🏆 I just unlocked "${achievement.name}" on VelocityType! +${achievement.points} points!`;
+    this.copyToClipboard(text);
+    this.showNotification('Achievement shared!', 'success');
+  },
+
+  // Share challenge completion
+  shareChallenge(challenge) {
+    const text = `🎯 Daily Challenge Complete! I earned ${challenge.reward} points on VelocityType. Join me!`;
+    this.copyToClipboard(text);
+  },
+
+  // Share leaderboard rank
+  shareRank(rank, wpm) {
+    const text = `📊 I'm ranked #${rank} on VelocityType with ${wpm} WPM! Can you beat me?`;
+    this.copyToClipboard(text);
+  },
+
+  // Copy to clipboard
+  copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      this.showNotification('Copied to clipboard!', 'success');
+    });
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    // Add share button to result modal
+    const shareResultBtn = document.getElementById('shareResultBtn');
+    if (shareResultBtn) {
+      shareResultBtn.onclick = () => {
+        const result = {
+          wpm: elements.resultWPM.innerText,
+          accuracy: elements.resultAccuracy.innerText,
+          errors: elements.resultErrors.innerText,
+          time: elements.resultTime.innerText
+        };
+        this.shareResult(result);
+      };
+    }
+  }
+};
