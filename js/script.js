@@ -5033,105 +5033,105 @@ const VoiceCommandSystem = {
 // Initialize Voice Command System
 VoiceCommandSystem.init();
 
-    // ==================== TYPING REPLAY SYSTEM (DAY 13) ====================
-    const ReplaySystem = {
-      // Recording data
-      isRecording: false,
-      isPlaying: false,
-      recordingData: [],
-      playbackInterval: null,
-      savedReplays: [],
-      
-      // Initialize
-      init() {
-        this.loadSavedReplays();
-        this.setupEventListeners();
-      },
-      
-      // Load saved replays
-      loadSavedReplays() {
-        const saved = localStorage.getItem('typingReplays');
-        if (saved) {
-          this.savedReplays = JSON.parse(saved);
-        }
-      },
-      
-      // Save replay
-      saveReplay() {
-        if (this.recordingData.length === 0) return;
-        
-        const replay = {
-          id: Date.now(),
-          date: new Date().toISOString(),
-          quote: currentQuoteText,
-          wpm: parseInt(elements.wpmElem.innerText),
-          accuracy: elements.accuracyElem.innerText,
-          errors: parseInt(elements.errorsElem.innerText),
-          duration: this.recordingData.length / 10, // Approximate seconds
-          keystrokes: this.recordingData,
-          mistakeCount: this.recordingData.filter(k => !k.correct).length
-        };
-        
-        this.savedReplays.unshift(replay);
-        if (this.savedReplays.length > 10) this.savedReplays.pop();
-        localStorage.setItem('typingReplays', JSON.stringify(this.savedReplays));
-        
-        this.showNotification('Replay saved!', 'success');
-        this.stopRecording();
-      },
-      
-      // Start recording
-      startRecording() {
-        this.isRecording = true;
-        this.recordingData = [];
-        this.showRecordingIndicator(true);
-        this.showNotification('Recording started...', 'info');
-        SoundManager.playKeypress();
-      },
-      
-      // Stop recording
-      stopRecording() {
-        this.isRecording = false;
-        this.showRecordingIndicator(false);
-        if (this.recordingData.length > 0) {
-          this.saveReplay();
-        }
-      },
-      
-      // Record keystroke
-      recordKeystroke(char, position, correct, timestamp) {
-        if (!this.isRecording) return;
-        
-        this.recordingData.push({
-          char: char,
-          position: position,
-          correct: correct,
-          time: timestamp || Date.now(),
-          wpm: parseInt(elements.wpmElem.innerText)
-        });
-      },
-      
-      // Show recording indicator
-      showRecordingIndicator(show) {
-        let indicator = document.getElementById('recordingIndicator');
-        if (show && !indicator) {
-          indicator = document.createElement('div');
-          indicator.id = 'recordingIndicator';
-          indicator.className = 'fixed top-20 right-5 bg-red-500 text-white px-3 py-1 rounded-full text-xs z-40 animate-pulse';
-          indicator.innerHTML = '<i class="fas fa-circle mr-1"></i> RECORDING';
-          document.body.appendChild(indicator);
-        } else if (!show && indicator) {
-          indicator.remove();
-        }
-      },
-      
-      // Show replays panel
-      showReplaysPanel() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+// ==================== TYPING REPLAY SYSTEM (DAY 13) ====================
+const ReplaySystem = {
+  // Recording data
+  isRecording: false,
+  isPlaying: false,
+  recordingData: [],
+  playbackInterval: null,
+  savedReplays: [],
+
+  // Initialize
+  init() {
+    this.loadSavedReplays();
+    this.setupEventListeners();
+  },
+
+  // Load saved replays
+  loadSavedReplays() {
+    const saved = localStorage.getItem('typingReplays');
+    if (saved) {
+      this.savedReplays = JSON.parse(saved);
+    }
+  },
+
+  // Save replay
+  saveReplay() {
+    if (this.recordingData.length === 0) return;
+
+    const replay = {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      quote: currentQuoteText,
+      wpm: parseInt(elements.wpmElem.innerText),
+      accuracy: elements.accuracyElem.innerText,
+      errors: parseInt(elements.errorsElem.innerText),
+      duration: this.recordingData.length / 10, // Approximate seconds
+      keystrokes: this.recordingData,
+      mistakeCount: this.recordingData.filter(k => !k.correct).length
+    };
+
+    this.savedReplays.unshift(replay);
+    if (this.savedReplays.length > 10) this.savedReplays.pop();
+    localStorage.setItem('typingReplays', JSON.stringify(this.savedReplays));
+
+    this.showNotification('Replay saved!', 'success');
+    this.stopRecording();
+  },
+
+  // Start recording
+  startRecording() {
+    this.isRecording = true;
+    this.recordingData = [];
+    this.showRecordingIndicator(true);
+    this.showNotification('Recording started...', 'info');
+    SoundManager.playKeypress();
+  },
+
+  // Stop recording
+  stopRecording() {
+    this.isRecording = false;
+    this.showRecordingIndicator(false);
+    if (this.recordingData.length > 0) {
+      this.saveReplay();
+    }
+  },
+
+  // Record keystroke
+  recordKeystroke(char, position, correct, timestamp) {
+    if (!this.isRecording) return;
+
+    this.recordingData.push({
+      char: char,
+      position: position,
+      correct: correct,
+      time: timestamp || Date.now(),
+      wpm: parseInt(elements.wpmElem.innerText)
+    });
+  },
+
+  // Show recording indicator
+  showRecordingIndicator(show) {
+    let indicator = document.getElementById('recordingIndicator');
+    if (show && !indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'recordingIndicator';
+      indicator.className = 'fixed top-20 right-5 bg-red-500 text-white px-3 py-1 rounded-full text-xs z-40 animate-pulse';
+      indicator.innerHTML = '<i class="fas fa-circle mr-1"></i> RECORDING';
+      document.body.appendChild(indicator);
+    } else if (!show && indicator) {
+      indicator.remove();
+    }
+  },
+
+  // Show replays panel
+  showReplaysPanel() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -5169,40 +5169,40 @@ VoiceCommandSystem.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Event listeners
-        const startBtn = modal.querySelector('#startRecordingBtn');
-        const stopBtn = modal.querySelector('#stopRecordingBtn');
-        const cancelBtn = modal.querySelector('#cancelRecordingBtn');
-        
-        if (startBtn) startBtn.onclick = () => this.startRecording();
-        if (stopBtn) stopBtn.onclick = () => this.stopRecording();
-        if (cancelBtn) cancelBtn.onclick = () => {
-          this.isRecording = false;
-          this.recordingData = [];
-          this.showRecordingIndicator(false);
-          modal.remove();
-          this.showReplaysPanel();
-        };
-        
-        const closeBtn = modal.querySelector('#closeReplaysBtn');
-        closeBtn.onclick = () => modal.remove();
-        
-        // Add replay button handlers
-        this.attachReplayButtons(modal);
-        
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Render replays list
-      renderReplaysList() {
-        if (this.savedReplays.length === 0) {
-          return '<p class="text-center text-gray-500 py-8">No saved replays. Record your first typing session!</p>';
-        }
-        
-        return this.savedReplays.map(replay => `
+
+    document.body.appendChild(modal);
+
+    // Event listeners
+    const startBtn = modal.querySelector('#startRecordingBtn');
+    const stopBtn = modal.querySelector('#stopRecordingBtn');
+    const cancelBtn = modal.querySelector('#cancelRecordingBtn');
+
+    if (startBtn) startBtn.onclick = () => this.startRecording();
+    if (stopBtn) stopBtn.onclick = () => this.stopRecording();
+    if (cancelBtn) cancelBtn.onclick = () => {
+      this.isRecording = false;
+      this.recordingData = [];
+      this.showRecordingIndicator(false);
+      modal.remove();
+      this.showReplaysPanel();
+    };
+
+    const closeBtn = modal.querySelector('#closeReplaysBtn');
+    closeBtn.onclick = () => modal.remove();
+
+    // Add replay button handlers
+    this.attachReplayButtons(modal);
+
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Render replays list
+  renderReplaysList() {
+    if (this.savedReplays.length === 0) {
+      return '<p class="text-center text-gray-500 py-8">No saved replays. Record your first typing session!</p>';
+    }
+
+    return this.savedReplays.map(replay => `
           <div class="replay-item p-3 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
             <div class="flex justify-between items-center">
               <div class="flex-1">
@@ -5221,45 +5221,45 @@ VoiceCommandSystem.init();
             </div>
           </div>
         `).join('');
-      },
-      
-      // Attach replay buttons
-      attachReplayButtons(modal) {
-        const playBtns = modal.querySelectorAll('.play-replay-btn');
-        playBtns.forEach(btn => {
-          btn.onclick = () => {
-            const id = parseInt(btn.dataset.id);
-            const replay = this.savedReplays.find(r => r.id === id);
-            if (replay) {
-              this.playReplay(replay);
-              modal.remove();
-            }
-          };
-        });
-        
-        const deleteBtns = modal.querySelectorAll('.delete-replay-btn');
-        deleteBtns.forEach(btn => {
-          btn.onclick = () => {
-            const id = parseInt(btn.dataset.id);
-            this.savedReplays = this.savedReplays.filter(r => r.id !== id);
-            localStorage.setItem('typingReplays', JSON.stringify(this.savedReplays));
-            modal.querySelector('#replaysList').innerHTML = this.renderReplaysList();
-            this.attachReplayButtons(modal);
-            this.showNotification('Replay deleted', 'success');
-          };
-        });
-      },
-      
-      // Play a replay
-      playReplay(replay) {
-        this.isPlaying = true;
-        let index = 0;
-        const keystrokes = replay.keystrokes;
-        
-        // Create playback overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
-        overlay.innerHTML = `
+  },
+
+  // Attach replay buttons
+  attachReplayButtons(modal) {
+    const playBtns = modal.querySelectorAll('.play-replay-btn');
+    playBtns.forEach(btn => {
+      btn.onclick = () => {
+        const id = parseInt(btn.dataset.id);
+        const replay = this.savedReplays.find(r => r.id === id);
+        if (replay) {
+          this.playReplay(replay);
+          modal.remove();
+        }
+      };
+    });
+
+    const deleteBtns = modal.querySelectorAll('.delete-replay-btn');
+    deleteBtns.forEach(btn => {
+      btn.onclick = () => {
+        const id = parseInt(btn.dataset.id);
+        this.savedReplays = this.savedReplays.filter(r => r.id !== id);
+        localStorage.setItem('typingReplays', JSON.stringify(this.savedReplays));
+        modal.querySelector('#replaysList').innerHTML = this.renderReplaysList();
+        this.attachReplayButtons(modal);
+        this.showNotification('Replay deleted', 'success');
+      };
+    });
+  },
+
+  // Play a replay
+  playReplay(replay) {
+    this.isPlaying = true;
+    let index = 0;
+    const keystrokes = replay.keystrokes;
+
+    // Create playback overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'fixed inset-0 bg-black/80 flex items-center justify-center z-50';
+    overlay.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 text-center">
             <h3 class="text-xl font-bold mb-2">Replaying: ${new Date(replay.date).toLocaleString()}</h3>
             <p class="text-sm text-gray-500 mb-4">${replay.wpm} WPM • ${replay.accuracy} accuracy</p>
@@ -5279,99 +5279,98 @@ VoiceCommandSystem.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(overlay);
-        
-        let paused = false;
-        let currentKeystroke = 0;
-        
-        const updateDisplay = () => {
-          const chars = overlay.querySelectorAll('.replay-char');
-          chars.forEach((ch, i) => {
-            ch.classList.remove('correct', 'incorrect', 'current');
-            if (i < currentKeystroke) {
-              const isCorrect = keystrokes[i]?.correct;
-              ch.classList.add(isCorrect ? 'correct' : 'incorrect');
-            } else if (i === currentKeystroke) {
-              ch.classList.add('current');
-            }
-          });
-          
-          const progress = overlay.querySelector('#replayProgress');
-          if (progress) progress.textContent = currentKeystroke;
-        };
-        
-        const playInterval = setInterval(() => {
-          if (paused || !this.isPlaying) return;
-          
-          if (currentKeystroke < keystrokes.length) {
-            updateDisplay();
-            currentKeystroke++;
-          } else {
-            clearInterval(playInterval);
-            this.isPlaying = false;
-            this.showNotification('Replay finished!', 'success');
-            setTimeout(() => overlay.remove(), 2000);
-          }
-        }, 100);
-        
-        const pauseBtn = overlay.querySelector('#pauseReplayBtn');
-        pauseBtn.onclick = () => {
-          paused = !paused;
-          pauseBtn.innerHTML = paused ? '<i class="fas fa-play"></i> Resume' : '<i class="fas fa-pause"></i> Pause';
-        };
-        
-        const stopBtn = overlay.querySelector('#stopReplayBtn');
-        stopBtn.onclick = () => {
-          clearInterval(playInterval);
-          this.isPlaying = false;
-          overlay.remove();
-        };
-        
+
+    document.body.appendChild(overlay);
+
+    let paused = false;
+    let currentKeystroke = 0;
+
+    const updateDisplay = () => {
+      const chars = overlay.querySelectorAll('.replay-char');
+      chars.forEach((ch, i) => {
+        ch.classList.remove('correct', 'incorrect', 'current');
+        if (i < currentKeystroke) {
+          const isCorrect = keystrokes[i]?.correct;
+          ch.classList.add(isCorrect ? 'correct' : 'incorrect');
+        } else if (i === currentKeystroke) {
+          ch.classList.add('current');
+        }
+      });
+
+      const progress = overlay.querySelector('#replayProgress');
+      if (progress) progress.textContent = currentKeystroke;
+    };
+
+    const playInterval = setInterval(() => {
+      if (paused || !this.isPlaying) return;
+
+      if (currentKeystroke < keystrokes.length) {
         updateDisplay();
-      },
-      
-      // Escape HTML
-      escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-        }`;
-        notification.style.animation = 'slideUp 0.3s ease';
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const replayBtn = document.getElementById('replayBtn');
-        if (replayBtn) {
-          replayBtn.onclick = () => this.showReplaysPanel();
-        }
+        currentKeystroke++;
+      } else {
+        clearInterval(playInterval);
+        this.isPlaying = false;
+        this.showNotification('Replay finished!', 'success');
+        setTimeout(() => overlay.remove(), 2000);
       }
+    }, 100);
+
+    const pauseBtn = overlay.querySelector('#pauseReplayBtn');
+    pauseBtn.onclick = () => {
+      paused = !paused;
+      pauseBtn.innerHTML = paused ? '<i class="fas fa-play"></i> Resume' : '<i class="fas fa-pause"></i> Pause';
     };
-    
-    // Modify handleInput to record keystrokes
-    const originalRecordHandleInput = handleInput;
-    handleInput = function() {
-      if (ReplaySystem.isRecording) {
-        const inputVal = elements.quoteInput.value;
-        const lastChar = inputVal[inputVal.length - 1];
-        const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
-        const position = inputVal.length - 1;
-        const isCorrect = position < quoteChars.length && lastChar === quoteChars[position]?.innerText;
-        
-        if (lastChar) {
-          ReplaySystem.recordKeystroke(lastChar, position, isCorrect);
-        }
-      }
-      originalRecordHandleInput();
+
+    const stopBtn = overlay.querySelector('#stopReplayBtn');
+    stopBtn.onclick = () => {
+      clearInterval(playInterval);
+      this.isPlaying = false;
+      overlay.remove();
     };
+
+    updateDisplay();
+  },
+
+  // Escape HTML
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+      }`;
+    notification.style.animation = 'slideUp 0.3s ease';
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const replayBtn = document.getElementById('replayBtn');
+    if (replayBtn) {
+      replayBtn.onclick = () => this.showReplaysPanel();
+    }
+  }
+};
+
+// Modify handleInput to record keystrokes
+const originalRecordHandleInput = handleInput;
+handleInput = function () {
+  if (ReplaySystem.isRecording) {
+    const inputVal = elements.quoteInput.value;
+    const lastChar = inputVal[inputVal.length - 1];
+    const quoteChars = elements.quoteDisplay.querySelectorAll(".char");
+    const position = inputVal.length - 1;
+    const isCorrect = position < quoteChars.length && lastChar === quoteChars[position]?.innerText;
+
+    if (lastChar) {
+      ReplaySystem.recordKeystroke(lastChar, position, isCorrect);
+    }
+  }
+  originalRecordHandleInput();
+};
