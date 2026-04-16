@@ -339,8 +339,8 @@ function finishTest() {
     practiceMode: practiceActive,
     date: new Date().toISOString()
   };
-        // Update classroom progress if student
-      ClassroomSystem.updateStudentProgress(testResult);
+  // Update classroom progress if student
+  ClassroomSystem.updateStudentProgress(testResult);
   // Check daily challenge progress
   DailyChallengeSystem.checkProgress(testResult);
   // Save to history
