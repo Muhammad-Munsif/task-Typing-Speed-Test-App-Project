@@ -392,6 +392,26 @@ function attachEvents() {
     };
   }
 
+        // Day 14: Share button
+      const shareBtn = document.getElementById('shareBtn');
+      if (shareBtn && SocialShareSystem) {
+        shareBtn.onclick = () => {
+          const result = {
+            wpm: elements.wpmElem.innerText,
+            accuracy: elements.accuracyElem.innerText,
+            errors: elements.errorsElem.innerText,
+            time: timeLeft
+          };
+          SocialShareSystem.shareResult(result);
+        };
+      }
+      
+      // Day 15: PWA Install button is already handled by PWASystem
+      // The PWASystem will show/hide this button automatically
+      
+      // Note: The install button visibility is managed by PWASystem
+      // It will only appear when the app is installable
+
   // Exit custom mode button
   const exitCustomModeBtn = document.getElementById('exitCustomModeBtn');
   if (exitCustomModeBtn) {
