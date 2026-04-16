@@ -6950,3 +6950,5 @@ const ClassroomSystem = {
     }
   }
 };
+    // Initialize Classroom System
+    ClassroomSystem.init();
