@@ -5868,3 +5868,482 @@ const GrammarCheckSystem = {
   }
 };
 GrammarCheckSystem.init();
+
+    // ==================== TYPING TOURNAMENT SYSTEM (DAY 17) ====================
+    const TournamentSystem = {
+      // Tournament data
+      activeTournament: null,
+      tournaments: [],
+      userTournaments: [],
+      
+      // Tournament types
+      types: {
+        QUICK: 'quick',
+        DAILY: 'daily',
+        WEEKLY: 'weekly',
+        MONTHLY: 'monthly',
+        CUSTOM: 'custom'
+      },
+      
+      // Initialize
+      init() {
+        this.loadTournaments();
+        this.setupEventListeners();
+        this.checkActiveTournaments();
+      },
+      
+      // Load tournaments from storage
+      loadTournaments() {
+        const saved = localStorage.getItem('velocityTournaments');
+        if (saved) {
+          this.tournaments = JSON.parse(saved);
+        } else {
+          this.generateDefaultTournaments();
+        }
+        
+        const userSaved = localStorage.getItem('userTournaments');
+        if (userSaved) {
+          this.userTournaments = JSON.parse(userSaved);
+        }
+      },
+      
+      // Generate default tournaments
+      generateDefaultTournaments() {
+        const now = new Date();
+        
+        this.tournaments = [
+          {
+            id: 'daily_1',
+            name: 'Daily Sprint',
+            type: this.types.DAILY,
+            description: 'Quick 60-second typing challenge',
+            startDate: new Date(now).toISOString(),
+            endDate: new Date(now.setHours(23, 59, 59, 999)).toISOString(),
+            difficulty: 'medium',
+            duration: 60,
+            prize: { points: 100, badge: 'Daily Champion' },
+            participants: [],
+            winner: null,
+            status: 'active'
+          },
+          {
+            id: 'weekly_1',
+            name: 'Weekly Masters',
+            type: this.types.WEEKLY,
+            description: 'Compete for the weekly title',
+            startDate: new Date(now.setDate(now.getDate() - now.getDay())).toISOString(),
+            endDate: new Date(now.setDate(now.getDate() + 6)).toISOString(),
+            difficulty: 'hard',
+            duration: 120,
+            prize: { points: 500, badge: 'Weekly Master', icon: '👑' },
+            participants: [],
+            winner: null,
+            status: 'active'
+          }
+        ];
+        
+        this.saveTournaments();
+      },
+      
+      // Save tournaments
+      saveTournaments() {
+        localStorage.setItem('velocityTournaments', JSON.stringify(this.tournaments));
+        localStorage.setItem('userTournaments', JSON.stringify(this.userTournaments));
+      },
+      
+      // Check active tournaments
+      checkActiveTournaments() {
+        const now = new Date();
+        this.tournaments.forEach(tournament => {
+          if (tournament.status === 'active' && new Date(tournament.endDate) < now) {
+            tournament.status = 'ended';
+            this.determineWinner(tournament);
+          }
+        });
+        this.saveTournaments();
+      },
+      
+      // Determine tournament winner
+      determineWinner(tournament) {
+        if (tournament.participants.length === 0) return;
+        
+        const sorted = [...tournament.participants].sort((a, b) => b.bestWPM - a.bestWPM);
+        tournament.winner = sorted[0];
+        tournament.status = 'completed';
+        
+        // Award prize to winner
+        this.awardPrize(tournament.winner, tournament.prize);
+        
+        this.saveTournaments();
+      },
+      
+      // Award prize to winner
+      awardPrize(winner, prize) {
+        if (AchievementSystem) {
+          AchievementSystem.userProgress.totalPoints += prize.points;
+          AchievementSystem.saveProgress();
+        }
+        
+        // Show notification
+        this.showNotification(`🏆 ${winner.name} won ${prize.points} points in ${prize.badge || 'Tournament'}!`, 'success');
+      },
+      
+      // Join tournament
+      joinTournament(tournamentId) {
+        const tournament = this.tournaments.find(t => t.id === tournamentId);
+        if (!tournament) {
+          this.showNotification('Tournament not found!', 'error');
+          return;
+        }
+        
+        if (tournament.status !== 'active') {
+          this.showNotification('Tournament is not active!', 'error');
+          return;
+        }
+        
+        const playerName = MultiplayerSystem?.playerName || 'You';
+        const existingParticipant = tournament.participants.find(p => p.name === playerName);
+        
+        if (existingParticipant) {
+          this.showNotification('You already joined this tournament!', 'error');
+          return;
+        }
+        
+        tournament.participants.push({
+          name: playerName,
+          bestWPM: 0,
+          bestAccuracy: 0,
+          tests: [],
+          joinedAt: new Date().toISOString()
+        });
+        
+        this.userTournaments.push({
+          tournamentId: tournamentId,
+          joinedAt: new Date().toISOString(),
+          completed: false
+        });
+        
+        this.saveTournaments();
+        this.showNotification(`Joined ${tournament.name}! Complete tests to rank!`, 'success');
+        SoundManager.playKeypress();
+      },
+      
+      // Submit tournament score
+      submitScore(tournamentId, testResult) {
+        const tournament = this.tournaments.find(t => t.id === tournamentId);
+        if (!tournament || tournament.status !== 'active') return;
+        
+        const playerName = MultiplayerSystem?.playerName || 'You';
+        const participant = tournament.participants.find(p => p.name === playerName);
+        
+        if (participant) {
+          participant.tests.push(testResult);
+          participant.bestWPM = Math.max(participant.bestWPM, testResult.wpm);
+          participant.bestAccuracy = Math.max(participant.bestAccuracy, testResult.accuracy);
+          
+          this.saveTournaments();
+          
+          // Update ranking display if open
+          this.updateRankingDisplay(tournamentId);
+        }
+      },
+      
+      // Update ranking display
+      updateRankingDisplay(tournamentId) {
+        const rankingContainer = document.getElementById('tournamentRanking');
+        if (!rankingContainer) return;
+        
+        const tournament = this.tournaments.find(t => t.id === tournamentId);
+        if (!tournament) return;
+        
+        const sorted = [...tournament.participants].sort((a, b) => b.bestWPM - a.bestWPM);
+        const playerRank = sorted.findIndex(p => p.name === (MultiplayerSystem?.playerName || 'You')) + 1;
+        
+        rankingContainer.innerHTML = `
+          <div class="mb-3 p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-center">
+            <span class="text-sm font-semibold">Your Rank: #${playerRank || '?'}</span>
+            <span class="text-sm ml-3">Best WPM: ${sorted.find(p => p.name === (MultiplayerSystem?.playerName || 'You'))?.bestWPM || 0}</span>
+          </div>
+          <div class="space-y-1 max-h-64 overflow-y-auto">
+            ${sorted.slice(0, 10).map((p, idx) => `
+              <div class="flex justify-between items-center p-2 ${p.name === (MultiplayerSystem?.playerName || 'You') ? 'bg-purple-200 dark:bg-purple-800/50' : 'bg-gray-100 dark:bg-gray-700'} rounded">
+                <div class="flex items-center gap-2">
+                  <span class="font-bold w-6">${idx + 1}</span>
+                  <span>${p.name}</span>
+                  ${idx === 0 ? '<span class="text-xs">👑</span>' : ''}
+                </div>
+                <div class="text-right">
+                  <span class="font-bold text-blue-500">${p.bestWPM} WPM</span>
+                  <span class="text-xs text-gray-500 ml-2">${p.bestAccuracy}%</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      },
+      
+      // Show tournaments panel
+      showTournamentsPanel() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        const activeTournaments = this.tournaments.filter(t => t.status === 'active');
+        const completedTournaments = this.tournaments.filter(t => t.status === 'completed');
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-trophy mr-2 text-yellow-500"></i>Typing Tournaments
+              </h3>
+              <button id="closeTournamentsBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <!-- Active Tournaments -->
+            <div class="mb-6">
+              <h4 class="font-semibold mb-3 text-green-600 dark:text-green-400">
+                <i class="fas fa-play-circle mr-2"></i>Active Tournaments
+              </h4>
+              ${activeTournaments.length > 0 ? activeTournaments.map(t => this.renderTournamentCard(t)).join('') : '<p class="text-center text-gray-500 py-4">No active tournaments at the moment. Check back soon!</p>'}
+            </div>
+            
+            <!-- Completed Tournaments -->
+            <div class="mb-4">
+              <h4 class="font-semibold mb-3 text-gray-600 dark:text-gray-400">
+                <i class="fas fa-check-circle mr-2"></i>Past Tournaments
+              </h4>
+              ${completedTournaments.length > 0 ? completedTournaments.slice(0, 5).map(t => this.renderCompletedCard(t)).join('') : '<p class="text-center text-gray-500 py-4">No completed tournaments yet.</p>'}
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const closeBtn = modal.querySelector('#closeTournamentsBtn');
+        closeBtn.onclick = () => modal.remove();
+        
+        // Attach join buttons
+        const joinBtns = modal.querySelectorAll('.join-tournament-btn');
+        joinBtns.forEach(btn => {
+          btn.onclick = () => {
+            const tournamentId = btn.dataset.id;
+            this.joinTournament(tournamentId);
+            modal.remove();
+            this.showTournamentDashboard(tournamentId);
+          };
+        });
+        
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Render tournament card
+      renderTournamentCard(tournament) {
+        const hasJoined = this.userTournaments.some(ut => ut.tournamentId === tournament.id);
+        const daysLeft = Math.ceil((new Date(tournament.endDate) - new Date()) / (1000 * 60 * 60 * 24));
+        
+        return `
+          <div class="mb-3 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border-2 border-purple-300 dark:border-purple-700">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-1">
+                  <h5 class="font-bold text-lg">${tournament.name}</h5>
+                  <span class="text-xs px-2 py-0.5 bg-green-500 text-white rounded-full">${tournament.type}</span>
+                </div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">${tournament.description}</p>
+                <div class="flex gap-3 mt-2 text-xs text-gray-500">
+                  <span><i class="fas fa-tachometer-alt"></i> ${tournament.difficulty}</span>
+                  <span><i class="fas fa-hourglass-half"></i> ${tournament.duration}s</span>
+                  <span><i class="fas fa-calendar"></i> ${daysLeft} days left</span>
+                  <span><i class="fas fa-users"></i> ${tournament.participants.length} players</span>
+                </div>
+                <div class="mt-2 p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                  <p class="text-xs"><i class="fas fa-gift"></i> Prize: ${tournament.prize.points} points + ${tournament.prize.badge || 'Badge'}</p>
+                </div>
+              </div>
+              <div>
+                ${!hasJoined ? `
+                  <button class="join-tournament-btn px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition" data-id="${tournament.id}">
+                    <i class="fas fa-sign-in-alt"></i> Join
+                  </button>
+                ` : `
+                  <button class="view-tournament-btn px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition" data-id="${tournament.id}">
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                `}
+              </div>
+            </div>
+          </div>
+        `;
+      },
+      
+      // Render completed tournament card
+      renderCompletedCard(tournament) {
+        return `
+          <div class="mb-2 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="font-semibold">${tournament.name}</p>
+                <p class="text-xs text-gray-500">Winner: ${tournament.winner?.name || 'Unknown'} (${tournament.winner?.bestWPM || 0} WPM)</p>
+              </div>
+              <span class="text-xs text-green-500">Completed</span>
+            </div>
+          </div>
+        `;
+      },
+      
+      // Show tournament dashboard
+      showTournamentDashboard(tournamentId) {
+        const tournament = this.tournaments.find(t => t.id === tournamentId);
+        if (!tournament) return;
+        
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        const sorted = [...tournament.participants].sort((a, b) => b.bestWPM - a.bestWPM);
+        const playerData = sorted.find(p => p.name === (MultiplayerSystem?.playerName || 'You'));
+        const playerRank = sorted.findIndex(p => p.name === (MultiplayerSystem?.playerName || 'You')) + 1;
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-trophy mr-2 text-yellow-500"></i>${tournament.name}
+              </h3>
+              <button id="closeDashboardBtn" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <!-- Tournament Info -->
+            <div class="mb-4 p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <div class="grid grid-cols-2 gap-2 text-sm">
+                <div><span class="text-gray-500">Ends:</span> ${new Date(tournament.endDate).toLocaleDateString()}</div>
+                <div><span class="text-gray-500">Players:</span> ${tournament.participants.length}</div>
+                <div><span class="text-gray-500">Your Best:</span> <span class="font-bold text-blue-500">${playerData?.bestWPM || 0} WPM</span></div>
+                <div><span class="text-gray-500">Your Rank:</span> <span class="font-bold text-purple-500">#${playerRank || '?'}</span></div>
+              </div>
+            </div>
+            
+            <!-- Submit Score -->
+            <div class="mb-4 p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <p class="text-sm font-semibold mb-2">Submit Your Best Score</p>
+              <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Complete a ${tournament.duration}s test on ${tournament.difficulty} difficulty to update your rank</p>
+              <button id="submitScoreBtn" class="w-full px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                <i class="fas fa-play"></i> Take Tournament Test
+              </button>
+            </div>
+            
+            <!-- Rankings -->
+            <h4 class="font-semibold mb-2">Leaderboard</h4>
+            <div id="tournamentRanking" class="space-y-1 max-h-96 overflow-y-auto">
+              ${sorted.slice(0, 20).map((p, idx) => `
+                <div class="flex justify-between items-center p-2 ${p.name === (MultiplayerSystem?.playerName || 'You') ? 'bg-purple-200 dark:bg-purple-800/50' : 'bg-gray-100 dark:bg-gray-700'} rounded">
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold w-6">${idx + 1}</span>
+                    <span>${p.name}</span>
+                    ${idx === 0 ? '<span class="text-xs">👑</span>' : ''}
+                  </div>
+                  <div class="text-right">
+                    <span class="font-bold text-blue-500">${p.bestWPM} WPM</span>
+                    <span class="text-xs text-gray-500 ml-2">${p.bestAccuracy}%</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            ${tournament.participants.length === 0 ? '<p class="text-center text-gray-500 py-4">No participants yet. Be the first to join!</p>' : ''}
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const submitBtn = modal.querySelector('#submitScoreBtn');
+        submitBtn.onclick = () => {
+          modal.remove();
+          this.startTournamentTest(tournament);
+        };
+        
+        const closeBtn = modal.querySelector('#closeDashboardBtn');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Start tournament test
+      startTournamentTest(tournament) {
+        // Set tournament settings
+        const oldDifficulty = difficulty;
+        const oldDuration = totalDuration;
+        
+        difficulty = tournament.difficulty;
+        totalDuration = tournament.duration;
+        timeLeft = tournament.duration;
+        elements.timeElem.innerText = timeLeft + "s";
+        
+        // Load new quote
+        loadQuote();
+        
+        // Show tournament mode indicator
+        let indicator = document.getElementById('tournamentIndicator');
+        if (!indicator) {
+          indicator = document.createElement('div');
+          indicator.id = 'tournamentIndicator';
+          indicator.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full shadow-lg z-40';
+          document.body.appendChild(indicator);
+        }
+        indicator.innerHTML = `<i class="fas fa-trophy mr-1"></i> Tournament Mode: ${tournament.name}`;
+        
+        // Store original finish test
+        const originalFinish = finishTest;
+        
+        // Override finish test for tournament
+        window.finishTest = function() {
+          originalFinish();
+          
+          const testResult = {
+            wpm: parseInt(elements.wpmElem.innerText),
+            accuracy: parseInt(elements.accuracyElem.innerText),
+            errors: parseInt(elements.errorsElem.innerText),
+            duration: tournament.duration
+          };
+          
+          TournamentSystem.submitScore(tournament.id, testResult);
+          
+          // Restore original finish test
+          window.finishTest = originalFinish;
+          
+          // Remove indicator
+          if (indicator) indicator.remove();
+          
+          // Restore settings
+          difficulty = oldDifficulty;
+          totalDuration = oldDuration;
+          
+          TournamentSystem.showNotification('Score submitted to tournament!', 'success');
+          TournamentSystem.showTournamentDashboard(tournament.id);
+        };
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        }`;
+        notification.style.animation = 'slideUp 0.3s ease';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        const tournamentBtn = document.getElementById('tournamentBtn');
+        if (tournamentBtn) {
+          tournamentBtn.onclick = () => this.showTournamentsPanel();
+        }
+      }
+    };
