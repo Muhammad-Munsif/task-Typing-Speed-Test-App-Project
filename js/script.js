@@ -5619,139 +5619,139 @@ const PWASystem = {
 
 PWASystem.init();
 
-    // ==================== GRAMMAR CHECK SYSTEM (DAY 16) ====================
-    const GrammarCheckSystem = {
-      isEnabled: true,
-      grammarIssues: [],
-      
-      // Common grammar patterns
-      grammarRules: [
-        {
-          pattern: /\bi\b(?=\s+[a-z])/gi,
-          replacement: 'I',
-          message: 'Pronoun "I" should be capitalized'
-        },
-        {
-          pattern: /\b(their|there|they're)\b(?!.*?\b(?:their|there|they're)\b)/gi,
-          message: 'Check homophone usage (their/there/they\'re)'
-        },
-        {
-          pattern: /\b(your|you're)\b(?!.*?\b(?:your|you're)\b)/gi,
-          message: 'Check homophone usage (your/you\'re)'
-        },
-        {
-          pattern: /\b(its|it's)\b(?!.*?\b(?:its|it's)\b)/gi,
-          message: 'Check homophone usage (its/it\'s)'
-        },
-        {
-          pattern: /\b(affect|effect)\b/gi,
-          message: 'Check usage: affect (verb) vs effect (noun)'
-        },
-        {
-          pattern: /\b(then|than)\b/gi,
-          message: 'Check usage: then (time) vs than (comparison)'
-        },
-        {
-          pattern: /\b(to|too|two)\b/gi,
-          message: 'Check homophone usage (to/too/two)'
-        },
-        {
-          pattern: /\b(weather|whether)\b/gi,
-          message: 'Check spelling: weather vs whether'
-        },
-        {
-          pattern: /\b(loose|lose)\b/gi,
-          message: 'Check spelling: loose (not tight) vs lose (misplace)'
-        },
-        {
-          pattern: /\s{2,}/g,
-          message: 'Extra spaces detected'
-        }
-      ],
-      
-      // Initialize
-      init() {
-        this.loadSettings();
-        this.setupEventListeners();
-      },
-      
-      // Load settings
-      loadSettings() {
-        const saved = localStorage.getItem('grammarCheckEnabled');
-        if (saved !== null) {
-          this.isEnabled = saved === 'true';
-        }
-      },
-      
-      // Save settings
-      saveSettings() {
-        localStorage.setItem('grammarCheckEnabled', this.isEnabled);
-      },
-      
-      // Check text for grammar issues
-      checkGrammar(text) {
-        if (!this.isEnabled || !text) return [];
-        
-        const issues = [];
-        
-        this.grammarRules.forEach(rule => {
-          const matches = text.match(rule.pattern);
-          if (matches && matches.length > 0) {
-            issues.push({
-              type: 'grammar',
-              message: rule.message,
-              count: matches.length,
-              suggestion: rule.replacement
-            });
-          }
+// ==================== GRAMMAR CHECK SYSTEM (DAY 16) ====================
+const GrammarCheckSystem = {
+  isEnabled: true,
+  grammarIssues: [],
+
+  // Common grammar patterns
+  grammarRules: [
+    {
+      pattern: /\bi\b(?=\s+[a-z])/gi,
+      replacement: 'I',
+      message: 'Pronoun "I" should be capitalized'
+    },
+    {
+      pattern: /\b(their|there|they're)\b(?!.*?\b(?:their|there|they're)\b)/gi,
+      message: 'Check homophone usage (their/there/they\'re)'
+    },
+    {
+      pattern: /\b(your|you're)\b(?!.*?\b(?:your|you're)\b)/gi,
+      message: 'Check homophone usage (your/you\'re)'
+    },
+    {
+      pattern: /\b(its|it's)\b(?!.*?\b(?:its|it's)\b)/gi,
+      message: 'Check homophone usage (its/it\'s)'
+    },
+    {
+      pattern: /\b(affect|effect)\b/gi,
+      message: 'Check usage: affect (verb) vs effect (noun)'
+    },
+    {
+      pattern: /\b(then|than)\b/gi,
+      message: 'Check usage: then (time) vs than (comparison)'
+    },
+    {
+      pattern: /\b(to|too|two)\b/gi,
+      message: 'Check homophone usage (to/too/two)'
+    },
+    {
+      pattern: /\b(weather|whether)\b/gi,
+      message: 'Check spelling: weather vs whether'
+    },
+    {
+      pattern: /\b(loose|lose)\b/gi,
+      message: 'Check spelling: loose (not tight) vs lose (misplace)'
+    },
+    {
+      pattern: /\s{2,}/g,
+      message: 'Extra spaces detected'
+    }
+  ],
+
+  // Initialize
+  init() {
+    this.loadSettings();
+    this.setupEventListeners();
+  },
+
+  // Load settings
+  loadSettings() {
+    const saved = localStorage.getItem('grammarCheckEnabled');
+    if (saved !== null) {
+      this.isEnabled = saved === 'true';
+    }
+  },
+
+  // Save settings
+  saveSettings() {
+    localStorage.setItem('grammarCheckEnabled', this.isEnabled);
+  },
+
+  // Check text for grammar issues
+  checkGrammar(text) {
+    if (!this.isEnabled || !text) return [];
+
+    const issues = [];
+
+    this.grammarRules.forEach(rule => {
+      const matches = text.match(rule.pattern);
+      if (matches && matches.length > 0) {
+        issues.push({
+          type: 'grammar',
+          message: rule.message,
+          count: matches.length,
+          suggestion: rule.replacement
         });
-        
-        // Check for repeated words
-        const repeatedWordPattern = /\b(\w+)\s+\1\b/gi;
-        let repeatedMatch;
-        while ((repeatedMatch = repeatedWordPattern.exec(text)) !== null) {
-          issues.push({
-            type: 'repetition',
-            message: `Repeated word: "${repeatedMatch[1]}"`,
-            position: repeatedMatch.index
-          });
-        }
-        
-        // Check for sentence length
-        const sentences = text.split(/[.!?]+/);
-        sentences.forEach(sentence => {
-          if (sentence.trim().split(/\s+/).length > 25) {
-            issues.push({
-              type: 'style',
-              message: 'Consider breaking this long sentence'
-            });
-          }
+      }
+    });
+
+    // Check for repeated words
+    const repeatedWordPattern = /\b(\w+)\s+\1\b/gi;
+    let repeatedMatch;
+    while ((repeatedMatch = repeatedWordPattern.exec(text)) !== null) {
+      issues.push({
+        type: 'repetition',
+        message: `Repeated word: "${repeatedMatch[1]}"`,
+        position: repeatedMatch.index
+      });
+    }
+
+    // Check for sentence length
+    const sentences = text.split(/[.!?]+/);
+    sentences.forEach(sentence => {
+      if (sentence.trim().split(/\s+/).length > 25) {
+        issues.push({
+          type: 'style',
+          message: 'Consider breaking this long sentence'
         });
-        
-        this.grammarIssues = issues;
-        this.displayGrammarWarnings(issues);
-        
-        return issues;
-      },
-      
-      // Display grammar warnings
-      displayGrammarWarnings(issues) {
-        let warningContainer = document.getElementById('grammarWarnings');
-        
-        if (!warningContainer) {
-          warningContainer = document.createElement('div');
-          warningContainer.id = 'grammarWarnings';
-          warningContainer.className = 'fixed bottom-20 left-5 right-5 md:left-auto md:right-5 md:w-80 bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 rounded-lg p-3 z-30 shadow-lg';
-          document.body.appendChild(warningContainer);
-        }
-        
-        if (issues.length === 0) {
-          warningContainer.style.display = 'none';
-          return;
-        }
-        
-        warningContainer.style.display = 'block';
-        warningContainer.innerHTML = `
+      }
+    });
+
+    this.grammarIssues = issues;
+    this.displayGrammarWarnings(issues);
+
+    return issues;
+  },
+
+  // Display grammar warnings
+  displayGrammarWarnings(issues) {
+    let warningContainer = document.getElementById('grammarWarnings');
+
+    if (!warningContainer) {
+      warningContainer = document.createElement('div');
+      warningContainer.id = 'grammarWarnings';
+      warningContainer.className = 'fixed bottom-20 left-5 right-5 md:left-auto md:right-5 md:w-80 bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 rounded-lg p-3 z-30 shadow-lg';
+      document.body.appendChild(warningContainer);
+    }
+
+    if (issues.length === 0) {
+      warningContainer.style.display = 'none';
+      return;
+    }
+
+    warningContainer.style.display = 'block';
+    warningContainer.innerHTML = `
           <div class="flex items-start gap-2">
             <i class="fas fa-exclamation-triangle text-yellow-500 mt-0.5"></i>
             <div class="flex-1">
@@ -5766,22 +5766,22 @@ PWASystem.init();
             </button>
           </div>
         `;
-        
-        const closeBtn = warningContainer.querySelector('#closeGrammarWarnings');
-        if (closeBtn) {
-          closeBtn.onclick = () => {
-            warningContainer.style.display = 'none';
-          };
-        }
-      },
-      
-      // Show grammar settings panel
-      showGrammarSettings() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+
+    const closeBtn = warningContainer.querySelector('#closeGrammarWarnings');
+    if (closeBtn) {
+      closeBtn.onclick = () => {
+        warningContainer.style.display = 'none';
+      };
+    }
+  },
+
+  // Show grammar settings panel
+  showGrammarSettings() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-xl font-bold text-gray-800 dark:text-white">
@@ -5816,35 +5816,35 @@ PWASystem.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const toggle = modal.querySelector('#grammarToggle');
-        toggle.onchange = (e) => {
-          this.isEnabled = e.target.checked;
-          this.saveSettings();
-          if (!this.isEnabled) {
-            const warnings = document.getElementById('grammarWarnings');
-            if (warnings) warnings.style.display = 'none';
-          }
-        };
-        
-        const closeBtn = modal.querySelector('#closeGrammarSettings') || modal.querySelector('#closeGrammarBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const grammarBtn = document.getElementById('grammarCheckBtn');
-        if (grammarBtn) {
-          grammarBtn.onclick = () => this.showGrammarSettings();
-        }
-        
-        // Check grammar on input
-        elements.quoteInput.addEventListener('input', () => {
-          this.checkGrammar(elements.quoteInput.value);
-        });
+
+    document.body.appendChild(modal);
+
+    const toggle = modal.querySelector('#grammarToggle');
+    toggle.onchange = (e) => {
+      this.isEnabled = e.target.checked;
+      this.saveSettings();
+      if (!this.isEnabled) {
+        const warnings = document.getElementById('grammarWarnings');
+        if (warnings) warnings.style.display = 'none';
       }
     };
+
+    const closeBtn = modal.querySelector('#closeGrammarSettings') || modal.querySelector('#closeGrammarBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const grammarBtn = document.getElementById('grammarCheckBtn');
+    if (grammarBtn) {
+      grammarBtn.onclick = () => this.showGrammarSettings();
+    }
+
+    // Check grammar on input
+    elements.quoteInput.addEventListener('input', () => {
+      this.checkGrammar(elements.quoteInput.value);
+    });
+  }
+};
 GrammarCheckSystem.init();
