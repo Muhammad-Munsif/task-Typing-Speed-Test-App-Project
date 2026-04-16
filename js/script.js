@@ -6348,3 +6348,604 @@ const TournamentSystem = {
 };
 // Initialize Tournament System
 TournamentSystem.init();
+
+    // ==================== CLASSROOM & TEACHER DASHBOARD (DAY 18) ====================
+    const ClassroomSystem = {
+      // Classroom data
+      currentUser: null,
+      classes: [],
+      currentClass: null,
+      assignments: [],
+      
+      // User roles
+      roles: {
+        STUDENT: 'student',
+        TEACHER: 'teacher',
+        ADMIN: 'admin'
+      },
+      
+      // Initialize
+      init() {
+        this.loadData();
+        this.setupEventListeners();
+        this.checkUserRole();
+      },
+      
+      // Load data from storage
+      loadData() {
+        const savedUser = localStorage.getItem('velocityUser');
+        if (savedUser) {
+          this.currentUser = JSON.parse(savedUser);
+        }
+        
+        const savedClasses = localStorage.getItem('velocityClasses');
+        if (savedClasses) {
+          this.classes = JSON.parse(savedClasses);
+        } else {
+          this.generateDemoClass();
+        }
+        
+        const savedAssignments = localStorage.getItem('velocityAssignments');
+        if (savedAssignments) {
+          this.assignments = JSON.parse(savedAssignments);
+        }
+      },
+      
+      // Generate demo class for testing
+      generateDemoClass() {
+        this.classes = [
+          {
+            id: 'class_001',
+            name: 'Typing 101',
+            code: 'TYPING101',
+            teacher: 'Professor Smith',
+            teacherId: 'teacher_001',
+            students: [
+              { id: 'student_001', name: 'Alice Johnson', joinedAt: new Date().toISOString(), testsCompleted: 12, avgWPM: 45, avgAccuracy: 88 },
+              { id: 'student_002', name: 'Bob Williams', joinedAt: new Date().toISOString(), testsCompleted: 8, avgWPM: 52, avgAccuracy: 92 },
+              { id: 'student_003', name: 'Charlie Brown', joinedAt: new Date().toISOString(), testsCompleted: 15, avgWPM: 48, avgAccuracy: 85 }
+            ],
+            createdAt: new Date().toISOString(),
+            assignments: []
+          }
+        ];
+        this.saveClasses();
+      },
+      
+      // Save data
+      saveData() {
+        if (this.currentUser) {
+          localStorage.setItem('velocityUser', JSON.stringify(this.currentUser));
+        }
+        this.saveClasses();
+        localStorage.setItem('velocityAssignments', JSON.stringify(this.assignments));
+      },
+      
+      saveClasses() {
+        localStorage.setItem('velocityClasses', JSON.stringify(this.classes));
+      },
+      
+      // Check user role
+      checkUserRole() {
+        if (!this.currentUser) {
+          // Show role selection
+          this.showRoleSelection();
+        }
+      },
+      
+      // Show role selection
+      showRoleSelection() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl text-center">
+            <div class="text-5xl mb-4">📚</div>
+            <h3 class="text-2xl font-bold mb-2 text-gray-800 dark:text-white">Welcome to VelocityType Classroom</h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">Are you a student or a teacher?</p>
+            
+            <div class="space-y-3">
+              <button id="studentRoleBtn" class="w-full px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-user-graduate"></i> I'm a Student
+              </button>
+              <button id="teacherRoleBtn" class="w-full px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                <i class="fas fa-chalkboard-user"></i> I'm a Teacher
+              </button>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <button id="skipClassroomBtn" class="text-sm text-gray-500 hover:text-gray-700">Skip for now</button>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const studentBtn = modal.querySelector('#studentRoleBtn');
+        const teacherBtn = modal.querySelector('#teacherRoleBtn');
+        const skipBtn = modal.querySelector('#skipClassroomBtn');
+        
+        studentBtn.onclick = () => {
+          this.currentUser = { role: this.roles.STUDENT, name: '', classCode: '' };
+          this.saveData();
+          modal.remove();
+          this.showJoinClassModal();
+        };
+        
+        teacherBtn.onclick = () => {
+          this.currentUser = { role: this.roles.TEACHER, name: '', school: '' };
+          this.saveData();
+          modal.remove();
+          this.showTeacherSetup();
+        };
+        
+        skipBtn.onclick = () => modal.remove();
+      },
+      
+      // Show join class modal for students
+      showJoinClassModal() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Join a Class</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Enter your class code provided by your teacher</p>
+            
+            <input type="text" id="classCodeInput" placeholder="Enter class code (e.g., TYPING101)" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 mb-4">
+            
+            <input type="text" id="studentNameInput" placeholder="Your full name" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 mb-4">
+            
+            <div class="flex gap-3">
+              <button id="joinClassBtn" class="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                <i class="fas fa-sign-in-alt"></i> Join Class
+              </button>
+              <button id="cancelJoinBtn" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition">
+                Cancel
+              </button>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const joinBtn = modal.querySelector('#joinClassBtn');
+        const cancelBtn = modal.querySelector('#cancelJoinBtn');
+        const classCodeInput = modal.querySelector('#classCodeInput');
+        const studentNameInput = modal.querySelector('#studentNameInput');
+        
+        joinBtn.onclick = () => {
+          const classCode = classCodeInput.value.toUpperCase();
+          const studentName = studentNameInput.value;
+          
+          if (!classCode || !studentName) {
+            alert('Please enter both class code and your name');
+            return;
+          }
+          
+          const classToJoin = this.classes.find(c => c.code === classCode);
+          if (!classToJoin) {
+            alert('Invalid class code. Please check and try again.');
+            return;
+          }
+          
+          this.currentUser.name = studentName;
+          this.currentUser.classId = classToJoin.id;
+          this.currentUser.classCode = classCode;
+          this.saveData();
+          
+          modal.remove();
+          this.showStudentDashboard();
+        };
+        
+        cancelBtn.onclick = () => modal.remove();
+      },
+      
+      // Show teacher setup
+      showTeacherSetup() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-gray-800 dark:text-white">Teacher Setup</h3>
+            
+            <input type="text" id="teacherNameInput" placeholder="Your full name" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 mb-4">
+            
+            <input type="text" id="schoolNameInput" placeholder="School/Institution name" class="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 mb-4">
+            
+            <div class="flex gap-3">
+              <button id="createTeacherBtn" class="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition">
+                <i class="fas fa-check"></i> Get Started
+              </button>
+              <button id="cancelTeacherBtn" class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition">
+                Cancel
+              </button>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const createBtn = modal.querySelector('#createTeacherBtn');
+        const cancelBtn = modal.querySelector('#cancelTeacherBtn');
+        const teacherNameInput = modal.querySelector('#teacherNameInput');
+        const schoolNameInput = modal.querySelector('#schoolNameInput');
+        
+        createBtn.onclick = () => {
+          const teacherName = teacherNameInput.value;
+          const schoolName = schoolNameInput.value;
+          
+          if (!teacherName || !schoolName) {
+            alert('Please enter both your name and school name');
+            return;
+          }
+          
+          this.currentUser.name = teacherName;
+          this.currentUser.school = schoolName;
+          this.currentUser.id = 'teacher_' + Date.now();
+          this.saveData();
+          
+          modal.remove();
+          this.showTeacherDashboard();
+        };
+        
+        cancelBtn.onclick = () => modal.remove();
+      },
+      
+      // Show student dashboard
+      showStudentDashboard() {
+        const classInfo = this.classes.find(c => c.id === this.currentUser.classId);
+        const studentInfo = classInfo?.students.find(s => s.name === this.currentUser.name);
+        
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-graduation-cap mr-2 text-blue-500"></i>Student Dashboard
+              </h3>
+              <button id="closeStudentDashboard" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <div class="mb-4 p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <p class="font-semibold">Welcome, ${this.currentUser.name}!</p>
+              <p class="text-sm">Class: ${classInfo?.name} (${classInfo?.code})</p>
+              <p class="text-sm">Teacher: ${classInfo?.teacher}</p>
+            </div>
+            
+            <!-- Student Stats -->
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg text-center">
+                <p class="text-xs">Tests Completed</p>
+                <p class="text-2xl font-bold">${studentInfo?.testsCompleted || 0}</p>
+              </div>
+              <div class="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-center">
+                <p class="text-xs">Average WPM</p>
+                <p class="text-2xl font-bold">${studentInfo?.avgWPM || 0}</p>
+              </div>
+              <div class="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg text-center">
+                <p class="text-xs">Average Accuracy</p>
+                <p class="text-2xl font-bold">${studentInfo?.avgAccuracy || 0}%</p>
+              </div>
+              <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-center">
+                <p class="text-xs">Class Rank</p>
+                <p class="text-2xl font-bold">#${this.getStudentRank(classInfo, this.currentUser.name)}</p>
+              </div>
+            </div>
+            
+            <!-- Class Leaderboard -->
+            <h4 class="font-semibold mb-2">Class Leaderboard</h4>
+            <div class="space-y-1 max-h-64 overflow-y-auto mb-4">
+              ${this.renderClassLeaderboard(classInfo)}
+            </div>
+            
+            <button id="closeDashboardBtn" class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
+              Close
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const closeBtn = modal.querySelector('#closeStudentDashboard') || modal.querySelector('#closeDashboardBtn');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Get student rank in class
+      getStudentRank(classInfo, studentName) {
+        if (!classInfo || !classInfo.students) return '?';
+        const sorted = [...classInfo.students].sort((a, b) => b.avgWPM - a.avgWPM);
+        const rank = sorted.findIndex(s => s.name === studentName) + 1;
+        return rank || '?';
+      },
+      
+      // Render class leaderboard
+      renderClassLeaderboard(classInfo) {
+        if (!classInfo || !classInfo.students || classInfo.students.length === 0) {
+          return '<p class="text-center text-gray-500">No students yet</p>';
+        }
+        
+        const sorted = [...classInfo.students].sort((a, b) => b.avgWPM - a.avgWPM);
+        
+        return sorted.map((student, idx) => `
+          <div class="flex justify-between items-center p-2 ${student.name === this.currentUser?.name ? 'bg-purple-100 dark:bg-purple-900/30' : 'bg-gray-100 dark:bg-gray-700'} rounded">
+            <div class="flex items-center gap-2">
+              <span class="font-bold w-6">${idx + 1}</span>
+              <span>${student.name}</span>
+            </div>
+            <div class="text-right">
+              <span class="font-bold text-blue-500">${student.avgWPM} WPM</span>
+              <span class="text-xs text-gray-500 ml-2">${student.avgAccuracy}%</span>
+            </div>
+          </div>
+        `).join('');
+      },
+      
+      // Show teacher dashboard
+      showTeacherDashboard() {
+        const myClasses = this.classes.filter(c => c.teacherId === this.currentUser.id || c.teacher === this.currentUser.name);
+        
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-chalkboard-user mr-2 text-purple-500"></i>Teacher Dashboard
+              </h3>
+              <button id="closeTeacherDashboard" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <div class="mb-4 p-4 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+              <p class="font-semibold">Welcome, ${this.currentUser.name}!</p>
+              <p class="text-sm">${this.currentUser.school}</p>
+            </div>
+            
+            <!-- Create New Class -->
+            <div class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 rounded-xl">
+              <h4 class="font-semibold mb-2">Create New Class</h4>
+              <div class="flex gap-2">
+                <input type="text" id="newClassName" placeholder="Class name" class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700">
+                <button id="createClassBtn" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                  <i class="fas fa-plus"></i> Create
+                </button>
+              </div>
+            </div>
+            
+            <!-- My Classes -->
+            <h4 class="font-semibold mb-2">My Classes (${myClasses.length})</h4>
+            <div class="space-y-3 mb-4 max-h-96 overflow-y-auto">
+              ${myClasses.length > 0 ? myClasses.map(c => this.renderTeacherClassCard(c)).join('') : '<p class="text-center text-gray-500 py-4">No classes yet. Create your first class above!</p>'}
+            </div>
+            
+            <button id="closeTeacherBtn" class="w-full px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition">
+              Close
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const createBtn = modal.querySelector('#createClassBtn');
+        const newClassNameInput = modal.querySelector('#newClassName');
+        
+        createBtn.onclick = () => {
+          const className = newClassNameInput.value;
+          if (!className) {
+            alert('Please enter a class name');
+            return;
+          }
+          
+          this.createClass(className);
+          modal.remove();
+          this.showTeacherDashboard();
+        };
+        
+        const closeBtn = modal.querySelector('#closeTeacherDashboard') || modal.querySelector('#closeTeacherBtn');
+        closeBtn.onclick = () => modal.remove();
+        
+        // Attach view buttons
+        const viewBtns = modal.querySelectorAll('.view-class-btn');
+        viewBtns.forEach(btn => {
+          btn.onclick = () => {
+            const classId = btn.dataset.id;
+            this.showClassDetails(classId);
+            modal.remove();
+          };
+        });
+        
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Create new class
+      createClass(className) {
+        const classCode = this.generateClassCode();
+        const newClass = {
+          id: 'class_' + Date.now(),
+          name: className,
+          code: classCode,
+          teacher: this.currentUser.name,
+          teacherId: this.currentUser.id,
+          students: [],
+          createdAt: new Date().toISOString(),
+          assignments: []
+        };
+        
+        this.classes.push(newClass);
+        this.saveClasses();
+        this.showNotification(`Class "${className}" created! Class code: ${classCode}`, 'success');
+      },
+      
+      // Generate unique class code
+      generateClassCode() {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const numbers = '0123456789';
+        let code = '';
+        for (let i = 0; i < 3; i++) code += letters[Math.floor(Math.random() * letters.length)];
+        for (let i = 0; i < 3; i++) code += numbers[Math.floor(Math.random() * numbers.length)];
+        return code;
+      },
+      
+      // Render teacher class card
+      renderTeacherClassCard(classItem) {
+        const avgWPM = classItem.students.reduce((sum, s) => sum + s.avgWPM, 0) / (classItem.students.length || 1);
+        
+        return `
+          <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+            <div class="flex justify-between items-start">
+              <div>
+                <p class="font-semibold">${classItem.name}</p>
+                <p class="text-xs text-gray-500">Code: ${classItem.code}</p>
+                <p class="text-xs text-gray-500">${classItem.students.length} students • Avg WPM: ${Math.round(avgWPM)}</p>
+              </div>
+              <button class="view-class-btn px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm" data-id="${classItem.id}">
+                <i class="fas fa-eye"></i> View
+              </button>
+            </div>
+          </div>
+        `;
+      },
+      
+      // Show class details for teacher
+      showClassDetails(classId) {
+        const classItem = this.classes.find(c => c.id === classId);
+        if (!classItem) return;
+        
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        const sortedStudents = [...classItem.students].sort((a, b) => b.avgWPM - a.avgWPM);
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-users mr-2 text-blue-500"></i>${classItem.name}
+              </h3>
+              <button id="closeClassDetails" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <div class="mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <p><strong>Class Code:</strong> <span class="font-mono text-lg">${classItem.code}</span></p>
+              <p><strong>Teacher:</strong> ${classItem.teacher}</p>
+              <p><strong>Students:</strong> ${classItem.students.length}</p>
+              <p><strong>Created:</strong> ${new Date(classItem.createdAt).toLocaleDateString()}</p>
+            </div>
+            
+            <h4 class="font-semibold mb-2">Student Rankings</h4>
+            <div class="space-y-1 max-h-96 overflow-y-auto mb-4">
+              ${sortedStudents.map((student, idx) => `
+                <div class="flex justify-between items-center p-2 bg-gray-100 dark:bg-gray-700 rounded">
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold w-6">${idx + 1}</span>
+                    <span>${student.name}</span>
+                  </div>
+                  <div class="flex gap-4 text-right">
+                    <span class="text-blue-500">${student.avgWPM} WPM</span>
+                    <span class="text-green-500">${student.avgAccuracy}%</span>
+                    <span>${student.testsCompleted} tests</span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            
+            ${classItem.students.length === 0 ? '<p class="text-center text-gray-500 py-4">No students have joined yet. Share the class code!</p>' : ''}
+            
+            <div class="flex gap-3">
+              <button id="shareClassCodeBtn" class="flex-1 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                <i class="fas fa-share-alt"></i> Share Class Code
+              </button>
+              <button id="closeDetailsBtn" class="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
+                Close
+              </button>
+            </div>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const shareBtn = modal.querySelector('#shareClassCodeBtn');
+        shareBtn.onclick = () => {
+          navigator.clipboard.writeText(`Join my VelocityType class with code: ${classItem.code}`);
+          this.showNotification('Class code copied to clipboard!', 'success');
+        };
+        
+        const closeBtn = modal.querySelector('#closeClassDetails') || modal.querySelector('#closeDetailsBtn');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Update student progress after test
+      updateStudentProgress(testResult) {
+        if (!this.currentUser || this.currentUser.role !== this.roles.STUDENT) return;
+        
+        const classItem = this.classes.find(c => c.id === this.currentUser.classId);
+        if (!classItem) return;
+        
+        const student = classItem.students.find(s => s.name === this.currentUser.name);
+        if (student) {
+          // Update student stats
+          const totalWPM = (student.avgWPM * student.testsCompleted) + testResult.wpm;
+          const totalAccuracy = (student.avgAccuracy * student.testsCompleted) + testResult.accuracy;
+          student.testsCompleted++;
+          student.avgWPM = Math.round(totalWPM / student.testsCompleted);
+          student.avgAccuracy = Math.round(totalAccuracy / student.testsCompleted);
+        } else {
+          // Add new student
+          classItem.students.push({
+            id: 'student_' + Date.now(),
+            name: this.currentUser.name,
+            joinedAt: new Date().toISOString(),
+            testsCompleted: 1,
+            avgWPM: testResult.wpm,
+            avgAccuracy: testResult.accuracy
+          });
+        }
+        
+        this.saveClasses();
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+        }`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        const classroomBtn = document.getElementById('classroomBtn');
+        if (classroomBtn) {
+          classroomBtn.onclick = () => {
+            if (!this.currentUser) {
+              this.showRoleSelection();
+            } else if (this.currentUser.role === this.roles.STUDENT) {
+              this.showStudentDashboard();
+            } else if (this.currentUser.role === this.roles.TEACHER) {
+              this.showTeacherDashboard();
+            }
+          };
+        }
+      }
+    };
