@@ -5358,6 +5358,7 @@ const ReplaySystem = {
   }
 };
 
+
 // Modify handleInput to record keystrokes
 const originalRecordHandleInput = handleInput;
 handleInput = function () {
@@ -5529,6 +5530,7 @@ const SocialShareSystem = {
     }
   }
 };
+SocialShareSystem.setupEventListeners();
 
 // ==================== PWA INSTALLATION (DAY 15) ====================
 const PWASystem = {
@@ -5615,8 +5617,5 @@ const PWASystem = {
   }
 };
 
-// Initialize Day 13-16 Systems
-ReplaySystem.init();
-SocialShareSystem.setupEventListeners();
 PWASystem.init();
 GrammarCheckSystem.init();
