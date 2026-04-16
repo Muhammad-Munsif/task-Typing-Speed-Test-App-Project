@@ -6346,5 +6346,5 @@ const TournamentSystem = {
     }
   }
 };
-    // Initialize Tournament System
-    TournamentSystem.init();
+// Initialize Tournament System
+TournamentSystem.init();
