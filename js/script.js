@@ -7253,124 +7253,124 @@ const AIDifficultySystem = {
 // Initialize AI Difficulty System
 AIDifficultySystem.init();
 
-    // ==================== CUSTOM THEMES MARKETPLACE (DAY 20) ====================
-    const ThemeMarketplace = {
-      // Theme storage
-      customThemes: [],
-      activeTheme: null,
-      marketplaceThemes: [],
-      
-      // Default themes
-      defaultThemes: [
-        { id: 'default_light', name: 'Default Light', type: 'light', primary: '#3b82f6', background: 'linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%)', cardBg: 'rgba(255,255,255,0.96)', textColor: '#1f2937', isDefault: true },
-        { id: 'default_dark', name: 'Default Dark', type: 'dark', primary: '#3b82f6', background: 'radial-gradient(circle at 20% 30%, #0a0f1a, #030712)', cardBg: 'rgba(17,24,39,0.94)', textColor: '#f3f4f6', isDefault: true },
-        { id: 'ocean_breeze', name: 'Ocean Breeze', type: 'light', primary: '#06b6d4', background: 'linear-gradient(135deg, #cffafe 0%, #e0f2fe 100%)', cardBg: 'rgba(255,255,255,0.95)', textColor: '#164e63', creator: 'Community', downloads: 1234 },
-        { id: 'midnight_aurora', name: 'Midnight Aurora', type: 'dark', primary: '#a855f7', background: 'linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%)', cardBg: 'rgba(30,27,75,0.9)', textColor: '#e9d5ff', creator: 'Community', downloads: 892 },
-        { id: 'forest_green', name: 'Forest Green', type: 'dark', primary: '#22c55e', background: 'linear-gradient(135deg, #064e3b 0%, #022c22 100%)', cardBg: 'rgba(6,78,59,0.9)', textColor: '#bbf7d0', creator: 'Community', downloads: 567 },
-        { id: 'sunset_glow', name: 'Sunset Glow', type: 'light', primary: '#f97316', background: 'linear-gradient(135deg, #fed7aa 0%, #ffedd5 100%)', cardBg: 'rgba(255,255,255,0.95)', textColor: '#7c2d12', creator: 'Community', downloads: 2100 },
-        { id: 'candy_pink', name: 'Candy Pink', type: 'light', primary: '#ec4899', background: 'linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%)', cardBg: 'rgba(255,255,255,0.96)', textColor: '#831843', creator: 'Community', downloads: 445 },
-        { id: 'matrix_green', name: 'Matrix Green', type: 'dark', primary: '#00ff41', background: '#0a0f0a', cardBg: 'rgba(0,20,0,0.95)', textColor: '#00ff41', creator: 'Community', downloads: 678 }
-      ],
-      
-      // Initialize
-      init() {
-        this.loadThemes();
-        this.setupEventListeners();
-        this.applyTheme(this.activeTheme || this.defaultThemes[0]);
-      },
-      
-      // Load themes from storage
-      loadThemes() {
-        const savedThemes = localStorage.getItem('customThemes');
-        if (savedThemes) {
-          this.customThemes = JSON.parse(savedThemes);
-        }
-        
-        const savedActive = localStorage.getItem('activeTheme');
-        if (savedActive) {
-          this.activeTheme = JSON.parse(savedActive);
-        }
-        
-        // Merge default themes with custom
-        this.marketplaceThemes = [...this.defaultThemes, ...this.customThemes];
-      },
-      
-      // Save themes
-      saveThemes() {
-        localStorage.setItem('customThemes', JSON.stringify(this.customThemes));
-        if (this.activeTheme) {
-          localStorage.setItem('activeTheme', JSON.stringify(this.activeTheme));
-        }
-      },
-      
-      // Apply theme to the app
-      applyTheme(theme) {
-        if (!theme) return;
-        
-        this.activeTheme = theme;
-        
-        // Apply CSS variables
-        document.documentElement.style.setProperty('--primary', theme.primary);
-        
-        // Apply background
-        document.body.style.background = theme.background;
-        document.body.style.color = theme.textColor;
-        
-        // Apply card background
-        const typingTest = document.querySelector('.typing-test');
-        if (typingTest) {
-          typingTest.style.background = theme.cardBg;
-        }
-        
-        // Save to localStorage
-        this.saveThemes();
-        
-        this.showNotification(`Theme applied: ${theme.name}`, 'success');
-      },
-      
-      // Create new custom theme
-      createTheme(themeData) {
-        const newTheme = {
-          id: 'custom_' + Date.now(),
-          name: themeData.name,
-          type: themeData.type,
-          primary: themeData.primary,
-          background: themeData.background,
-          cardBg: themeData.cardBg,
-          textColor: themeData.textColor,
-          creator: MultiplayerSystem?.playerName || 'You',
-          downloads: 0,
-          createdAt: new Date().toISOString()
-        };
-        
-        this.customThemes.push(newTheme);
-        this.marketplaceThemes.push(newTheme);
-        this.saveThemes();
-        
-        this.showNotification(`Theme "${newTheme.name}" created!`, 'success');
-        return newTheme;
-      },
-      
-      // Delete custom theme
-      deleteTheme(themeId) {
-        this.customThemes = this.customThemes.filter(t => t.id !== themeId);
-        this.marketplaceThemes = [...this.defaultThemes, ...this.customThemes];
-        this.saveThemes();
-        
-        if (this.activeTheme?.id === themeId) {
-          this.applyTheme(this.defaultThemes[0]);
-        }
-        
-        this.showNotification('Theme deleted', 'success');
-      },
-      
-      // Show theme marketplace
-      showMarketplace() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+// ==================== CUSTOM THEMES MARKETPLACE (DAY 20) ====================
+const ThemeMarketplace = {
+  // Theme storage
+  customThemes: [],
+  activeTheme: null,
+  marketplaceThemes: [],
+
+  // Default themes
+  defaultThemes: [
+    { id: 'default_light', name: 'Default Light', type: 'light', primary: '#3b82f6', background: 'linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%)', cardBg: 'rgba(255,255,255,0.96)', textColor: '#1f2937', isDefault: true },
+    { id: 'default_dark', name: 'Default Dark', type: 'dark', primary: '#3b82f6', background: 'radial-gradient(circle at 20% 30%, #0a0f1a, #030712)', cardBg: 'rgba(17,24,39,0.94)', textColor: '#f3f4f6', isDefault: true },
+    { id: 'ocean_breeze', name: 'Ocean Breeze', type: 'light', primary: '#06b6d4', background: 'linear-gradient(135deg, #cffafe 0%, #e0f2fe 100%)', cardBg: 'rgba(255,255,255,0.95)', textColor: '#164e63', creator: 'Community', downloads: 1234 },
+    { id: 'midnight_aurora', name: 'Midnight Aurora', type: 'dark', primary: '#a855f7', background: 'linear-gradient(135deg, #1e1b4b 0%, #2e1065 100%)', cardBg: 'rgba(30,27,75,0.9)', textColor: '#e9d5ff', creator: 'Community', downloads: 892 },
+    { id: 'forest_green', name: 'Forest Green', type: 'dark', primary: '#22c55e', background: 'linear-gradient(135deg, #064e3b 0%, #022c22 100%)', cardBg: 'rgba(6,78,59,0.9)', textColor: '#bbf7d0', creator: 'Community', downloads: 567 },
+    { id: 'sunset_glow', name: 'Sunset Glow', type: 'light', primary: '#f97316', background: 'linear-gradient(135deg, #fed7aa 0%, #ffedd5 100%)', cardBg: 'rgba(255,255,255,0.95)', textColor: '#7c2d12', creator: 'Community', downloads: 2100 },
+    { id: 'candy_pink', name: 'Candy Pink', type: 'light', primary: '#ec4899', background: 'linear-gradient(135deg, #fce7f3 0%, #fdf2f8 100%)', cardBg: 'rgba(255,255,255,0.96)', textColor: '#831843', creator: 'Community', downloads: 445 },
+    { id: 'matrix_green', name: 'Matrix Green', type: 'dark', primary: '#00ff41', background: '#0a0f0a', cardBg: 'rgba(0,20,0,0.95)', textColor: '#00ff41', creator: 'Community', downloads: 678 }
+  ],
+
+  // Initialize
+  init() {
+    this.loadThemes();
+    this.setupEventListeners();
+    this.applyTheme(this.activeTheme || this.defaultThemes[0]);
+  },
+
+  // Load themes from storage
+  loadThemes() {
+    const savedThemes = localStorage.getItem('customThemes');
+    if (savedThemes) {
+      this.customThemes = JSON.parse(savedThemes);
+    }
+
+    const savedActive = localStorage.getItem('activeTheme');
+    if (savedActive) {
+      this.activeTheme = JSON.parse(savedActive);
+    }
+
+    // Merge default themes with custom
+    this.marketplaceThemes = [...this.defaultThemes, ...this.customThemes];
+  },
+
+  // Save themes
+  saveThemes() {
+    localStorage.setItem('customThemes', JSON.stringify(this.customThemes));
+    if (this.activeTheme) {
+      localStorage.setItem('activeTheme', JSON.stringify(this.activeTheme));
+    }
+  },
+
+  // Apply theme to the app
+  applyTheme(theme) {
+    if (!theme) return;
+
+    this.activeTheme = theme;
+
+    // Apply CSS variables
+    document.documentElement.style.setProperty('--primary', theme.primary);
+
+    // Apply background
+    document.body.style.background = theme.background;
+    document.body.style.color = theme.textColor;
+
+    // Apply card background
+    const typingTest = document.querySelector('.typing-test');
+    if (typingTest) {
+      typingTest.style.background = theme.cardBg;
+    }
+
+    // Save to localStorage
+    this.saveThemes();
+
+    this.showNotification(`Theme applied: ${theme.name}`, 'success');
+  },
+
+  // Create new custom theme
+  createTheme(themeData) {
+    const newTheme = {
+      id: 'custom_' + Date.now(),
+      name: themeData.name,
+      type: themeData.type,
+      primary: themeData.primary,
+      background: themeData.background,
+      cardBg: themeData.cardBg,
+      textColor: themeData.textColor,
+      creator: MultiplayerSystem?.playerName || 'You',
+      downloads: 0,
+      createdAt: new Date().toISOString()
+    };
+
+    this.customThemes.push(newTheme);
+    this.marketplaceThemes.push(newTheme);
+    this.saveThemes();
+
+    this.showNotification(`Theme "${newTheme.name}" created!`, 'success');
+    return newTheme;
+  },
+
+  // Delete custom theme
+  deleteTheme(themeId) {
+    this.customThemes = this.customThemes.filter(t => t.id !== themeId);
+    this.marketplaceThemes = [...this.defaultThemes, ...this.customThemes];
+    this.saveThemes();
+
+    if (this.activeTheme?.id === themeId) {
+      this.applyTheme(this.defaultThemes[0]);
+    }
+
+    this.showNotification('Theme deleted', 'success');
+  },
+
+  // Show theme marketplace
+  showMarketplace() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-5xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -7394,48 +7394,48 @@ AIDifficultySystem.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const createBtn = modal.querySelector('#createThemeBtn');
-        createBtn.onclick = () => {
+
+    document.body.appendChild(modal);
+
+    const createBtn = modal.querySelector('#createThemeBtn');
+    createBtn.onclick = () => {
+      modal.remove();
+      this.showThemeCreator();
+    };
+
+    // Attach theme actions
+    const applyBtns = modal.querySelectorAll('.apply-theme-btn');
+    applyBtns.forEach(btn => {
+      btn.onclick = () => {
+        const themeId = btn.dataset.id;
+        const theme = this.marketplaceThemes.find(t => t.id === themeId);
+        if (theme) {
+          this.applyTheme(theme);
           modal.remove();
-          this.showThemeCreator();
-        };
-        
-        // Attach theme actions
-        const applyBtns = modal.querySelectorAll('.apply-theme-btn');
-        applyBtns.forEach(btn => {
-          btn.onclick = () => {
-            const themeId = btn.dataset.id;
-            const theme = this.marketplaceThemes.find(t => t.id === themeId);
-            if (theme) {
-              this.applyTheme(theme);
-              modal.remove();
-            }
-          };
-        });
-        
-        const deleteBtns = modal.querySelectorAll('.delete-theme-btn');
-        deleteBtns.forEach(btn => {
-          btn.onclick = () => {
-            const themeId = btn.dataset.id;
-            this.deleteTheme(themeId);
-            modal.querySelector('#themeGrid').innerHTML = this.marketplaceThemes.map(t => this.renderThemeCard(t)).join('');
-          };
-        });
-        
-        const closeBtn = modal.querySelector('#closeMarketplace');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Render theme card
-      renderThemeCard(theme) {
-        const isActive = this.activeTheme?.id === theme.id;
-        const isCustom = theme.id?.startsWith('custom_');
-        
-        return `
+        }
+      };
+    });
+
+    const deleteBtns = modal.querySelectorAll('.delete-theme-btn');
+    deleteBtns.forEach(btn => {
+      btn.onclick = () => {
+        const themeId = btn.dataset.id;
+        this.deleteTheme(themeId);
+        modal.querySelector('#themeGrid').innerHTML = this.marketplaceThemes.map(t => this.renderThemeCard(t)).join('');
+      };
+    });
+
+    const closeBtn = modal.querySelector('#closeMarketplace');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Render theme card
+  renderThemeCard(theme) {
+    const isActive = this.activeTheme?.id === theme.id;
+    const isCustom = theme.id?.startsWith('custom_');
+
+    return `
           <div class="p-4 rounded-xl transition-all hover:scale-[1.02] ${isActive ? 'ring-2 ring-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'bg-gray-100 dark:bg-gray-700'}">
             <div class="flex justify-between items-start mb-2">
               <div>
@@ -7465,15 +7465,15 @@ AIDifficultySystem.init();
             </div>
           </div>
         `;
-      },
-      
-      // Show theme creator
-      showThemeCreator() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+  },
+
+  // Show theme creator
+  showThemeCreator() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-xl font-bold text-gray-800 dark:text-white">
@@ -7538,83 +7538,82 @@ AIDifficultySystem.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Live preview updates
-        const primaryColor = modal.querySelector('#primaryColor');
-        const backgroundColor = modal.querySelector('#backgroundColor');
-        const cardBgColor = modal.querySelector('#cardBgColor');
-        const textColor = modal.querySelector('#textColor');
-        const previewArea = modal.querySelector('#previewArea');
-        const previewCard = modal.querySelector('#previewCard');
-        const previewText = modal.querySelector('#previewText');
-        
-        const updatePreview = () => {
-          previewArea.style.background = backgroundColor.value;
-          previewCard.style.background = cardBgColor.value;
-          previewText.style.color = textColor.value;
-          previewCard.querySelector('.w-full').style.background = primaryColor.value;
-        };
-        
-        primaryColor.oninput = updatePreview;
-        backgroundColor.oninput = updatePreview;
-        cardBgColor.oninput = updatePreview;
-        textColor.oninput = updatePreview;
-        
-        // Set default gradient example
-        backgroundColor.value = 'linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%)';
-        cardBgColor.value = 'rgba(255,255,255,0.96)';
-        
-        const saveBtn = modal.querySelector('#saveThemeBtn');
-        const cancelBtn = modal.querySelector('#cancelThemeBtn');
-        const closeBtn = modal.querySelector('#closeCreator');
-        
-        saveBtn.onclick = () => {
-          const name = modal.querySelector('#themeName').value;
-          const type = modal.querySelector('#themeType').value;
-          const primary = primaryColor.value;
-          const background = backgroundColor.value;
-          const cardBg = cardBgColor.value;
-          const text = textColor.value;
-          
-          if (!name) {
-            alert('Please enter a theme name');
-            return;
-          }
-          
-          this.createTheme({ name, type, primary, background, cardBg, textColor: text });
-          modal.remove();
-          this.showMarketplace();
-        };
-        
-        cancelBtn.onclick = () => {
-          modal.remove();
-          this.showMarketplace();
-        };
-        
-        closeBtn.onclick = () => {
-          modal.remove();
-          this.showMarketplace();
-        };
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const themeBtn = document.getElementById('themeMarketplaceBtn');
-        if (themeBtn) {
-          themeBtn.onclick = () => this.showMarketplace();
-        }
-      }
+
+    document.body.appendChild(modal);
+
+    // Live preview updates
+    const primaryColor = modal.querySelector('#primaryColor');
+    const backgroundColor = modal.querySelector('#backgroundColor');
+    const cardBgColor = modal.querySelector('#cardBgColor');
+    const textColor = modal.querySelector('#textColor');
+    const previewArea = modal.querySelector('#previewArea');
+    const previewCard = modal.querySelector('#previewCard');
+    const previewText = modal.querySelector('#previewText');
+
+    const updatePreview = () => {
+      previewArea.style.background = backgroundColor.value;
+      previewCard.style.background = cardBgColor.value;
+      previewText.style.color = textColor.value;
+      previewCard.querySelector('.w-full').style.background = primaryColor.value;
     };
+
+    primaryColor.oninput = updatePreview;
+    backgroundColor.oninput = updatePreview;
+    cardBgColor.oninput = updatePreview;
+    textColor.oninput = updatePreview;
+
+    // Set default gradient example
+    backgroundColor.value = 'linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%)';
+    cardBgColor.value = 'rgba(255,255,255,0.96)';
+
+    const saveBtn = modal.querySelector('#saveThemeBtn');
+    const cancelBtn = modal.querySelector('#cancelThemeBtn');
+    const closeBtn = modal.querySelector('#closeCreator');
+
+    saveBtn.onclick = () => {
+      const name = modal.querySelector('#themeName').value;
+      const type = modal.querySelector('#themeType').value;
+      const primary = primaryColor.value;
+      const background = backgroundColor.value;
+      const cardBg = cardBgColor.value;
+      const text = textColor.value;
+
+      if (!name) {
+        alert('Please enter a theme name');
+        return;
+      }
+
+      this.createTheme({ name, type, primary, background, cardBg, textColor: text });
+      modal.remove();
+      this.showMarketplace();
+    };
+
+    cancelBtn.onclick = () => {
+      modal.remove();
+      this.showMarketplace();
+    };
+
+    closeBtn.onclick = () => {
+      modal.remove();
+      this.showMarketplace();
+    };
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const themeBtn = document.getElementById('themeMarketplaceBtn');
+    if (themeBtn) {
+      themeBtn.onclick = () => this.showMarketplace();
+    }
+  }
+};
