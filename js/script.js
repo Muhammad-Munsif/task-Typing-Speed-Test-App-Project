@@ -7250,3 +7250,5 @@ const AIDifficultySystem = {
     }
   }
 };
+    // Initialize AI Difficulty System
+    AIDifficultySystem.init();
