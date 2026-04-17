@@ -5534,25 +5534,25 @@ const SocialShareSystem = {
     }
   }
 };
-  // Day 14: Share button
-  const shareBtn = document.getElementById('shareBtn');
-  if (shareBtn && SocialShareSystem) {
-    shareBtn.onclick = () => {
-      const result = {
-        wpm: elements.wpmElem.innerText,
-        accuracy: elements.accuracyElem.innerText,
-        errors: elements.errorsElem.innerText,
-        time: timeLeft
-      };
-      SocialShareSystem.shareResult(result);
+// Day 14: Share button
+const shareBtn = document.getElementById('shareBtn');
+if (shareBtn && SocialShareSystem) {
+  shareBtn.onclick = () => {
+    const result = {
+      wpm: elements.wpmElem.innerText,
+      accuracy: elements.accuracyElem.innerText,
+      errors: elements.errorsElem.innerText,
+      time: timeLeft
     };
-  }
+    SocialShareSystem.shareResult(result);
+  };
+}
 
-  // Day 15: PWA Install button is already handled by PWASystem
-  // The PWASystem will show/hide this button automatically
+// Day 15: PWA Install button is already handled by PWASystem
+// The PWASystem will show/hide this button automatically
 
-  // Note: The install button visibility is managed by PWASystem
-  // It will only appear when the app is installable
+// Note: The install button visibility is managed by PWASystem
+// It will only appear when the app is installable
 SocialShareSystem.setupEventListeners();
 
 // ==================== PWA INSTALLATION (DAY 15) ====================
@@ -6954,212 +6954,212 @@ const ClassroomSystem = {
 // Initialize Classroom System
 ClassroomSystem.init();
 
-    // ==================== AI-POWERED DIFFICULTY ADAPTATION (DAY 19) ====================
-    const AIDifficultySystem = {
-      // User skill profile
-      skillProfile: {
-        currentLevel: 1,
-        confidence: 0.5,
-        performanceHistory: [],
-        skillRatings: {
-          speed: 0,
-          accuracy: 0,
-          consistency: 0,
-          endurance: 0
-        },
-        adaptiveEnabled: true
-      },
-      
-      // Difficulty parameters
-      difficultyParams: {
-        easy: { baseWPM: 20, targetAccuracy: 85, complexity: 0.3 },
-        medium: { baseWPM: 40, targetAccuracy: 88, complexity: 0.5 },
-        hard: { baseWPM: 60, targetAccuracy: 90, complexity: 0.7 },
-        expert: { baseWPM: 80, targetAccuracy: 92, complexity: 0.9 }
-      },
-      
-      // Initialize
-      init() {
-        this.loadProfile();
-        this.setupEventListeners();
-      },
-      
-      // Load profile from storage
-      loadProfile() {
-        const saved = localStorage.getItem('aiDifficultyProfile');
-        if (saved) {
-          this.skillProfile = JSON.parse(saved);
-        }
-      },
-      
-      // Save profile
-      saveProfile() {
-        localStorage.setItem('aiDifficultyProfile', JSON.stringify(this.skillProfile));
-      },
-      
-      // Analyze test performance and update skill profile
-      analyzePerformance(testResult) {
-        if (!this.skillProfile.adaptiveEnabled) return;
-        
-        // Update performance history
-        this.skillProfile.performanceHistory.push({
-          timestamp: Date.now(),
-          wpm: testResult.wpm,
-          accuracy: testResult.accuracy,
-          errors: testResult.errors,
-          difficulty: difficulty,
-          quoteLength: currentQuoteText.length
-        });
-        
-        // Keep last 20 performances
-        if (this.skillProfile.performanceHistory.length > 20) {
-          this.skillProfile.performanceHistory.shift();
-        }
-        
-        // Calculate skill ratings
-        this.updateSkillRatings();
-        
-        // Determine optimal difficulty
-        const recommendedDifficulty = this.calculateRecommendedDifficulty();
-        
-        // Auto-adjust if enabled
-        if (this.shouldAdjustDifficulty(recommendedDifficulty)) {
-          this.adjustDifficulty(recommendedDifficulty);
-        }
-        
-        this.saveProfile();
-        this.showAdaptationFeedback(recommendedDifficulty);
-      },
-      
-      // Update skill ratings based on history
-      updateSkillRatings() {
-        const history = this.skillProfile.performanceHistory;
-        if (history.length === 0) return;
-        
-        // Speed rating (based on WPM relative to difficulty)
-        const avgWPM = history.reduce((sum, p) => sum + p.wpm, 0) / history.length;
-        const maxWPM = Math.max(...history.map(p => p.wpm));
-        this.skillProfile.skillRatings.speed = Math.min(100, (avgWPM / 100) * 100);
-        
-        // Accuracy rating
-        const avgAccuracy = history.reduce((sum, p) => sum + p.accuracy, 0) / history.length;
-        this.skillProfile.skillRatings.accuracy = avgAccuracy;
-        
-        // Consistency rating (low variance = high consistency)
-        const wpmVariance = this.calculateVariance(history.map(p => p.wpm));
-        this.skillProfile.skillRatings.consistency = Math.max(0, 100 - (wpmVariance / 2));
-        
-        // Endurance rating (based on longer tests performance)
-        const longTests = history.filter(p => p.quoteLength > 200);
-        if (longTests.length > 0) {
-          const longTestAvg = longTests.reduce((sum, p) => sum + p.wpm, 0) / longTests.length;
-          this.skillProfile.skillRatings.endurance = Math.min(100, (longTestAvg / 80) * 100);
-        } else {
-          this.skillProfile.skillRatings.endurance = 50;
-        }
-        
-        // Calculate overall level (1-10)
-        const overallScore = (
-          this.skillProfile.skillRatings.speed * 0.4 +
-          this.skillProfile.skillRatings.accuracy * 0.3 +
-          this.skillProfile.skillRatings.consistency * 0.2 +
-          this.skillProfile.skillRatings.endurance * 0.1
-        );
-        
-        this.skillProfile.currentLevel = Math.max(1, Math.min(10, Math.floor(overallScore / 10)));
-      },
-      
-      // Calculate variance
-      calculateVariance(values) {
-        const mean = values.reduce((a, b) => a + b, 0) / values.length;
-        const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
-        return squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
-      },
-      
-      // Calculate recommended difficulty
-      calculateRecommendedDifficulty() {
-        const history = this.skillProfile.performanceHistory;
-        if (history.length < 3) return difficulty;
-        
-        const recentTests = history.slice(-5);
-        const avgWPM = recentTests.reduce((sum, p) => sum + p.wpm, 0) / recentTests.length;
-        const avgAccuracy = recentTests.reduce((sum, p) => sum + p.accuracy, 0) / recentTests.length;
-        
-        // Determine appropriate difficulty
-        if (avgWPM >= 75 && avgAccuracy >= 92) return 'expert';
-        if (avgWPM >= 55 && avgAccuracy >= 88) return 'hard';
-        if (avgWPM >= 35 && avgAccuracy >= 85) return 'medium';
-        return 'easy';
-      },
-      
-      // Check if difficulty should be adjusted
-      shouldAdjustDifficulty(recommended) {
-        if (recommended === difficulty) return false;
-        
-        const history = this.skillProfile.performanceHistory;
-        if (history.length < 5) return false;
-        
-        // Check if consistently performing well
-        const recentTests = history.slice(-5);
-        const consistent = recentTests.every(t => t.accuracy >= 85);
-        
-        return consistent;
-      },
-      
-      // Adjust difficulty
-      adjustDifficulty(newDifficulty) {
-        const oldDifficulty = difficulty;
-        difficulty = newDifficulty;
-        
-        // Update UI to show selected difficulty
-        document.querySelectorAll('.difficulty-option').forEach(btn => {
-          if (btn.dataset.difficulty === newDifficulty) {
-            btn.classList.add('bg-blue-500', 'text-white', 'shadow-md');
-          } else {
-            btn.classList.remove('bg-blue-500', 'text-white', 'shadow-md');
-          }
-        });
-        
-        // Load new quote with new difficulty
-        newQuote();
-        
-        // Show notification
-        this.showNotification(`AI adjusted difficulty: ${oldDifficulty} → ${newDifficulty}`, 'info');
-        
-        // Play sound
-        SoundManager.playKeypress();
-      },
-      
-      // Show adaptation feedback
-      showAdaptationFeedback(recommended) {
-        if (recommended === difficulty) return;
-        
-        const feedback = document.createElement('div');
-        feedback.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-2 rounded-full shadow-lg z-40 animate-bounce';
-        feedback.innerHTML = `
+// ==================== AI-POWERED DIFFICULTY ADAPTATION (DAY 19) ====================
+const AIDifficultySystem = {
+  // User skill profile
+  skillProfile: {
+    currentLevel: 1,
+    confidence: 0.5,
+    performanceHistory: [],
+    skillRatings: {
+      speed: 0,
+      accuracy: 0,
+      consistency: 0,
+      endurance: 0
+    },
+    adaptiveEnabled: true
+  },
+
+  // Difficulty parameters
+  difficultyParams: {
+    easy: { baseWPM: 20, targetAccuracy: 85, complexity: 0.3 },
+    medium: { baseWPM: 40, targetAccuracy: 88, complexity: 0.5 },
+    hard: { baseWPM: 60, targetAccuracy: 90, complexity: 0.7 },
+    expert: { baseWPM: 80, targetAccuracy: 92, complexity: 0.9 }
+  },
+
+  // Initialize
+  init() {
+    this.loadProfile();
+    this.setupEventListeners();
+  },
+
+  // Load profile from storage
+  loadProfile() {
+    const saved = localStorage.getItem('aiDifficultyProfile');
+    if (saved) {
+      this.skillProfile = JSON.parse(saved);
+    }
+  },
+
+  // Save profile
+  saveProfile() {
+    localStorage.setItem('aiDifficultyProfile', JSON.stringify(this.skillProfile));
+  },
+
+  // Analyze test performance and update skill profile
+  analyzePerformance(testResult) {
+    if (!this.skillProfile.adaptiveEnabled) return;
+
+    // Update performance history
+    this.skillProfile.performanceHistory.push({
+      timestamp: Date.now(),
+      wpm: testResult.wpm,
+      accuracy: testResult.accuracy,
+      errors: testResult.errors,
+      difficulty: difficulty,
+      quoteLength: currentQuoteText.length
+    });
+
+    // Keep last 20 performances
+    if (this.skillProfile.performanceHistory.length > 20) {
+      this.skillProfile.performanceHistory.shift();
+    }
+
+    // Calculate skill ratings
+    this.updateSkillRatings();
+
+    // Determine optimal difficulty
+    const recommendedDifficulty = this.calculateRecommendedDifficulty();
+
+    // Auto-adjust if enabled
+    if (this.shouldAdjustDifficulty(recommendedDifficulty)) {
+      this.adjustDifficulty(recommendedDifficulty);
+    }
+
+    this.saveProfile();
+    this.showAdaptationFeedback(recommendedDifficulty);
+  },
+
+  // Update skill ratings based on history
+  updateSkillRatings() {
+    const history = this.skillProfile.performanceHistory;
+    if (history.length === 0) return;
+
+    // Speed rating (based on WPM relative to difficulty)
+    const avgWPM = history.reduce((sum, p) => sum + p.wpm, 0) / history.length;
+    const maxWPM = Math.max(...history.map(p => p.wpm));
+    this.skillProfile.skillRatings.speed = Math.min(100, (avgWPM / 100) * 100);
+
+    // Accuracy rating
+    const avgAccuracy = history.reduce((sum, p) => sum + p.accuracy, 0) / history.length;
+    this.skillProfile.skillRatings.accuracy = avgAccuracy;
+
+    // Consistency rating (low variance = high consistency)
+    const wpmVariance = this.calculateVariance(history.map(p => p.wpm));
+    this.skillProfile.skillRatings.consistency = Math.max(0, 100 - (wpmVariance / 2));
+
+    // Endurance rating (based on longer tests performance)
+    const longTests = history.filter(p => p.quoteLength > 200);
+    if (longTests.length > 0) {
+      const longTestAvg = longTests.reduce((sum, p) => sum + p.wpm, 0) / longTests.length;
+      this.skillProfile.skillRatings.endurance = Math.min(100, (longTestAvg / 80) * 100);
+    } else {
+      this.skillProfile.skillRatings.endurance = 50;
+    }
+
+    // Calculate overall level (1-10)
+    const overallScore = (
+      this.skillProfile.skillRatings.speed * 0.4 +
+      this.skillProfile.skillRatings.accuracy * 0.3 +
+      this.skillProfile.skillRatings.consistency * 0.2 +
+      this.skillProfile.skillRatings.endurance * 0.1
+    );
+
+    this.skillProfile.currentLevel = Math.max(1, Math.min(10, Math.floor(overallScore / 10)));
+  },
+
+  // Calculate variance
+  calculateVariance(values) {
+    const mean = values.reduce((a, b) => a + b, 0) / values.length;
+    const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
+    return squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
+  },
+
+  // Calculate recommended difficulty
+  calculateRecommendedDifficulty() {
+    const history = this.skillProfile.performanceHistory;
+    if (history.length < 3) return difficulty;
+
+    const recentTests = history.slice(-5);
+    const avgWPM = recentTests.reduce((sum, p) => sum + p.wpm, 0) / recentTests.length;
+    const avgAccuracy = recentTests.reduce((sum, p) => sum + p.accuracy, 0) / recentTests.length;
+
+    // Determine appropriate difficulty
+    if (avgWPM >= 75 && avgAccuracy >= 92) return 'expert';
+    if (avgWPM >= 55 && avgAccuracy >= 88) return 'hard';
+    if (avgWPM >= 35 && avgAccuracy >= 85) return 'medium';
+    return 'easy';
+  },
+
+  // Check if difficulty should be adjusted
+  shouldAdjustDifficulty(recommended) {
+    if (recommended === difficulty) return false;
+
+    const history = this.skillProfile.performanceHistory;
+    if (history.length < 5) return false;
+
+    // Check if consistently performing well
+    const recentTests = history.slice(-5);
+    const consistent = recentTests.every(t => t.accuracy >= 85);
+
+    return consistent;
+  },
+
+  // Adjust difficulty
+  adjustDifficulty(newDifficulty) {
+    const oldDifficulty = difficulty;
+    difficulty = newDifficulty;
+
+    // Update UI to show selected difficulty
+    document.querySelectorAll('.difficulty-option').forEach(btn => {
+      if (btn.dataset.difficulty === newDifficulty) {
+        btn.classList.add('bg-blue-500', 'text-white', 'shadow-md');
+      } else {
+        btn.classList.remove('bg-blue-500', 'text-white', 'shadow-md');
+      }
+    });
+
+    // Load new quote with new difficulty
+    newQuote();
+
+    // Show notification
+    this.showNotification(`AI adjusted difficulty: ${oldDifficulty} → ${newDifficulty}`, 'info');
+
+    // Play sound
+    SoundManager.playKeypress();
+  },
+
+  // Show adaptation feedback
+  showAdaptationFeedback(recommended) {
+    if (recommended === difficulty) return;
+
+    const feedback = document.createElement('div');
+    feedback.className = 'fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white px-4 py-2 rounded-full shadow-lg z-40 animate-bounce';
+    feedback.innerHTML = `
           <i class="fas fa-robot mr-2"></i>
           AI Suggestion: Try ${recommended.toUpperCase()} difficulty for optimal challenge
           <button id="dismissFeedback" class="ml-3 text-xs bg-white/20 px-2 py-1 rounded">Dismiss</button>
         `;
-        
-        document.body.appendChild(feedback);
-        
-        const dismissBtn = feedback.querySelector('#dismissFeedback');
-        dismissBtn.onclick = () => feedback.remove();
-        
-        setTimeout(() => feedback.remove(), 8000);
-      },
-      
-      // Show AI difficulty panel
-      showAIDifficultyPanel() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        const history = this.skillProfile.performanceHistory;
-        const recentAvgWPM = history.slice(-5).reduce((sum, p) => sum + p.wpm, 0) / (Math.min(5, history.length) || 1);
-        
-        modal.innerHTML = `
+
+    document.body.appendChild(feedback);
+
+    const dismissBtn = feedback.querySelector('#dismissFeedback');
+    dismissBtn.onclick = () => feedback.remove();
+
+    setTimeout(() => feedback.remove(), 8000);
+  },
+
+  // Show AI difficulty panel
+  showAIDifficultyPanel() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    const history = this.skillProfile.performanceHistory;
+    const recentAvgWPM = history.slice(-5).reduce((sum, p) => sum + p.wpm, 0) / (Math.min(5, history.length) || 1);
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -7214,37 +7214,36 @@ ClassroomSystem.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const toggle = modal.querySelector('#aiToggle');
-        toggle.onchange = (e) => {
-          this.skillProfile.adaptiveEnabled = e.target.checked;
-          this.saveProfile();
-          this.showNotification(`AI Adaptation ${e.target.checked ? 'enabled' : 'disabled'}`, 'success');
-        };
-        
-        const closeBtn = modal.querySelector('#closeAIPanel') || modal.querySelector('#closeAIDetailsBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const aiDifficultyBtn = document.getElementById('aiDifficultyBtn');
-        if (aiDifficultyBtn) {
-          aiDifficultyBtn.onclick = () => this.showAIDifficultyPanel();
-        }
-      }
+
+    document.body.appendChild(modal);
+
+    const toggle = modal.querySelector('#aiToggle');
+    toggle.onchange = (e) => {
+      this.skillProfile.adaptiveEnabled = e.target.checked;
+      this.saveProfile();
+      this.showNotification(`AI Adaptation ${e.target.checked ? 'enabled' : 'disabled'}`, 'success');
     };
+
+    const closeBtn = modal.querySelector('#closeAIPanel') || modal.querySelector('#closeAIDetailsBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const aiDifficultyBtn = document.getElementById('aiDifficultyBtn');
+    if (aiDifficultyBtn) {
+      aiDifficultyBtn.onclick = () => this.showAIDifficultyPanel();
+    }
+  }
+};
