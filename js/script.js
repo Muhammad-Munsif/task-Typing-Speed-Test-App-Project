@@ -328,8 +328,8 @@ function finishTest() {
   // Update leaderboards
   LeaderboardSystem.updateLeaderboards();
 
-        // AI Difficulty Adaptation
-      AIDifficultySystem.analyzePerformance(testResult);
+  // AI Difficulty Adaptation
+  AIDifficultySystem.analyzePerformance(testResult);
   // Create test result object for achievements
   const testResult = {
     wpm: finalWPM,
