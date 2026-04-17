@@ -7617,3 +7617,5 @@ const ThemeMarketplace = {
     }
   }
 };
+    // Initialize Theme Marketplace
+    ThemeMarketplace.init();
