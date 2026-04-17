@@ -327,6 +327,9 @@ function finishTest() {
   elements.resultModal.classList.remove("hidden");
   // Update leaderboards
   LeaderboardSystem.updateLeaderboards();
+
+        // AI Difficulty Adaptation
+      AIDifficultySystem.analyzePerformance(testResult);
   // Create test result object for achievements
   const testResult = {
     wpm: finalWPM,
