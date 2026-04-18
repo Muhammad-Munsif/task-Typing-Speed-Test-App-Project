@@ -8209,5 +8209,5 @@ const CertificationSystem = {
   }
 };
 
-    // Initialize Certification System
-    CertificationSystem.init();
+// Initialize Certification System
+CertificationSystem.init();
