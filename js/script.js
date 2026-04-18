@@ -8915,5 +8915,5 @@ const SocialIntegration = {
     };
   }
 };
-    // Initialize Social Integration
-    SocialIntegration.init();
+// Initialize Social Integration
+SocialIntegration.init();
