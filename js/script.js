@@ -8543,3 +8543,6 @@ fetch('/api/stats', {
     }
   }
 };
+
+    // Initialize Developer API
+    DeveloperAPI.init();
