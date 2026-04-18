@@ -8208,3 +8208,6 @@ const CertificationSystem = {
     };
   }
 };
+
+    // Initialize Certification System
+    CertificationSystem.init();
