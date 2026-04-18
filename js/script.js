@@ -8211,3 +8211,336 @@ const CertificationSystem = {
 
 // Initialize Certification System
 CertificationSystem.init();
+
+    // ==================== API FOR DEVELOPERS (DAY 22) ====================
+    const DeveloperAPI = {
+      // API version
+      version: 'v1',
+      apiKey: null,
+      rateLimit: 100, // requests per minute
+      requestCount: 0,
+      lastReset: Date.now(),
+      
+      // API endpoints
+      endpoints: {
+        'GET /api/stats': 'Get user statistics',
+        'GET /api/history': 'Get test history',
+        'GET /api/achievements': 'Get achievements',
+        'GET /api/leaderboard': 'Get global leaderboard',
+        'POST /api/test/result': 'Submit test result',
+        'GET /api/quotes': 'Get random quote',
+        'GET /api/user/profile': 'Get user profile'
+      },
+      
+      // Initialize
+      init() {
+        this.loadAPIKey();
+        this.setupEventListeners();
+        this.startRateLimitReset();
+      },
+      
+      // Load or generate API key
+      loadAPIKey() {
+        const saved = localStorage.getItem('velocityAPIKey');
+        if (saved) {
+          this.apiKey = saved;
+        } else {
+          this.generateAPIKey();
+        }
+      },
+      
+      // Generate new API key
+      generateAPIKey() {
+        const key = 'vel_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 8);
+        this.apiKey = key;
+        localStorage.setItem('velocityAPIKey', key);
+      },
+      
+      // Regenerate API key
+      regenerateAPIKey() {
+        this.generateAPIKey();
+        this.showNotification('New API key generated!', 'success');
+      },
+      
+      // Check rate limit
+      checkRateLimit() {
+        const now = Date.now();
+        if (now - this.lastReset > 60000) {
+          this.requestCount = 0;
+          this.lastReset = now;
+        }
+        
+        if (this.requestCount >= this.rateLimit) {
+          return { allowed: false, message: 'Rate limit exceeded. Max 100 requests per minute.' };
+        }
+        
+        this.requestCount++;
+        return { allowed: true, message: 'OK' };
+      },
+      
+      // Handle API requests (simulated)
+      handleAPIRequest(method, endpoint, data = null) {
+        const rateCheck = this.checkRateLimit();
+        if (!rateCheck.allowed) {
+          return { error: rateCheck.message, status: 429 };
+        }
+        
+        // Simulate API response
+        switch(`${method} ${endpoint}`) {
+          case 'GET /api/stats':
+            return this.getStats();
+          case 'GET /api/history':
+            return this.getHistory();
+          case 'GET /api/achievements':
+            return this.getAchievements();
+          case 'GET /api/leaderboard':
+            return this.getLeaderboard();
+          case 'POST /api/test/result':
+            return this.submitResult(data);
+          case 'GET /api/quotes':
+            return this.getRandomQuote();
+          case 'GET /api/user/profile':
+            return this.getUserProfile();
+          default:
+            return { error: 'Endpoint not found', status: 404 };
+        }
+      },
+      
+      // API endpoint handlers
+      getStats() {
+        const wpmValues = testHistory.map(h => h.wpm);
+        const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
+        
+        return {
+          status: 200,
+          data: {
+            totalTests: testHistory.length,
+            bestWPM: Math.max(...wpmValues, 0),
+            averageWPM: Math.round(wpmValues.reduce((a,b) => a+b, 0) / (wpmValues.length || 1)),
+            bestAccuracy: Math.max(...accuracyValues, 0),
+            averageAccuracy: Math.round(accuracyValues.reduce((a,b) => a+b, 0) / (accuracyValues.length || 1)),
+            totalPoints: AchievementSystem?.userProgress?.totalPoints || 0,
+            certifications: CertificationSystem?.userCertifications?.length || 0
+          }
+        };
+      },
+      
+      getHistory() {
+        return {
+          status: 200,
+          data: testHistory.slice(0, 50).map(t => ({
+            date: t.date,
+            wpm: t.wpm,
+            accuracy: t.accuracy,
+            errors: t.errors,
+            duration: t.time,
+            difficulty: t.difficulty,
+            source: t.source
+          }))
+        };
+      },
+      
+      getAchievements() {
+        return {
+          status: 200,
+          data: {
+            unlocked: AchievementSystem?.userProgress?.unlockedAchievements || [],
+            totalPoints: AchievementSystem?.userProgress?.totalPoints || 0,
+            allAchievements: Object.keys(AchievementSystem?.achievements || {}).length
+          }
+        };
+      },
+      
+      getLeaderboard() {
+        return {
+          status: 200,
+          data: LeaderboardSystem?.globalLeaderboard?.slice(0, 20) || []
+        };
+      },
+      
+      submitResult(data) {
+        if (!data || !data.wpm || !data.accuracy) {
+          return { error: 'Invalid test data', status: 400 };
+        }
+        
+        // Simulate test submission
+        const newTest = {
+          date: new Date().toISOString(),
+          wpm: data.wpm,
+          accuracy: data.accuracy,
+          errors: data.errors || 0,
+          time: data.duration || 60,
+          difficulty: data.difficulty || 'medium',
+          source: data.source || 'api'
+        };
+        
+        testHistory.unshift(newTest);
+        if (testHistory.length > 50) testHistory.pop();
+        localStorage.setItem('velocityHistory', JSON.stringify(testHistory));
+        
+        return {
+          status: 201,
+          data: { message: 'Test result submitted successfully', test: newTest }
+        };
+      },
+      
+      getRandomQuote() {
+        const difficulties = ['easy', 'medium', 'hard', 'expert'];
+        const randomDifficulty = difficulties[Math.floor(Math.random() * difficulties.length)];
+        const quotes = QUOTES_LIB.programming[randomDifficulty];
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        
+        return {
+          status: 200,
+          data: {
+            quote: randomQuote,
+            difficulty: randomDifficulty,
+            length: randomQuote.length,
+            wordCount: randomQuote.split(' ').length
+          }
+        };
+      },
+      
+      getUserProfile() {
+        return {
+          status: 200,
+          data: {
+            name: MultiplayerSystem?.playerName || 'Anonymous',
+            joinDate: localStorage.getItem('velocityJoinDate') || new Date().toISOString(),
+            totalTests: testHistory.length,
+            bestWPM: Math.max(...testHistory.map(h => h.wpm), 0),
+            totalPoints: AchievementSystem?.userProgress?.totalPoints || 0
+          }
+        };
+      },
+      
+      // Show API documentation panel
+      showAPIPanel() {
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+        modal.style.animation = 'fadeIn 0.2s ease';
+        
+        modal.innerHTML = `
+          <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-3xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
+              <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-code mr-2 text-blue-500"></i>Developer API
+              </h3>
+              <button id="closeAPIPanel" class="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <i class="fas fa-times text-2xl"></i>
+              </button>
+            </div>
+            
+            <!-- API Key Section -->
+            <div class="mb-6 p-4 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+              <p class="font-semibold mb-2">Your API Key</p>
+              <div class="flex gap-2">
+                <input type="text" id="apiKeyInput" value="${this.apiKey}" readonly class="flex-1 p-2 rounded-lg bg-white dark:bg-gray-700 font-mono text-sm">
+                <button id="copyApiKeyBtn" class="px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+                <button id="regenerateApiKeyBtn" class="px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition">
+                  <i class="fas fa-sync"></i> Regenerate
+                </button>
+              </div>
+              <p class="text-xs text-gray-500 mt-2">Keep your API key secure. Regenerate if compromised.</p>
+            </div>
+            
+            <!-- API Endpoints -->
+            <h4 class="font-semibold mb-3">API Endpoints</h4>
+            <div class="space-y-3 mb-6">
+              ${Object.entries(this.endpoints).map(([endpoint, description]) => `
+                <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="font-mono text-sm font-bold text-blue-500">${endpoint.split(' ')[0]}</span>
+                    <span class="font-mono text-sm">${endpoint.split(' ')[1]}</span>
+                    <button class="test-endpoint-btn ml-auto px-2 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded text-xs transition" data-endpoint="${endpoint}">
+                      <i class="fas fa-play"></i> Test
+                    </button>
+                  </div>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">${description}</p>
+                </div>
+              `).join('')}
+            </div>
+            
+            <!-- Usage Example -->
+            <div class="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+              <p class="font-semibold mb-2">JavaScript Example</p>
+              <pre class="text-xs bg-gray-900 text-green-400 p-3 rounded overflow-x-auto"><code>// Fetch user stats
+fetch('/api/stats', {
+  headers: { 'X-API-Key': '${this.apiKey}' }
+})
+.then(res => res.json())
+.then(data => console.log(data));</code></pre>
+            </div>
+            
+            <button id="closeAPI" class="w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
+              Close
+            </button>
+          </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Copy API key
+        const copyBtn = modal.querySelector('#copyApiKeyBtn');
+        const apiKeyInput = modal.querySelector('#apiKeyInput');
+        copyBtn.onclick = () => {
+          apiKeyInput.select();
+          document.execCommand('copy');
+          this.showNotification('API key copied!', 'success');
+        };
+        
+        // Regenerate API key
+        const regenerateBtn = modal.querySelector('#regenerateApiKeyBtn');
+        regenerateBtn.onclick = () => {
+          if (confirm('Regenerating API key will invalidate the old key. Continue?')) {
+            this.regenerateAPIKey();
+            apiKeyInput.value = this.apiKey;
+            this.showNotification('API key regenerated!', 'success');
+          }
+        };
+        
+        // Test endpoints
+        const testBtns = modal.querySelectorAll('.test-endpoint-btn');
+        testBtns.forEach(btn => {
+          btn.onclick = () => {
+            const endpoint = btn.dataset.endpoint;
+            const [method, path] = endpoint.split(' ');
+            const response = this.handleAPIRequest(method, path);
+            alert(`Response:\n${JSON.stringify(response, null, 2)}`);
+          };
+        });
+        
+        const closeBtn = modal.querySelector('#closeAPIPanel') || modal.querySelector('#closeAPI');
+        closeBtn.onclick = () => modal.remove();
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+      },
+      
+      // Start rate limit reset timer
+      startRateLimitReset() {
+        setInterval(() => {
+          this.requestCount = 0;
+          this.lastReset = Date.now();
+        }, 60000);
+      },
+      
+      // Show notification
+      showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
+          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+        }`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => notification.remove(), 3000);
+      },
+      
+      // Setup event listeners
+      setupEventListeners() {
+        const apiBtn = document.getElementById('apiBtn');
+        if (apiBtn) {
+          apiBtn.onclick = () => this.showAPIPanel();
+        }
+      }
+    };
