@@ -7620,161 +7620,161 @@ const ThemeMarketplace = {
 // Initialize Theme Marketplace
 ThemeMarketplace.init();
 
-    // ==================== TYPING CERTIFICATION SYSTEM (DAY 21) ====================
-    const CertificationSystem = {
-      // Certification levels
-      levels: {
-        BRONZE: { name: 'Bronze Typist', minWPM: 25, minAccuracy: 85, icon: '🥉', color: '#cd7f32' },
-        SILVER: { name: 'Silver Typist', minWPM: 45, minAccuracy: 88, icon: '🥈', color: '#c0c0c0' },
-        GOLD: { name: 'Gold Typist', minWPM: 65, minAccuracy: 90, icon: '🥇', color: '#ffd700' },
-        PLATINUM: { name: 'Platinum Typist', minWPM: 85, minAccuracy: 92, icon: '💎', color: '#e5e4e2' },
-        DIAMOND: { name: 'Diamond Typist', minWPM: 105, minAccuracy: 94, icon: '🔹', color: '#b9f2ff' },
-        MASTER: { name: 'Master Typist', minWPM: 125, minAccuracy: 96, icon: '👑', color: '#ff6b35' },
-        GRANDMASTER: { name: 'Grandmaster Typist', minWPM: 150, minAccuracy: 98, icon: '🏆', color: '#ff3366' }
-      },
-      
-      // Certification categories
-      categories: {
-        GENERAL: 'General Typing',
-        CODE: 'Code Typing',
-        LITERATURE: 'Literary Typing',
-        SCIENCE: 'Scientific Typing',
-        NUMERIC: 'Numeric Entry',
-        SYMBOL: 'Symbol Mastery'
-      },
-      
-      // User certifications
-      userCertifications: [],
-      pendingCertifications: [],
-      
-      // Initialize
-      init() {
-        this.loadCertifications();
-        this.setupEventListeners();
-        this.checkCertificationEligibility();
-      },
-      
-      // Load certifications from storage
-      loadCertifications() {
-        const saved = localStorage.getItem('velocityCertifications');
-        if (saved) {
-          this.userCertifications = JSON.parse(saved);
+// ==================== TYPING CERTIFICATION SYSTEM (DAY 21) ====================
+const CertificationSystem = {
+  // Certification levels
+  levels: {
+    BRONZE: { name: 'Bronze Typist', minWPM: 25, minAccuracy: 85, icon: '🥉', color: '#cd7f32' },
+    SILVER: { name: 'Silver Typist', minWPM: 45, minAccuracy: 88, icon: '🥈', color: '#c0c0c0' },
+    GOLD: { name: 'Gold Typist', minWPM: 65, minAccuracy: 90, icon: '🥇', color: '#ffd700' },
+    PLATINUM: { name: 'Platinum Typist', minWPM: 85, minAccuracy: 92, icon: '💎', color: '#e5e4e2' },
+    DIAMOND: { name: 'Diamond Typist', minWPM: 105, minAccuracy: 94, icon: '🔹', color: '#b9f2ff' },
+    MASTER: { name: 'Master Typist', minWPM: 125, minAccuracy: 96, icon: '👑', color: '#ff6b35' },
+    GRANDMASTER: { name: 'Grandmaster Typist', minWPM: 150, minAccuracy: 98, icon: '🏆', color: '#ff3366' }
+  },
+
+  // Certification categories
+  categories: {
+    GENERAL: 'General Typing',
+    CODE: 'Code Typing',
+    LITERATURE: 'Literary Typing',
+    SCIENCE: 'Scientific Typing',
+    NUMERIC: 'Numeric Entry',
+    SYMBOL: 'Symbol Mastery'
+  },
+
+  // User certifications
+  userCertifications: [],
+  pendingCertifications: [],
+
+  // Initialize
+  init() {
+    this.loadCertifications();
+    this.setupEventListeners();
+    this.checkCertificationEligibility();
+  },
+
+  // Load certifications from storage
+  loadCertifications() {
+    const saved = localStorage.getItem('velocityCertifications');
+    if (saved) {
+      this.userCertifications = JSON.parse(saved);
+    }
+
+    const pending = localStorage.getItem('pendingCertifications');
+    if (pending) {
+      this.pendingCertifications = JSON.parse(pending);
+    }
+  },
+
+  // Save certifications
+  saveCertifications() {
+    localStorage.setItem('velocityCertifications', JSON.stringify(this.userCertifications));
+    localStorage.setItem('pendingCertifications', JSON.stringify(this.pendingCertifications));
+  },
+
+  // Check if user qualifies for new certifications
+  checkCertificationEligibility() {
+    const stats = this.getUserStats();
+
+    for (const [levelKey, level] of Object.entries(this.levels)) {
+      // Check if already has this certification
+      const hasCert = this.userCertifications.some(c => c.level === levelKey);
+      if (!hasCert) {
+        // Check if qualifies
+        if (stats.bestWPM >= level.minWPM && stats.bestAccuracy >= level.minAccuracy) {
+          this.issueCertification(levelKey, level, stats);
         }
-        
-        const pending = localStorage.getItem('pendingCertifications');
-        if (pending) {
-          this.pendingCertifications = JSON.parse(pending);
-        }
+      }
+    }
+  },
+
+  // Get user statistics for certification
+  getUserStats() {
+    const wpmValues = testHistory.map(h => h.wpm);
+    const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
+
+    // Category-specific stats
+    const codeTests = testHistory.filter(t => t.source === 'programming');
+    const literatureTests = testHistory.filter(t => t.source === 'literature');
+    const scienceTests = testHistory.filter(t => t.source === 'science');
+
+    return {
+      bestWPM: Math.max(...wpmValues, 0),
+      avgWPM: Math.round(wpmValues.reduce((a, b) => a + b, 0) / (wpmValues.length || 1)),
+      bestAccuracy: Math.max(...accuracyValues, 0),
+      avgAccuracy: Math.round(accuracyValues.reduce((a, b) => a + b, 0) / (accuracyValues.length || 1)),
+      totalTests: testHistory.length,
+      codeWPM: codeTests.length > 0 ? Math.max(...codeTests.map(t => t.wpm)) : 0,
+      literatureWPM: literatureTests.length > 0 ? Math.max(...literatureTests.map(t => t.wpm)) : 0,
+      scienceWPM: scienceTests.length > 0 ? Math.max(...scienceTests.map(t => t.wpm)) : 0
+    };
+  },
+
+  // Issue new certification
+  issueCertification(levelKey, level, stats) {
+    const certification = {
+      id: Date.now(),
+      level: levelKey,
+      name: level.name,
+      icon: level.icon,
+      color: level.color,
+      issuedDate: new Date().toISOString(),
+      certificateNumber: this.generateCertificateNumber(),
+      stats: {
+        wpm: stats.bestWPM,
+        accuracy: stats.bestAccuracy,
+        totalTests: stats.totalTests
       },
-      
-      // Save certifications
-      saveCertifications() {
-        localStorage.setItem('velocityCertifications', JSON.stringify(this.userCertifications));
-        localStorage.setItem('pendingCertifications', JSON.stringify(this.pendingCertifications));
-      },
-      
-      // Check if user qualifies for new certifications
-      checkCertificationEligibility() {
-        const stats = this.getUserStats();
-        
-        for (const [levelKey, level] of Object.entries(this.levels)) {
-          // Check if already has this certification
-          const hasCert = this.userCertifications.some(c => c.level === levelKey);
-          if (!hasCert) {
-            // Check if qualifies
-            if (stats.bestWPM >= level.minWPM && stats.bestAccuracy >= level.minAccuracy) {
-              this.issueCertification(levelKey, level, stats);
-            }
-          }
-        }
-      },
-      
-      // Get user statistics for certification
-      getUserStats() {
-        const wpmValues = testHistory.map(h => h.wpm);
-        const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
-        
-        // Category-specific stats
-        const codeTests = testHistory.filter(t => t.source === 'programming');
-        const literatureTests = testHistory.filter(t => t.source === 'literature');
-        const scienceTests = testHistory.filter(t => t.source === 'science');
-        
-        return {
-          bestWPM: Math.max(...wpmValues, 0),
-          avgWPM: Math.round(wpmValues.reduce((a,b) => a+b, 0) / (wpmValues.length || 1)),
-          bestAccuracy: Math.max(...accuracyValues, 0),
-          avgAccuracy: Math.round(accuracyValues.reduce((a,b) => a+b, 0) / (accuracyValues.length || 1)),
-          totalTests: testHistory.length,
-          codeWPM: codeTests.length > 0 ? Math.max(...codeTests.map(t => t.wpm)) : 0,
-          literatureWPM: literatureTests.length > 0 ? Math.max(...literatureTests.map(t => t.wpm)) : 0,
-          scienceWPM: scienceTests.length > 0 ? Math.max(...scienceTests.map(t => t.wpm)) : 0
-        };
-      },
-      
-      // Issue new certification
-      issueCertification(levelKey, level, stats) {
-        const certification = {
-          id: Date.now(),
-          level: levelKey,
-          name: level.name,
-          icon: level.icon,
-          color: level.color,
-          issuedDate: new Date().toISOString(),
-          certificateNumber: this.generateCertificateNumber(),
-          stats: {
-            wpm: stats.bestWPM,
-            accuracy: stats.bestAccuracy,
-            totalTests: stats.totalTests
-          },
-          verified: true
-        };
-        
-        this.userCertifications.push(certification);
-        this.saveCertifications();
-        
-        // Show celebration
-        this.showCertificationCelebration(certification);
-        
-        // Play achievement sound
-        SoundManager.playAchievement();
-        
-        // Award points
-        if (AchievementSystem) {
-          const pointsEarned = this.getCertificationPoints(levelKey);
-          AchievementSystem.userProgress.totalPoints += pointsEarned;
-          AchievementSystem.saveProgress();
-        }
-      },
-      
-      // Get certification points
-      getCertificationPoints(level) {
-        const points = {
-          BRONZE: 50,
-          SILVER: 100,
-          GOLD: 200,
-          PLATINUM: 350,
-          DIAMOND: 500,
-          MASTER: 750,
-          GRANDMASTER: 1000
-        };
-        return points[level] || 0;
-      },
-      
-      // Generate unique certificate number
-      generateCertificateNumber() {
-        const prefix = 'VTC';
-        const timestamp = Date.now().toString().slice(-8);
-        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-        return `${prefix}-${timestamp}-${random}`;
-      },
-      
-      // Show certification celebration
-      showCertificationCelebration(cert) {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+      verified: true
+    };
+
+    this.userCertifications.push(certification);
+    this.saveCertifications();
+
+    // Show celebration
+    this.showCertificationCelebration(certification);
+
+    // Play achievement sound
+    SoundManager.playAchievement();
+
+    // Award points
+    if (AchievementSystem) {
+      const pointsEarned = this.getCertificationPoints(levelKey);
+      AchievementSystem.userProgress.totalPoints += pointsEarned;
+      AchievementSystem.saveProgress();
+    }
+  },
+
+  // Get certification points
+  getCertificationPoints(level) {
+    const points = {
+      BRONZE: 50,
+      SILVER: 100,
+      GOLD: 200,
+      PLATINUM: 350,
+      DIAMOND: 500,
+      MASTER: 750,
+      GRANDMASTER: 1000
+    };
+    return points[level] || 0;
+  },
+
+  // Generate unique certificate number
+  generateCertificateNumber() {
+    const prefix = 'VTC';
+    const timestamp = Date.now().toString().slice(-8);
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    return `${prefix}-${timestamp}-${random}`;
+  },
+
+  // Show certification celebration
+  showCertificationCelebration(cert) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl max-w-md w-full mx-4 p-8 text-center shadow-2xl animate-bounce">
             <div class="text-7xl mb-4">${cert.icon}</div>
             <h2 class="text-3xl font-bold text-white mb-2">Certification Unlocked!</h2>
@@ -7789,24 +7789,24 @@ ThemeMarketplace.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeCelebration');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Show certifications panel
-      showCertificationsPanel() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        const stats = this.getUserStats();
-        const nextLevel = this.getNextLevel(stats);
-        
-        modal.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeCelebration');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Show certifications panel
+  showCertificationsPanel() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    const stats = this.getUserStats();
+    const nextLevel = this.getNextLevel(stats);
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -7853,9 +7853,9 @@ ThemeMarketplace.init();
             <h4 class="font-semibold mb-3">Your Certifications (${this.userCertifications.length}/7)</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-6">
               ${Object.entries(this.levels).map(([key, level]) => {
-                const hasCert = this.userCertifications.some(c => c.level === key);
-                const certData = this.userCertifications.find(c => c.level === key);
-                return `
+      const hasCert = this.userCertifications.some(c => c.level === key);
+      const certData = this.userCertifications.find(c => c.level === key);
+      return `
                   <div class="p-3 rounded-lg ${hasCert ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-2 border-yellow-500' : 'bg-gray-100 dark:bg-gray-700 opacity-60'}">
                     <div class="flex items-center gap-3">
                       <div class="text-3xl">${level.icon}</div>
@@ -7868,7 +7868,7 @@ ThemeMarketplace.init();
                     </div>
                   </div>
                 `;
-              }).join('')}
+    }).join('')}
             </div>
             
             <button id="closeCertBtn" class="w-full px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition">
@@ -7876,44 +7876,44 @@ ThemeMarketplace.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Download certificate buttons
-        const downloadBtns = modal.querySelectorAll('.download-cert-btn');
-        downloadBtns.forEach(btn => {
-          btn.onclick = () => {
-            const certId = parseInt(btn.dataset.certId);
-            const cert = this.userCertifications.find(c => c.id === certId);
-            if (cert) {
-              this.generateCertificatePDF(cert);
-            }
-          };
-        });
-        
-        const closeBtn = modal.querySelector('#closeCertPanel') || modal.querySelector('#closeCertBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Get next certification level
-      getNextLevel(stats) {
-        const levels = Object.entries(this.levels);
-        for (const [key, level] of levels) {
-          const hasCert = this.userCertifications.some(c => c.level === key);
-          if (!hasCert) {
-            return level;
-          }
+
+    document.body.appendChild(modal);
+
+    // Download certificate buttons
+    const downloadBtns = modal.querySelectorAll('.download-cert-btn');
+    downloadBtns.forEach(btn => {
+      btn.onclick = () => {
+        const certId = parseInt(btn.dataset.certId);
+        const cert = this.userCertifications.find(c => c.id === certId);
+        if (cert) {
+          this.generateCertificatePDF(cert);
         }
-        return null;
-      },
-      
-      // Generate certificate PDF (HTML/CSS for print)
-      generateCertificatePDF(cert) {
-        const level = this.levels[cert.level];
-        const printWindow = window.open('', '_blank');
-        
-        printWindow.document.write(`
+      };
+    });
+
+    const closeBtn = modal.querySelector('#closeCertPanel') || modal.querySelector('#closeCertBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Get next certification level
+  getNextLevel(stats) {
+    const levels = Object.entries(this.levels);
+    for (const [key, level] of levels) {
+      const hasCert = this.userCertifications.some(c => c.level === key);
+      if (!hasCert) {
+        return level;
+      }
+    }
+    return null;
+  },
+
+  // Generate certificate PDF (HTML/CSS for print)
+  generateCertificatePDF(cert) {
+    const level = this.levels[cert.level];
+    const printWindow = window.open('', '_blank');
+
+    printWindow.document.write(`
           <!DOCTYPE html>
           <html>
           <head>
@@ -8083,19 +8083,19 @@ ThemeMarketplace.init();
           </body>
           </html>
         `);
-        
-        printWindow.document.close();
-        this.showNotification('Certificate opened. Use Ctrl+P to save as PDF.', 'success');
-      },
-      
-      // Show certification quiz (optional assessment)
-      showCertificationQuiz() {
-        // This would be a formal typing test for certification
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+
+    printWindow.document.close();
+    this.showNotification('Certificate opened. Use Ctrl+P to save as PDF.', 'success');
+  },
+
+  // Show certification quiz (optional assessment)
+  showCertificationQuiz() {
+    // This would be a formal typing test for certification
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl text-center">
             <div class="text-5xl mb-4">📝</div>
             <h3 class="text-xl font-bold mb-2">Formal Certification Test</h3>
@@ -8109,103 +8109,102 @@ ThemeMarketplace.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const startBtn = modal.querySelector('#startCertTest');
-        const closeBtn = modal.querySelector('#closeCertTest');
-        
-        startBtn.onclick = () => {
-          this.startFormalTest();
-          modal.remove();
-        };
-        
-        closeBtn.onclick = () => modal.remove();
-      },
-      
-      // Start formal certification test
-      startFormalTest() {
-        // Set strict test conditions
-        const originalDuration = totalDuration;
-        totalDuration = 300; // 5 minutes
-        timeLeft = 300;
-        elements.timeElem.innerText = "300s";
-        
-        // Disable practice mode
-        if (practiceActive) togglePractice();
-        
-        // Show certification mode indicator
-        let indicator = document.getElementById('certIndicator');
-        if (!indicator) {
-          indicator = document.createElement('div');
-          indicator.id = 'certIndicator';
-          indicator.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg z-40';
-          document.body.appendChild(indicator);
-        }
-        indicator.innerHTML = '<i class="fas fa-certificate mr-1"></i> CERTIFICATION MODE - 5 MINUTES';
-        
-        // Load new quote
-        loadQuote();
-        
-        // Store original finish test
-        const originalFinish = finishTest;
-        
-        // Override finish test for certification
-        window.finishTest = function() {
-          originalFinish();
-          
-          const testResult = {
-            wpm: parseInt(elements.wpmElem.innerText),
-            accuracy: parseInt(elements.accuracyElem.innerText),
-            errors: parseInt(elements.errorsElem.innerText),
-            duration: 300
-          };
-          
-          // Check if passed certification
-          if (testResult.wpm >= 45 && testResult.accuracy >= 88) {
-            CertificationSystem.issueCertification('SILVER', CertificationSystem.levels.SILVER, CertificationSystem.getUserStats());
-          } else if (testResult.wpm >= 25 && testResult.accuracy >= 85) {
-            CertificationSystem.issueCertification('BRONZE', CertificationSystem.levels.BRONZE, CertificationSystem.getUserStats());
-          } else {
-            CertificationSystem.showNotification('Certification test failed. Keep practicing!', 'error');
-          }
-          
-          // Restore original finish test
-          window.finishTest = originalFinish;
-          
-          // Remove indicator
-          if (indicator) indicator.remove();
-          
-          // Restore settings
-          totalDuration = originalDuration;
-          timeLeft = originalDuration;
-          elements.timeElem.innerText = originalDuration + "s";
-        };
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const certBtn = document.getElementById('certificationBtn');
-        if (certBtn) {
-          certBtn.onclick = () => this.showCertificationsPanel();
-        }
-        
-        // Check eligibility after each test
-        const originalFinishTest = finishTest;
-        window.finishTest = function() {
-          originalFinishTest();
-          CertificationSystem.checkCertificationEligibility();
-        };
-      }
+
+    document.body.appendChild(modal);
+
+    const startBtn = modal.querySelector('#startCertTest');
+    const closeBtn = modal.querySelector('#closeCertTest');
+
+    startBtn.onclick = () => {
+      this.startFormalTest();
+      modal.remove();
     };
+
+    closeBtn.onclick = () => modal.remove();
+  },
+
+  // Start formal certification test
+  startFormalTest() {
+    // Set strict test conditions
+    const originalDuration = totalDuration;
+    totalDuration = 300; // 5 minutes
+    timeLeft = 300;
+    elements.timeElem.innerText = "300s";
+
+    // Disable practice mode
+    if (practiceActive) togglePractice();
+
+    // Show certification mode indicator
+    let indicator = document.getElementById('certIndicator');
+    if (!indicator) {
+      indicator = document.createElement('div');
+      indicator.id = 'certIndicator';
+      indicator.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg z-40';
+      document.body.appendChild(indicator);
+    }
+    indicator.innerHTML = '<i class="fas fa-certificate mr-1"></i> CERTIFICATION MODE - 5 MINUTES';
+
+    // Load new quote
+    loadQuote();
+
+    // Store original finish test
+    const originalFinish = finishTest;
+
+    // Override finish test for certification
+    window.finishTest = function () {
+      originalFinish();
+
+      const testResult = {
+        wpm: parseInt(elements.wpmElem.innerText),
+        accuracy: parseInt(elements.accuracyElem.innerText),
+        errors: parseInt(elements.errorsElem.innerText),
+        duration: 300
+      };
+
+      // Check if passed certification
+      if (testResult.wpm >= 45 && testResult.accuracy >= 88) {
+        CertificationSystem.issueCertification('SILVER', CertificationSystem.levels.SILVER, CertificationSystem.getUserStats());
+      } else if (testResult.wpm >= 25 && testResult.accuracy >= 85) {
+        CertificationSystem.issueCertification('BRONZE', CertificationSystem.levels.BRONZE, CertificationSystem.getUserStats());
+      } else {
+        CertificationSystem.showNotification('Certification test failed. Keep practicing!', 'error');
+      }
+
+      // Restore original finish test
+      window.finishTest = originalFinish;
+
+      // Remove indicator
+      if (indicator) indicator.remove();
+
+      // Restore settings
+      totalDuration = originalDuration;
+      timeLeft = originalDuration;
+      elements.timeElem.innerText = originalDuration + "s";
+    };
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const certBtn = document.getElementById('certificationBtn');
+    if (certBtn) {
+      certBtn.onclick = () => this.showCertificationsPanel();
+    }
+
+    // Check eligibility after each test
+    const originalFinishTest = finishTest;
+    window.finishTest = function () {
+      originalFinishTest();
+      CertificationSystem.checkCertificationEligibility();
+    };
+  }
+};
