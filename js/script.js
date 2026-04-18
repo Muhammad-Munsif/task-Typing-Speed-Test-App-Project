@@ -8547,211 +8547,213 @@ fetch('/api/stats', {
 // Initialize Developer API
 DeveloperAPI.init();
 
-    // ==================== DISCORD/SLACK INTEGRATION (DAY 23) ====================
-    const SocialIntegration = {
-      // Webhook URLs (stored locally)
-      discordWebhook: null,
-      slackWebhook: null,
-      
-      // Integration settings
-      settings: {
-        discordEnabled: false,
-        slackEnabled: false,
-        autoShare: false,
-        shareOnAchievement: true,
-        shareOnCertification: true
-      },
-      
-      // Initialize
-      init() {
-        this.loadSettings();
-        this.setupEventListeners();
-      },
-      
-      // Load settings from storage
-      loadSettings() {
-        const saved = localStorage.getItem('socialIntegration');
-        if (saved) {
-          const data = JSON.parse(saved);
-          this.settings = data.settings || this.settings;
-          this.discordWebhook = data.discordWebhook;
-          this.slackWebhook = data.slackWebhook;
-        }
-      },
-      
-      // Save settings
-      saveSettings() {
-        localStorage.setItem('socialIntegration', JSON.stringify({
-          settings: this.settings,
-          discordWebhook: this.discordWebhook,
-          slackWebhook: this.slackWebhook
-        }));
-      },
-      
-      // Send to Discord
-      async sendToDiscord(message, embed = null) {
-        if (!this.discordWebhook || !this.settings.discordEnabled) {
-          this.showNotification('Discord not configured or disabled', 'error');
-          return false;
-        }
-        
-        const payload = {
-          content: message,
-          username: 'VelocityType Bot',
-          avatar_url: 'https://cdn-icons-png.flaticon.com/512/4042/4042383.png'
-        };
-        
-        if (embed) {
-          payload.embeds = [embed];
-        }
-        
-        try {
-          const response = await fetch(this.discordWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          
-          if (response.ok) {
-            this.showNotification('Shared to Discord!', 'success');
-            return true;
-          }
-        } catch (error) {
-          console.error('Discord webhook error:', error);
-          this.showNotification('Failed to share to Discord', 'error');
-        }
-        return false;
-      },
-      
-      // Send to Slack
-      async sendToSlack(message, blocks = null) {
-        if (!this.slackWebhook || !this.settings.slackEnabled) {
-          this.showNotification('Slack not configured or disabled', 'error');
-          return false;
-        }
-        
-        const payload = {
-          text: message,
-          username: 'VelocityType',
-          icon_emoji: ':keyboard:'
-        };
-        
-        if (blocks) {
-          payload.blocks = blocks;
-        }
-        
-        try {
-          const response = await fetch(this.slackWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-          });
-          
-          if (response.ok) {
-            this.showNotification('Shared to Slack!', 'success');
-            return true;
-          }
-        } catch (error) {
-          console.error('Slack webhook error:', error);
-          this.showNotification('Failed to share to Slack', 'error');
-        }
-        return false;
-      },
-      
-      // Share test result
-      shareTestResult(testResult) {
-        const message = `I just scored ${testResult.wpm} WPM with ${testResult.accuracy} accuracy on VelocityType! 🚀`;
-        
-        const embed = {
-          title: '🏆 Typing Test Result',
-          color: 0x5865F2,
-          fields: [
-            { name: 'WPM', value: testResult.wpm.toString(), inline: true },
-            { name: 'Accuracy', value: testResult.accuracy, inline: true },
-            { name: 'Errors', value: testResult.errors.toString(), inline: true },
-            { name: 'Duration', value: testResult.time, inline: true }
-          ],
-          timestamp: new Date().toISOString(),
-          footer: { text: 'VelocityType Typing Speed Test' }
-        };
-        
-        const slackBlocks = [
-          { type: 'section', text: { type: 'mrkdwn', text: `*🏆 Typing Test Result*` } },
-          { type: 'section', text: { type: 'mrkdwn', text: message } },
-          { type: 'divider' },
-          { type: 'section', fields: [
-            { type: 'mrkdwn', text: `*WPM:*\n${testResult.wpm}` },
-            { type: 'mrkdwn', text: `*Accuracy:*\n${testResult.accuracy}` },
-            { type: 'mrkdwn', text: `*Errors:*\n${testResult.errors}` },
-            { type: 'mrkdwn', text: `*Time:*\n${testResult.time}` }
-          ]}
-        ];
-        
-        if (this.settings.discordEnabled && this.discordWebhook) {
-          this.sendToDiscord(message, embed);
-        }
-        
-        if (this.settings.slackEnabled && this.slackWebhook) {
-          this.sendToSlack(message, slackBlocks);
-        }
-      },
-      
-      // Share achievement
-      shareAchievement(achievement) {
-        const message = `🏅 I unlocked "${achievement.name}" on VelocityType! (+${achievement.points} points)`;
-        
-        const embed = {
-          title: '🎖️ Achievement Unlocked!',
-          color: 0xFFD700,
-          description: achievement.name,
-          fields: [
-            { name: 'Points Earned', value: achievement.points.toString(), inline: true },
-            { name: 'Description', value: achievement.description, inline: true }
-          ],
-          timestamp: new Date().toISOString()
-        };
-        
-        if (this.settings.discordEnabled && this.discordWebhook) {
-          this.sendToDiscord(message, embed);
-        }
-        
-        if (this.settings.slackEnabled && this.slackWebhook) {
-          this.sendToSlack(message);
-        }
-      },
-      
-      // Share certification
-      shareCertification(cert) {
-        const message = `🎓 I earned the "${cert.name}" certification on VelocityType! Certificate #: ${cert.certificateNumber}`;
-        
-        const embed = {
-          title: '📜 New Certification Earned!',
-          color: 0x00FF00,
-          description: cert.name,
-          fields: [
-            { name: 'Certificate #', value: cert.certificateNumber, inline: true },
-            { name: 'WPM', value: cert.stats.wpm.toString(), inline: true },
-            { name: 'Accuracy', value: `${cert.stats.accuracy}%`, inline: true }
-          ],
-          timestamp: new Date().toISOString()
-        };
-        
-        if (this.settings.discordEnabled && this.discordWebhook) {
-          this.sendToDiscord(message, embed);
-        }
-        
-        if (this.settings.slackEnabled && this.slackWebhook) {
-          this.sendToSlack(message);
-        }
-      },
-      
-      // Show integration settings panel
-      showIntegrationPanel() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+// ==================== DISCORD/SLACK INTEGRATION (DAY 23) ====================
+const SocialIntegration = {
+  // Webhook URLs (stored locally)
+  discordWebhook: null,
+  slackWebhook: null,
+
+  // Integration settings
+  settings: {
+    discordEnabled: false,
+    slackEnabled: false,
+    autoShare: false,
+    shareOnAchievement: true,
+    shareOnCertification: true
+  },
+
+  // Initialize
+  init() {
+    this.loadSettings();
+    this.setupEventListeners();
+  },
+
+  // Load settings from storage
+  loadSettings() {
+    const saved = localStorage.getItem('socialIntegration');
+    if (saved) {
+      const data = JSON.parse(saved);
+      this.settings = data.settings || this.settings;
+      this.discordWebhook = data.discordWebhook;
+      this.slackWebhook = data.slackWebhook;
+    }
+  },
+
+  // Save settings
+  saveSettings() {
+    localStorage.setItem('socialIntegration', JSON.stringify({
+      settings: this.settings,
+      discordWebhook: this.discordWebhook,
+      slackWebhook: this.slackWebhook
+    }));
+  },
+
+  // Send to Discord
+  async sendToDiscord(message, embed = null) {
+    if (!this.discordWebhook || !this.settings.discordEnabled) {
+      this.showNotification('Discord not configured or disabled', 'error');
+      return false;
+    }
+
+    const payload = {
+      content: message,
+      username: 'VelocityType Bot',
+      avatar_url: 'https://cdn-icons-png.flaticon.com/512/4042/4042383.png'
+    };
+
+    if (embed) {
+      payload.embeds = [embed];
+    }
+
+    try {
+      const response = await fetch(this.discordWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        this.showNotification('Shared to Discord!', 'success');
+        return true;
+      }
+    } catch (error) {
+      console.error('Discord webhook error:', error);
+      this.showNotification('Failed to share to Discord', 'error');
+    }
+    return false;
+  },
+
+  // Send to Slack
+  async sendToSlack(message, blocks = null) {
+    if (!this.slackWebhook || !this.settings.slackEnabled) {
+      this.showNotification('Slack not configured or disabled', 'error');
+      return false;
+    }
+
+    const payload = {
+      text: message,
+      username: 'VelocityType',
+      icon_emoji: ':keyboard:'
+    };
+
+    if (blocks) {
+      payload.blocks = blocks;
+    }
+
+    try {
+      const response = await fetch(this.slackWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        this.showNotification('Shared to Slack!', 'success');
+        return true;
+      }
+    } catch (error) {
+      console.error('Slack webhook error:', error);
+      this.showNotification('Failed to share to Slack', 'error');
+    }
+    return false;
+  },
+
+  // Share test result
+  shareTestResult(testResult) {
+    const message = `I just scored ${testResult.wpm} WPM with ${testResult.accuracy} accuracy on VelocityType! 🚀`;
+
+    const embed = {
+      title: '🏆 Typing Test Result',
+      color: 0x5865F2,
+      fields: [
+        { name: 'WPM', value: testResult.wpm.toString(), inline: true },
+        { name: 'Accuracy', value: testResult.accuracy, inline: true },
+        { name: 'Errors', value: testResult.errors.toString(), inline: true },
+        { name: 'Duration', value: testResult.time, inline: true }
+      ],
+      timestamp: new Date().toISOString(),
+      footer: { text: 'VelocityType Typing Speed Test' }
+    };
+
+    const slackBlocks = [
+      { type: 'section', text: { type: 'mrkdwn', text: `*🏆 Typing Test Result*` } },
+      { type: 'section', text: { type: 'mrkdwn', text: message } },
+      { type: 'divider' },
+      {
+        type: 'section', fields: [
+          { type: 'mrkdwn', text: `*WPM:*\n${testResult.wpm}` },
+          { type: 'mrkdwn', text: `*Accuracy:*\n${testResult.accuracy}` },
+          { type: 'mrkdwn', text: `*Errors:*\n${testResult.errors}` },
+          { type: 'mrkdwn', text: `*Time:*\n${testResult.time}` }
+        ]
+      }
+    ];
+
+    if (this.settings.discordEnabled && this.discordWebhook) {
+      this.sendToDiscord(message, embed);
+    }
+
+    if (this.settings.slackEnabled && this.slackWebhook) {
+      this.sendToSlack(message, slackBlocks);
+    }
+  },
+
+  // Share achievement
+  shareAchievement(achievement) {
+    const message = `🏅 I unlocked "${achievement.name}" on VelocityType! (+${achievement.points} points)`;
+
+    const embed = {
+      title: '🎖️ Achievement Unlocked!',
+      color: 0xFFD700,
+      description: achievement.name,
+      fields: [
+        { name: 'Points Earned', value: achievement.points.toString(), inline: true },
+        { name: 'Description', value: achievement.description, inline: true }
+      ],
+      timestamp: new Date().toISOString()
+    };
+
+    if (this.settings.discordEnabled && this.discordWebhook) {
+      this.sendToDiscord(message, embed);
+    }
+
+    if (this.settings.slackEnabled && this.slackWebhook) {
+      this.sendToSlack(message);
+    }
+  },
+
+  // Share certification
+  shareCertification(cert) {
+    const message = `🎓 I earned the "${cert.name}" certification on VelocityType! Certificate #: ${cert.certificateNumber}`;
+
+    const embed = {
+      title: '📜 New Certification Earned!',
+      color: 0x00FF00,
+      description: cert.name,
+      fields: [
+        { name: 'Certificate #', value: cert.certificateNumber, inline: true },
+        { name: 'WPM', value: cert.stats.wpm.toString(), inline: true },
+        { name: 'Accuracy', value: `${cert.stats.accuracy}%`, inline: true }
+      ],
+      timestamp: new Date().toISOString()
+    };
+
+    if (this.settings.discordEnabled && this.discordWebhook) {
+      this.sendToDiscord(message, embed);
+    }
+
+    if (this.settings.slackEnabled && this.slackWebhook) {
+      this.sendToSlack(message);
+    }
+  },
+
+  // Show integration settings panel
+  showIntegrationPanel() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -8826,91 +8828,90 @@ DeveloperAPI.init();
             </div>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Save settings
-        const saveBtn = modal.querySelector('#saveIntegrationBtn');
-        const discordToggle = modal.querySelector('#discordToggle');
-        const slackToggle = modal.querySelector('#slackToggle');
-        const discordWebhookInput = modal.querySelector('#discordWebhook');
-        const slackWebhookInput = modal.querySelector('#slackWebhook');
-        const autoShareToggle = modal.querySelector('#autoShareToggle');
-        const shareAchievementToggle = modal.querySelector('#shareAchievementToggle');
-        const shareCertToggle = modal.querySelector('#shareCertToggle');
-        
-        saveBtn.onclick = () => {
-          this.settings.discordEnabled = discordToggle.checked;
-          this.settings.slackEnabled = slackToggle.checked;
-          this.settings.autoShare = autoShareToggle.checked;
-          this.settings.shareOnAchievement = shareAchievementToggle.checked;
-          this.settings.shareOnCertification = shareCertToggle.checked;
-          this.discordWebhook = discordWebhookInput.value || null;
-          this.slackWebhook = slackWebhookInput.value || null;
-          this.saveSettings();
-          this.showNotification('Integration settings saved!', 'success');
-          modal.remove();
+
+    document.body.appendChild(modal);
+
+    // Save settings
+    const saveBtn = modal.querySelector('#saveIntegrationBtn');
+    const discordToggle = modal.querySelector('#discordToggle');
+    const slackToggle = modal.querySelector('#slackToggle');
+    const discordWebhookInput = modal.querySelector('#discordWebhook');
+    const slackWebhookInput = modal.querySelector('#slackWebhook');
+    const autoShareToggle = modal.querySelector('#autoShareToggle');
+    const shareAchievementToggle = modal.querySelector('#shareAchievementToggle');
+    const shareCertToggle = modal.querySelector('#shareCertToggle');
+
+    saveBtn.onclick = () => {
+      this.settings.discordEnabled = discordToggle.checked;
+      this.settings.slackEnabled = slackToggle.checked;
+      this.settings.autoShare = autoShareToggle.checked;
+      this.settings.shareOnAchievement = shareAchievementToggle.checked;
+      this.settings.shareOnCertification = shareCertToggle.checked;
+      this.discordWebhook = discordWebhookInput.value || null;
+      this.slackWebhook = slackWebhookInput.value || null;
+      this.saveSettings();
+      this.showNotification('Integration settings saved!', 'success');
+      modal.remove();
+    };
+
+    // Test Discord
+    const testDiscordBtn = modal.querySelector('#testDiscordBtn');
+    testDiscordBtn.onclick = () => {
+      const webhook = discordWebhookInput.value;
+      if (!webhook) {
+        alert('Please enter a Discord webhook URL first');
+        return;
+      }
+      this.sendToDiscord('🎉 VelocityType integration test successful! Your typing stats will now be shared here.', null);
+    };
+
+    // Test Slack
+    const testSlackBtn = modal.querySelector('#testSlackBtn');
+    testSlackBtn.onclick = () => {
+      const webhook = slackWebhookInput.value;
+      if (!webhook) {
+        alert('Please enter a Slack webhook URL first');
+        return;
+      }
+      this.sendToSlack('🎉 VelocityType integration test successful! Your typing stats will now be shared here.');
+    };
+
+    const closeBtn = modal.querySelector('#closeIntegrationPanel');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const socialBtn = document.getElementById('socialIntegrationBtn');
+    if (socialBtn) {
+      socialBtn.onclick = () => this.showIntegrationPanel();
+    }
+
+    // Auto-share test results
+    const originalFinishTest = finishTest;
+    window.finishTest = function () {
+      originalFinishTest();
+
+      if (SocialIntegration.settings.autoShare && (SocialIntegration.settings.discordEnabled || SocialIntegration.settings.slackEnabled)) {
+        const testResult = {
+          wpm: elements.wpmElem.innerText,
+          accuracy: elements.accuracyElem.innerText,
+          errors: elements.errorsElem.innerText,
+          time: elements.timeElem.innerText
         };
-        
-        // Test Discord
-        const testDiscordBtn = modal.querySelector('#testDiscordBtn');
-        testDiscordBtn.onclick = () => {
-          const webhook = discordWebhookInput.value;
-          if (!webhook) {
-            alert('Please enter a Discord webhook URL first');
-            return;
-          }
-          this.sendToDiscord('🎉 VelocityType integration test successful! Your typing stats will now be shared here.', null);
-        };
-        
-        // Test Slack
-        const testSlackBtn = modal.querySelector('#testSlackBtn');
-        testSlackBtn.onclick = () => {
-          const webhook = slackWebhookInput.value;
-          if (!webhook) {
-            alert('Please enter a Slack webhook URL first');
-            return;
-          }
-          this.sendToSlack('🎉 VelocityType integration test successful! Your typing stats will now be shared here.');
-        };
-        
-        const closeBtn = modal.querySelector('#closeIntegrationPanel');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const socialBtn = document.getElementById('socialIntegrationBtn');
-        if (socialBtn) {
-          socialBtn.onclick = () => this.showIntegrationPanel();
-        }
-        
-        // Auto-share test results
-        const originalFinishTest = finishTest;
-        window.finishTest = function() {
-          originalFinishTest();
-          
-          if (SocialIntegration.settings.autoShare && (SocialIntegration.settings.discordEnabled || SocialIntegration.settings.slackEnabled)) {
-            const testResult = {
-              wpm: elements.wpmElem.innerText,
-              accuracy: elements.accuracyElem.innerText,
-              errors: elements.errorsElem.innerText,
-              time: elements.timeElem.innerText
-            };
-            SocialIntegration.shareTestResult(testResult);
-          }
-        };
+        SocialIntegration.shareTestResult(testResult);
       }
     };
+  }
+};
