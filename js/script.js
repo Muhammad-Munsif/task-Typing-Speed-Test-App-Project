@@ -9898,5 +9898,5 @@ const PremiumSystem = {
     }, 5000);
   }
 };
-    // Initialize Premium System
-    PremiumSystem.init();
+// Initialize Premium System
+PremiumSystem.init();
