@@ -9402,217 +9402,217 @@ const LearningPathsSystem = {
 // Initialize Learning Paths System
 LearningPathsSystem.init();
 
-    // ==================== PREMIUM FEATURES & MONETIZATION (DAY 25) ====================
-    const PremiumSystem = {
-      // Subscription tiers
-      tiers: {
-        FREE: {
-          id: 'free',
-          name: 'Free',
-          price: 0,
-          priceMonthly: 0,
-          color: '#10b981',
-          features: [
-            'Basic typing tests',
-            'Standard quotes library',
-            'Basic statistics',
-            'Dark/light mode',
-            'Test history (last 15)',
-            'Basic achievements'
-          ]
-        },
-        PRO: {
-          id: 'pro',
-          name: 'Pro',
-          price: 49,
-          priceMonthly: 4.99,
-          color: '#3b82f6',
-          features: [
-            'Everything in Free',
-            'Unlimited test history',
-            'Advanced analytics & charts',
-            'Custom text library (unlimited)',
-            'Export data (CSV, JSON, PDF)',
-            'Priority support',
-            'No ads',
-            'Multiplayer racing',
-            'Daily challenges'
-          ]
-        },
-        TEAM: {
-          id: 'team',
-          name: 'Team',
-          price: 199,
-          priceMonthly: 19.99,
-          color: '#8b5cf6',
-          features: [
-            'Everything in Pro',
-            'Classroom dashboard',
-            'Student management (up to 50)',
-            'Teacher analytics',
-            'Bulk export reports',
-            'Dedicated support',
-            'Custom branding',
-            'API access',
-            'Team leaderboards'
-          ]
-        },
-        ENTERPRISE: {
-          id: 'enterprise',
-          name: 'Enterprise',
-          price: 999,
-          priceMonthly: 99.99,
-          color: '#f59e0b',
-          features: [
-            'Everything in Team',
-            'Unlimited students',
-            'SSO integration',
-            'Custom development',
-            'SLA guarantee',
-            'On-premise deployment',
-            '24/7 phone support',
-            'Custom feature development',
-            'White-label solution'
-          ]
-        }
-      },
-      
-      // Current user subscription
-      userSubscription: {
-        tier: 'free',
-        startDate: null,
-        endDate: null,
-        autoRenew: false,
-        features: {}
-      },
-      
-      // Premium features status
-      premiumFeatures: {
-        unlimitedHistory: false,
-        advancedAnalytics: false,
-        unlimitedCustomTexts: false,
-        exportData: false,
-        noAds: false,
-        multiplayer: false,
-        dailyChallenges: false,
-        classroomAccess: false,
-        apiAccess: false,
-        customBranding: false
-      },
-      
-      // Initialize
-      init() {
-        this.loadSubscription();
-        this.setupEventListeners();
-        this.applyPremiumFeatures();
-      },
-      
-      // Load subscription from storage
-      loadSubscription() {
-        const saved = localStorage.getItem('velocitySubscription');
-        if (saved) {
-          this.userSubscription = JSON.parse(saved);
-          this.updatePremiumFeatures();
-        }
-      },
-      
-      // Save subscription
-      saveSubscription() {
-        localStorage.setItem('velocitySubscription', JSON.stringify(this.userSubscription));
-      },
-      
-      // Update premium features based on tier
-      updatePremiumFeatures() {
-        const tier = this.userSubscription.tier;
-        
-        // Reset all features
-        Object.keys(this.premiumFeatures).forEach(key => {
-          this.premiumFeatures[key] = false;
-        });
-        
-        // Apply features based on tier
-        if (tier === 'pro' || tier === 'team' || tier === 'enterprise') {
-          this.premiumFeatures.unlimitedHistory = true;
-          this.premiumFeatures.advancedAnalytics = true;
-          this.premiumFeatures.unlimitedCustomTexts = true;
-          this.premiumFeatures.exportData = true;
-          this.premiumFeatures.noAds = true;
-          this.premiumFeatures.multiplayer = true;
-          this.premiumFeatures.dailyChallenges = true;
-        }
-        
-        if (tier === 'team' || tier === 'enterprise') {
-          this.premiumFeatures.classroomAccess = true;
-          this.premiumFeatures.apiAccess = true;
-        }
-        
-        if (tier === 'enterprise') {
-          this.premiumFeatures.customBranding = true;
-        }
-        
-        this.saveSubscription();
-      },
-      
-      // Apply premium features to the app
-      applyPremiumFeatures() {
-        // Apply no ads
-        if (this.premiumFeatures.noAds) {
-          this.removeAds();
-        }
-        
-        // Apply unlimited history
-        if (this.premiumFeatures.unlimitedHistory) {
-          this.enableUnlimitedHistory();
-        }
-        
-        // Apply advanced analytics
-        if (this.premiumFeatures.advancedAnalytics) {
-          this.enableAdvancedAnalytics();
-        }
-        
-        // Apply unlimited custom texts
-        if (this.premiumFeatures.unlimitedCustomTexts) {
-          this.enableUnlimitedCustomTexts();
-        }
-      },
-      
-      // Remove ads from UI
-      removeAds() {
-        const adContainers = document.querySelectorAll('.ad-container');
-        adContainers.forEach(ad => ad.remove());
-      },
-      
-      // Enable unlimited history
-      enableUnlimitedHistory() {
-        // Remove the 15-test limit
-        // Already handled in storage
-        this.showNotification('Unlimited history enabled!', 'success');
-      },
-      
-      // Enable advanced analytics
-      enableAdvancedAnalytics() {
-        // Add more detailed analytics
-        console.log('Advanced analytics enabled');
-      },
-      
-      // Enable unlimited custom texts
-      enableUnlimitedCustomTexts() {
-        // Remove the 10-text limit
-        if (CustomTextSystem) {
-          CustomTextSystem.maxCustomTexts = Infinity;
-        }
-      },
-      
-      // Show premium modal
-      showPremiumModal() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        const currentTier = this.tiers[this.userSubscription.tier.toUpperCase()];
-        const isPremium = this.userSubscription.tier !== 'free';
-        
-        modal.innerHTML = `
+// ==================== PREMIUM FEATURES & MONETIZATION (DAY 25) ====================
+const PremiumSystem = {
+  // Subscription tiers
+  tiers: {
+    FREE: {
+      id: 'free',
+      name: 'Free',
+      price: 0,
+      priceMonthly: 0,
+      color: '#10b981',
+      features: [
+        'Basic typing tests',
+        'Standard quotes library',
+        'Basic statistics',
+        'Dark/light mode',
+        'Test history (last 15)',
+        'Basic achievements'
+      ]
+    },
+    PRO: {
+      id: 'pro',
+      name: 'Pro',
+      price: 49,
+      priceMonthly: 4.99,
+      color: '#3b82f6',
+      features: [
+        'Everything in Free',
+        'Unlimited test history',
+        'Advanced analytics & charts',
+        'Custom text library (unlimited)',
+        'Export data (CSV, JSON, PDF)',
+        'Priority support',
+        'No ads',
+        'Multiplayer racing',
+        'Daily challenges'
+      ]
+    },
+    TEAM: {
+      id: 'team',
+      name: 'Team',
+      price: 199,
+      priceMonthly: 19.99,
+      color: '#8b5cf6',
+      features: [
+        'Everything in Pro',
+        'Classroom dashboard',
+        'Student management (up to 50)',
+        'Teacher analytics',
+        'Bulk export reports',
+        'Dedicated support',
+        'Custom branding',
+        'API access',
+        'Team leaderboards'
+      ]
+    },
+    ENTERPRISE: {
+      id: 'enterprise',
+      name: 'Enterprise',
+      price: 999,
+      priceMonthly: 99.99,
+      color: '#f59e0b',
+      features: [
+        'Everything in Team',
+        'Unlimited students',
+        'SSO integration',
+        'Custom development',
+        'SLA guarantee',
+        'On-premise deployment',
+        '24/7 phone support',
+        'Custom feature development',
+        'White-label solution'
+      ]
+    }
+  },
+
+  // Current user subscription
+  userSubscription: {
+    tier: 'free',
+    startDate: null,
+    endDate: null,
+    autoRenew: false,
+    features: {}
+  },
+
+  // Premium features status
+  premiumFeatures: {
+    unlimitedHistory: false,
+    advancedAnalytics: false,
+    unlimitedCustomTexts: false,
+    exportData: false,
+    noAds: false,
+    multiplayer: false,
+    dailyChallenges: false,
+    classroomAccess: false,
+    apiAccess: false,
+    customBranding: false
+  },
+
+  // Initialize
+  init() {
+    this.loadSubscription();
+    this.setupEventListeners();
+    this.applyPremiumFeatures();
+  },
+
+  // Load subscription from storage
+  loadSubscription() {
+    const saved = localStorage.getItem('velocitySubscription');
+    if (saved) {
+      this.userSubscription = JSON.parse(saved);
+      this.updatePremiumFeatures();
+    }
+  },
+
+  // Save subscription
+  saveSubscription() {
+    localStorage.setItem('velocitySubscription', JSON.stringify(this.userSubscription));
+  },
+
+  // Update premium features based on tier
+  updatePremiumFeatures() {
+    const tier = this.userSubscription.tier;
+
+    // Reset all features
+    Object.keys(this.premiumFeatures).forEach(key => {
+      this.premiumFeatures[key] = false;
+    });
+
+    // Apply features based on tier
+    if (tier === 'pro' || tier === 'team' || tier === 'enterprise') {
+      this.premiumFeatures.unlimitedHistory = true;
+      this.premiumFeatures.advancedAnalytics = true;
+      this.premiumFeatures.unlimitedCustomTexts = true;
+      this.premiumFeatures.exportData = true;
+      this.premiumFeatures.noAds = true;
+      this.premiumFeatures.multiplayer = true;
+      this.premiumFeatures.dailyChallenges = true;
+    }
+
+    if (tier === 'team' || tier === 'enterprise') {
+      this.premiumFeatures.classroomAccess = true;
+      this.premiumFeatures.apiAccess = true;
+    }
+
+    if (tier === 'enterprise') {
+      this.premiumFeatures.customBranding = true;
+    }
+
+    this.saveSubscription();
+  },
+
+  // Apply premium features to the app
+  applyPremiumFeatures() {
+    // Apply no ads
+    if (this.premiumFeatures.noAds) {
+      this.removeAds();
+    }
+
+    // Apply unlimited history
+    if (this.premiumFeatures.unlimitedHistory) {
+      this.enableUnlimitedHistory();
+    }
+
+    // Apply advanced analytics
+    if (this.premiumFeatures.advancedAnalytics) {
+      this.enableAdvancedAnalytics();
+    }
+
+    // Apply unlimited custom texts
+    if (this.premiumFeatures.unlimitedCustomTexts) {
+      this.enableUnlimitedCustomTexts();
+    }
+  },
+
+  // Remove ads from UI
+  removeAds() {
+    const adContainers = document.querySelectorAll('.ad-container');
+    adContainers.forEach(ad => ad.remove());
+  },
+
+  // Enable unlimited history
+  enableUnlimitedHistory() {
+    // Remove the 15-test limit
+    // Already handled in storage
+    this.showNotification('Unlimited history enabled!', 'success');
+  },
+
+  // Enable advanced analytics
+  enableAdvancedAnalytics() {
+    // Add more detailed analytics
+    console.log('Advanced analytics enabled');
+  },
+
+  // Enable unlimited custom texts
+  enableUnlimitedCustomTexts() {
+    // Remove the 10-text limit
+    if (CustomTextSystem) {
+      CustomTextSystem.maxCustomTexts = Infinity;
+    }
+  },
+
+  // Show premium modal
+  showPremiumModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    const currentTier = this.tiers[this.userSubscription.tier.toUpperCase()];
+    const isPremium = this.userSubscription.tier !== 'free';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -9634,8 +9634,8 @@ LearningPathsSystem.init();
             <!-- Subscription Tiers -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               ${Object.entries(this.tiers).map(([key, tier]) => {
-                const isCurrent = this.userSubscription.tier === tier.id;
-                return `
+      const isCurrent = this.userSubscription.tier === tier.id;
+      return `
                   <div class="p-4 rounded-xl ${isCurrent ? 'bg-gradient-to-br from-yellow-400 to-orange-500 text-white' : 'bg-gray-100 dark:bg-gray-700'}">
                     <p class="text-xl font-bold">${tier.name}</p>
                     <p class="text-2xl font-bold mt-2">$${tier.priceMonthly}<span class="text-sm">/mo</span></p>
@@ -9657,7 +9657,7 @@ LearningPathsSystem.init();
                     ${isCurrent ? '<p class="mt-3 text-center text-xs font-semibold">✓ Current Plan</p>' : ''}
                   </div>
                 `;
-              }).join('')}
+    }).join('')}
             </div>
             
             <!-- Feature Comparison Table -->
@@ -9692,43 +9692,43 @@ LearningPathsSystem.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Upgrade buttons
-        const upgradeBtns = modal.querySelectorAll('.upgrade-btn');
-        upgradeBtns.forEach(btn => {
-          btn.onclick = () => {
-            const tier = btn.dataset.tier;
-            this.showPaymentModal(tier);
-            modal.remove();
-          };
-        });
-        
-        const closeBtn = modal.querySelector('#closePremiumModal') || modal.querySelector('#closePremiumBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Render checkmarks for comparison table
-      renderCheckmarks(free, pro, team, enterprise) {
-        return `
+
+    document.body.appendChild(modal);
+
+    // Upgrade buttons
+    const upgradeBtns = modal.querySelectorAll('.upgrade-btn');
+    upgradeBtns.forEach(btn => {
+      btn.onclick = () => {
+        const tier = btn.dataset.tier;
+        this.showPaymentModal(tier);
+        modal.remove();
+      };
+    });
+
+    const closeBtn = modal.querySelector('#closePremiumModal') || modal.querySelector('#closePremiumBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Render checkmarks for comparison table
+  renderCheckmarks(free, pro, team, enterprise) {
+    return `
           <td class="p-2 text-center">${free ? '✅' : '❌'}</td>
           <td class="p-2 text-center">${pro ? '✅' : '❌'}</td>
           <td class="p-2 text-center">${team ? '✅' : '❌'}</td>
           <td class="p-2 text-center">${enterprise ? '✅' : '❌'}</td>
         `;
-      },
-      
-      // Show payment modal
-      showPaymentModal(tierId) {
-        const tier = this.tiers[tierId.toUpperCase()];
-        
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+  },
+
+  // Show payment modal
+  showPaymentModal(tierId) {
+    const tier = this.tiers[tierId.toUpperCase()];
+
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-md w-full mx-4 p-6 shadow-2xl">
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-xl font-bold text-gray-800 dark:text-white">
@@ -9765,58 +9765,58 @@ LearningPathsSystem.init();
             <p class="text-xs text-center text-gray-500 mt-3">30-day money-back guarantee. Cancel anytime.</p>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const subscribeBtn = modal.querySelector('#subscribeBtn');
-        subscribeBtn.onclick = () => {
-          // Simulate payment processing
-          this.processPayment(tierId);
-          modal.remove();
-        };
-        
-        const closeBtn = modal.querySelector('#closePaymentModal') || modal.querySelector('#cancelPaymentBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Process payment (simulated)
-      processPayment(tierId) {
-        // Show loading
-        const loading = document.createElement('div');
-        loading.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        loading.innerHTML = '<div class="bg-white dark:bg-gray-800 rounded-xl p-6 text-center"><div class="loader mb-2"></div><p>Processing payment...</p></div>';
-        document.body.appendChild(loading);
-        
-        setTimeout(() => {
-          loading.remove();
-          
-          // Update subscription
-          this.userSubscription.tier = tierId;
-          this.userSubscription.startDate = new Date().toISOString();
-          this.userSubscription.endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
-          this.userSubscription.autoRenew = true;
-          
-          this.updatePremiumFeatures();
-          this.saveSubscription();
-          this.applyPremiumFeatures();
-          
-          this.showNotification(`Successfully upgraded to ${this.tiers[tierId.toUpperCase()].name}!`, 'success');
-          
-          // Show welcome modal
-          this.showWelcomeToPremium(tierId);
-        }, 1500);
-      },
-      
-      // Show welcome to premium modal
-      showWelcomeToPremium(tierId) {
-        const tier = this.tiers[tierId.toUpperCase()];
-        
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const subscribeBtn = modal.querySelector('#subscribeBtn');
+    subscribeBtn.onclick = () => {
+      // Simulate payment processing
+      this.processPayment(tierId);
+      modal.remove();
+    };
+
+    const closeBtn = modal.querySelector('#closePaymentModal') || modal.querySelector('#cancelPaymentBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Process payment (simulated)
+  processPayment(tierId) {
+    // Show loading
+    const loading = document.createElement('div');
+    loading.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    loading.innerHTML = '<div class="bg-white dark:bg-gray-800 rounded-xl p-6 text-center"><div class="loader mb-2"></div><p>Processing payment...</p></div>';
+    document.body.appendChild(loading);
+
+    setTimeout(() => {
+      loading.remove();
+
+      // Update subscription
+      this.userSubscription.tier = tierId;
+      this.userSubscription.startDate = new Date().toISOString();
+      this.userSubscription.endDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+      this.userSubscription.autoRenew = true;
+
+      this.updatePremiumFeatures();
+      this.saveSubscription();
+      this.applyPremiumFeatures();
+
+      this.showNotification(`Successfully upgraded to ${this.tiers[tierId.toUpperCase()].name}!`, 'success');
+
+      // Show welcome modal
+      this.showWelcomeToPremium(tierId);
+    }, 1500);
+  },
+
+  // Show welcome to premium modal
+  showWelcomeToPremium(tierId) {
+    const tier = this.tiers[tierId.toUpperCase()];
+
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl max-w-md w-full mx-4 p-8 text-center shadow-2xl animate-bounce">
             <div class="text-6xl mb-3">🎉</div>
             <h2 class="text-2xl font-bold text-white mb-2">Welcome to ${tier.name}!</h2>
@@ -9832,21 +9832,21 @@ LearningPathsSystem.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeWelcome');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Add ad banner (for free users)
-      addAdBanner() {
-        if (this.premiumFeatures.noAds) return;
-        
-        const adBanner = document.createElement('div');
-        adBanner.className = 'ad-container fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg z-40 cursor-pointer';
-        adBanner.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeWelcome');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Add ad banner (for free users)
+  addAdBanner() {
+    if (this.premiumFeatures.noAds) return;
+
+    const adBanner = document.createElement('div');
+    adBanner.className = 'ad-container fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-6 py-3 rounded-full shadow-lg z-40 cursor-pointer';
+    adBanner.innerHTML = `
           <div class="flex items-center gap-3">
             <i class="fas fa-crown text-yellow-300"></i>
             <span class="text-sm">🚀 Upgrade to Pro - Unlimited tests & analytics!</span>
@@ -9855,47 +9855,46 @@ LearningPathsSystem.init();
             </button>
           </div>
         `;
-        
-        adBanner.onclick = (e) => {
-          if (e.target.id !== 'upgradeFromAd') {
-            this.showPremiumModal();
-          }
-        };
-        
-        const upgradeBtn = adBanner.querySelector('#upgradeFromAd');
-        if (upgradeBtn) {
-          upgradeBtn.onclick = (e) => {
-            e.stopPropagation();
-            this.showPremiumModal();
-          };
-        }
-        
-        document.body.appendChild(adBanner);
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const premiumBtn = document.getElementById('premiumBtn');
-        if (premiumBtn) {
-          premiumBtn.onclick = () => this.showPremiumModal();
-        }
-        
-        // Add ad banner for free users
-        setTimeout(() => {
-          if (this.userSubscription.tier === 'free') {
-            this.addAdBanner();
-          }
-        }, 5000);
+
+    adBanner.onclick = (e) => {
+      if (e.target.id !== 'upgradeFromAd') {
+        this.showPremiumModal();
       }
     };
+
+    const upgradeBtn = adBanner.querySelector('#upgradeFromAd');
+    if (upgradeBtn) {
+      upgradeBtn.onclick = (e) => {
+        e.stopPropagation();
+        this.showPremiumModal();
+      };
+    }
+
+    document.body.appendChild(adBanner);
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const premiumBtn = document.getElementById('premiumBtn');
+    if (premiumBtn) {
+      premiumBtn.onclick = () => this.showPremiumModal();
+    }
+
+    // Add ad banner for free users
+    setTimeout(() => {
+      if (this.userSubscription.tier === 'free') {
+        this.addAdBanner();
+      }
+    }, 5000);
+  }
+};
