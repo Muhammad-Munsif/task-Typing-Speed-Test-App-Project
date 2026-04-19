@@ -9399,5 +9399,5 @@ const LearningPathsSystem = {
   }
 };
 
-    // Initialize Learning Paths System
-    LearningPathsSystem.init();
+// Initialize Learning Paths System
+LearningPathsSystem.init();
