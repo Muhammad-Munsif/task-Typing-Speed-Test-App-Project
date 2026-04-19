@@ -8918,222 +8918,222 @@ const SocialIntegration = {
 // Initialize Social Integration
 SocialIntegration.init();
 
-    // ==================== GAMIFIED LEARNING PATHS (DAY 24) ====================
-    const LearningPathsSystem = {
-      // Learning paths
-      paths: {
-        BEGINNER: {
-          id: 'beginner',
-          name: '🏁 Beginner\'s Journey',
-          description: 'Master the fundamentals of typing',
-          icon: '🌱',
-          requiredLevel: 0,
-          rewards: { points: 100, badge: 'Path Starter' },
-          quests: [
-            { id: 'q1', name: 'First Steps', description: 'Complete your first typing test', requirement: { tests: 1 }, reward: 20, icon: '🎯' },
-            { id: 'q2', name: 'Getting Comfortable', description: 'Reach 20 WPM', requirement: { wpm: 20 }, reward: 30, icon: '⚡' },
-            { id: 'q3', name: 'Accuracy Matters', description: 'Achieve 85% accuracy', requirement: { accuracy: 85 }, reward: 30, icon: '🎯' },
-            { id: 'q4', name: 'Practice Makes Perfect', description: 'Complete 10 tests', requirement: { tests: 10 }, reward: 50, icon: '📝' },
-            { id: 'q5', name: 'Speed Seeker', description: 'Reach 30 WPM', requirement: { wpm: 30 }, reward: 50, icon: '🚀' }
-          ]
-        },
-        INTERMEDIATE: {
-          id: 'intermediate',
-          name: '⚡ Speed Seeker',
-          description: 'Boost your typing speed and accuracy',
-          icon: '⚡',
-          requiredLevel: 5,
-          rewards: { points: 250, badge: 'Speed Seeker' },
-          quests: [
-            { id: 'q6', name: 'Breaking 40', description: 'Reach 40 WPM', requirement: { wpm: 40 }, reward: 50, icon: '💨' },
-            { id: 'q7', name: 'Precision Typist', description: 'Achieve 90% accuracy', requirement: { accuracy: 90 }, reward: 60, icon: '🎯' },
-            { id: 'q8', name: 'Endurance Test', description: 'Complete a 120-second test', requirement: { duration: 120 }, reward: 70, icon: '⏱️' },
-            { id: 'q9', name: 'Perfect Run', description: 'Complete a test with 0 errors', requirement: { perfect: true }, reward: 100, icon: '⭐' },
-            { id: 'q10', name: 'Code Warrior', description: 'Complete 10 programming quotes', requirement: { category: 'programming', count: 10 }, reward: 80, icon: '💻' },
-            { id: 'q11', name: 'Speed Demon', description: 'Reach 55 WPM', requirement: { wpm: 55 }, reward: 75, icon: '🔥' }
-          ]
-        },
-        ADVANCED: {
-          id: 'advanced',
-          name: '🔥 Advanced Mastery',
-          description: 'Push your limits to expert level',
-          icon: '🔥',
-          requiredLevel: 10,
-          rewards: { points: 500, badge: 'Advanced Master' },
-          quests: [
-            { id: 'q12', name: 'Elite Speed', description: 'Reach 70 WPM', requirement: { wpm: 70 }, reward: 100, icon: '💨' },
-            { id: 'q13', name: 'Near Perfection', description: 'Achieve 95% accuracy', requirement: { accuracy: 95 }, reward: 120, icon: '🎯' },
-            { id: 'q14', name: 'Marathon Runner', description: 'Complete 50 tests total', requirement: { tests: 50 }, reward: 150, icon: '🏃' },
-            { id: 'q15', name: 'Expert Challenger', description: 'Complete 10 expert difficulty tests', requirement: { difficulty: 'expert', count: 10 }, reward: 150, icon: '👑' },
-            { id: 'q16', name: 'Literary Scholar', description: 'Complete 20 literature quotes', requirement: { category: 'literature', count: 20 }, reward: 100, icon: '📚' },
-            { id: 'q17', name: 'Scientific Mind', description: 'Complete 20 science quotes', requirement: { category: 'science', count: 20 }, reward: 100, icon: '🔬' }
-          ]
-        },
-        EXPERT: {
-          id: 'expert',
-          name: '👑 Legendary Typist',
-          description: 'Join the typing elite',
-          icon: '👑',
-          requiredLevel: 20,
-          rewards: { points: 1000, badge: 'Legendary Typist' },
-          quests: [
-            { id: 'q18', name: 'Breaking 100', description: 'Reach 100 WPM', requirement: { wpm: 100 }, reward: 200, icon: '💨' },
-            { id: 'q19', name: 'Accuracy King', description: 'Achieve 98% accuracy', requirement: { accuracy: 98 }, reward: 200, icon: '🎯' },
-            { id: 'q20', name: 'Century Club', description: 'Complete 100 tests', requirement: { tests: 100 }, reward: 250, icon: '🏆' },
-            { id: 'q21', name: 'Grandmaster', description: 'Complete all certifications', requirement: { certifications: 7 }, reward: 500, icon: '👑' },
-            { id: 'q22', name: 'Tournament Champion', description: 'Win 5 tournaments', requirement: { tournamentWins: 5 }, reward: 300, icon: '🏆' },
-            { id: 'q23', name: 'Perfect Mastery', description: 'Get 100% accuracy on expert difficulty', requirement: { perfectExpert: true }, reward: 400, icon: '⭐' }
-          ]
+// ==================== GAMIFIED LEARNING PATHS (DAY 24) ====================
+const LearningPathsSystem = {
+  // Learning paths
+  paths: {
+    BEGINNER: {
+      id: 'beginner',
+      name: '🏁 Beginner\'s Journey',
+      description: 'Master the fundamentals of typing',
+      icon: '🌱',
+      requiredLevel: 0,
+      rewards: { points: 100, badge: 'Path Starter' },
+      quests: [
+        { id: 'q1', name: 'First Steps', description: 'Complete your first typing test', requirement: { tests: 1 }, reward: 20, icon: '🎯' },
+        { id: 'q2', name: 'Getting Comfortable', description: 'Reach 20 WPM', requirement: { wpm: 20 }, reward: 30, icon: '⚡' },
+        { id: 'q3', name: 'Accuracy Matters', description: 'Achieve 85% accuracy', requirement: { accuracy: 85 }, reward: 30, icon: '🎯' },
+        { id: 'q4', name: 'Practice Makes Perfect', description: 'Complete 10 tests', requirement: { tests: 10 }, reward: 50, icon: '📝' },
+        { id: 'q5', name: 'Speed Seeker', description: 'Reach 30 WPM', requirement: { wpm: 30 }, reward: 50, icon: '🚀' }
+      ]
+    },
+    INTERMEDIATE: {
+      id: 'intermediate',
+      name: '⚡ Speed Seeker',
+      description: 'Boost your typing speed and accuracy',
+      icon: '⚡',
+      requiredLevel: 5,
+      rewards: { points: 250, badge: 'Speed Seeker' },
+      quests: [
+        { id: 'q6', name: 'Breaking 40', description: 'Reach 40 WPM', requirement: { wpm: 40 }, reward: 50, icon: '💨' },
+        { id: 'q7', name: 'Precision Typist', description: 'Achieve 90% accuracy', requirement: { accuracy: 90 }, reward: 60, icon: '🎯' },
+        { id: 'q8', name: 'Endurance Test', description: 'Complete a 120-second test', requirement: { duration: 120 }, reward: 70, icon: '⏱️' },
+        { id: 'q9', name: 'Perfect Run', description: 'Complete a test with 0 errors', requirement: { perfect: true }, reward: 100, icon: '⭐' },
+        { id: 'q10', name: 'Code Warrior', description: 'Complete 10 programming quotes', requirement: { category: 'programming', count: 10 }, reward: 80, icon: '💻' },
+        { id: 'q11', name: 'Speed Demon', description: 'Reach 55 WPM', requirement: { wpm: 55 }, reward: 75, icon: '🔥' }
+      ]
+    },
+    ADVANCED: {
+      id: 'advanced',
+      name: '🔥 Advanced Mastery',
+      description: 'Push your limits to expert level',
+      icon: '🔥',
+      requiredLevel: 10,
+      rewards: { points: 500, badge: 'Advanced Master' },
+      quests: [
+        { id: 'q12', name: 'Elite Speed', description: 'Reach 70 WPM', requirement: { wpm: 70 }, reward: 100, icon: '💨' },
+        { id: 'q13', name: 'Near Perfection', description: 'Achieve 95% accuracy', requirement: { accuracy: 95 }, reward: 120, icon: '🎯' },
+        { id: 'q14', name: 'Marathon Runner', description: 'Complete 50 tests total', requirement: { tests: 50 }, reward: 150, icon: '🏃' },
+        { id: 'q15', name: 'Expert Challenger', description: 'Complete 10 expert difficulty tests', requirement: { difficulty: 'expert', count: 10 }, reward: 150, icon: '👑' },
+        { id: 'q16', name: 'Literary Scholar', description: 'Complete 20 literature quotes', requirement: { category: 'literature', count: 20 }, reward: 100, icon: '📚' },
+        { id: 'q17', name: 'Scientific Mind', description: 'Complete 20 science quotes', requirement: { category: 'science', count: 20 }, reward: 100, icon: '🔬' }
+      ]
+    },
+    EXPERT: {
+      id: 'expert',
+      name: '👑 Legendary Typist',
+      description: 'Join the typing elite',
+      icon: '👑',
+      requiredLevel: 20,
+      rewards: { points: 1000, badge: 'Legendary Typist' },
+      quests: [
+        { id: 'q18', name: 'Breaking 100', description: 'Reach 100 WPM', requirement: { wpm: 100 }, reward: 200, icon: '💨' },
+        { id: 'q19', name: 'Accuracy King', description: 'Achieve 98% accuracy', requirement: { accuracy: 98 }, reward: 200, icon: '🎯' },
+        { id: 'q20', name: 'Century Club', description: 'Complete 100 tests', requirement: { tests: 100 }, reward: 250, icon: '🏆' },
+        { id: 'q21', name: 'Grandmaster', description: 'Complete all certifications', requirement: { certifications: 7 }, reward: 500, icon: '👑' },
+        { id: 'q22', name: 'Tournament Champion', description: 'Win 5 tournaments', requirement: { tournamentWins: 5 }, reward: 300, icon: '🏆' },
+        { id: 'q23', name: 'Perfect Mastery', description: 'Get 100% accuracy on expert difficulty', requirement: { perfectExpert: true }, reward: 400, icon: '⭐' }
+      ]
+    }
+  },
+
+  // User progress
+  userProgress: {
+    currentPath: 'beginner',
+    completedQuests: [],
+    currentLevel: 1,
+    totalXP: 0,
+    skillTree: {
+      speed: { level: 1, xp: 0, unlocked: true },
+      accuracy: { level: 1, xp: 0, unlocked: true },
+      endurance: { level: 1, xp: 0, unlocked: false },
+      coding: { level: 1, xp: 0, unlocked: false },
+      literature: { level: 1, xp: 0, unlocked: false }
+    }
+  },
+
+  // Initialize
+  init() {
+    this.loadProgress();
+    this.setupEventListeners();
+    this.checkQuests();
+  },
+
+  // Load progress from storage
+  loadProgress() {
+    const saved = localStorage.getItem('learningPathsProgress');
+    if (saved) {
+      this.userProgress = JSON.parse(saved);
+    }
+  },
+
+  // Save progress
+  saveProgress() {
+    localStorage.setItem('learningPathsProgress', JSON.stringify(this.userProgress));
+  },
+
+  // Check quest completion
+  checkQuests() {
+    const currentPathData = this.paths[this.userProgress.currentPath.toUpperCase()];
+    if (!currentPathData) return;
+
+    let anyCompleted = false;
+
+    for (const quest of currentPathData.quests) {
+      if (!this.userProgress.completedQuests.includes(quest.id)) {
+        if (this.isQuestComplete(quest)) {
+          this.completeQuest(quest);
+          anyCompleted = true;
         }
-      },
-      
-      // User progress
-      userProgress: {
-        currentPath: 'beginner',
-        completedQuests: [],
-        currentLevel: 1,
-        totalXP: 0,
-        skillTree: {
-          speed: { level: 1, xp: 0, unlocked: true },
-          accuracy: { level: 1, xp: 0, unlocked: true },
-          endurance: { level: 1, xp: 0, unlocked: false },
-          coding: { level: 1, xp: 0, unlocked: false },
-          literature: { level: 1, xp: 0, unlocked: false }
-        }
-      },
-      
-      // Initialize
-      init() {
-        this.loadProgress();
-        this.setupEventListeners();
-        this.checkQuests();
-      },
-      
-      // Load progress from storage
-      loadProgress() {
-        const saved = localStorage.getItem('learningPathsProgress');
-        if (saved) {
-          this.userProgress = JSON.parse(saved);
-        }
-      },
-      
-      // Save progress
-      saveProgress() {
-        localStorage.setItem('learningPathsProgress', JSON.stringify(this.userProgress));
-      },
-      
-      // Check quest completion
-      checkQuests() {
-        const currentPathData = this.paths[this.userProgress.currentPath.toUpperCase()];
-        if (!currentPathData) return;
-        
-        let anyCompleted = false;
-        
-        for (const quest of currentPathData.quests) {
-          if (!this.userProgress.completedQuests.includes(quest.id)) {
-            if (this.isQuestComplete(quest)) {
-              this.completeQuest(quest);
-              anyCompleted = true;
-            }
-          }
-        }
-        
-        // Check if path is complete
-        const allQuestsComplete = currentPathData.quests.every(q => 
-          this.userProgress.completedQuests.includes(q.id)
-        );
-        
-        if (allQuestsComplete && currentPathData.id !== 'expert') {
-          this.unlockNextPath();
-        }
-        
-        if (anyCompleted) {
-          this.saveProgress();
-          this.updateLevel();
-        }
-      },
-      
-      // Check if quest is complete
-      isQuestComplete(quest) {
-        const stats = this.getCurrentStats();
-        
-        if (quest.requirement.tests) {
-          return stats.totalTests >= quest.requirement.tests;
-        }
-        if (quest.requirement.wpm) {
-          return stats.bestWPM >= quest.requirement.wpm;
-        }
-        if (quest.requirement.accuracy) {
-          return stats.bestAccuracy >= quest.requirement.accuracy;
-        }
-        if (quest.requirement.duration) {
-          return stats.hasLongTest;
-        }
-        if (quest.requirement.perfect) {
-          return stats.hasPerfectTest;
-        }
-        if (quest.requirement.category) {
-          const categoryTests = testHistory.filter(t => t.source === quest.requirement.category);
-          return categoryTests.length >= quest.requirement.count;
-        }
-        if (quest.requirement.difficulty) {
-          const difficultyTests = testHistory.filter(t => t.difficulty === quest.requirement.difficulty);
-          return difficultyTests.length >= quest.requirement.count;
-        }
-        if (quest.requirement.certifications) {
-          return (CertificationSystem?.userCertifications?.length || 0) >= quest.requirement.certifications;
-        }
-        if (quest.requirement.tournamentWins) {
-          const wins = parseInt(localStorage.getItem('raceWins') || '0');
-          return wins >= quest.requirement.tournamentWins;
-        }
-        if (quest.requirement.perfectExpert) {
-          return stats.hasPerfectExpert;
-        }
-        
-        return false;
-      },
-      
-      // Get current statistics
-      getCurrentStats() {
-        const wpmValues = testHistory.map(h => h.wpm);
-        const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
-        
-        return {
-          totalTests: testHistory.length,
-          bestWPM: Math.max(...wpmValues, 0),
-          bestAccuracy: Math.max(...accuracyValues, 0),
-          hasLongTest: testHistory.some(t => t.time >= 120),
-          hasPerfectTest: testHistory.some(t => parseInt(t.accuracy) === 100),
-          hasPerfectExpert: testHistory.some(t => t.difficulty === 'expert' && parseInt(t.accuracy) === 100)
-        };
-      },
-      
-      // Complete quest
-      completeQuest(quest) {
-        this.userProgress.completedQuests.push(quest.id);
-        this.userProgress.totalXP += quest.reward;
-        
-        // Show quest completion celebration
-        this.showQuestComplete(quest);
-        
-        // Play sound
-        SoundManager.playAchievement();
-        
-        // Award points to achievement system
-        if (AchievementSystem) {
-          AchievementSystem.userProgress.totalPoints += quest.reward;
-          AchievementSystem.saveProgress();
-        }
-      },
-      
-      // Show quest completion celebration
-      showQuestComplete(quest) {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+      }
+    }
+
+    // Check if path is complete
+    const allQuestsComplete = currentPathData.quests.every(q =>
+      this.userProgress.completedQuests.includes(q.id)
+    );
+
+    if (allQuestsComplete && currentPathData.id !== 'expert') {
+      this.unlockNextPath();
+    }
+
+    if (anyCompleted) {
+      this.saveProgress();
+      this.updateLevel();
+    }
+  },
+
+  // Check if quest is complete
+  isQuestComplete(quest) {
+    const stats = this.getCurrentStats();
+
+    if (quest.requirement.tests) {
+      return stats.totalTests >= quest.requirement.tests;
+    }
+    if (quest.requirement.wpm) {
+      return stats.bestWPM >= quest.requirement.wpm;
+    }
+    if (quest.requirement.accuracy) {
+      return stats.bestAccuracy >= quest.requirement.accuracy;
+    }
+    if (quest.requirement.duration) {
+      return stats.hasLongTest;
+    }
+    if (quest.requirement.perfect) {
+      return stats.hasPerfectTest;
+    }
+    if (quest.requirement.category) {
+      const categoryTests = testHistory.filter(t => t.source === quest.requirement.category);
+      return categoryTests.length >= quest.requirement.count;
+    }
+    if (quest.requirement.difficulty) {
+      const difficultyTests = testHistory.filter(t => t.difficulty === quest.requirement.difficulty);
+      return difficultyTests.length >= quest.requirement.count;
+    }
+    if (quest.requirement.certifications) {
+      return (CertificationSystem?.userCertifications?.length || 0) >= quest.requirement.certifications;
+    }
+    if (quest.requirement.tournamentWins) {
+      const wins = parseInt(localStorage.getItem('raceWins') || '0');
+      return wins >= quest.requirement.tournamentWins;
+    }
+    if (quest.requirement.perfectExpert) {
+      return stats.hasPerfectExpert;
+    }
+
+    return false;
+  },
+
+  // Get current statistics
+  getCurrentStats() {
+    const wpmValues = testHistory.map(h => h.wpm);
+    const accuracyValues = testHistory.map(h => parseInt(h.accuracy));
+
+    return {
+      totalTests: testHistory.length,
+      bestWPM: Math.max(...wpmValues, 0),
+      bestAccuracy: Math.max(...accuracyValues, 0),
+      hasLongTest: testHistory.some(t => t.time >= 120),
+      hasPerfectTest: testHistory.some(t => parseInt(t.accuracy) === 100),
+      hasPerfectExpert: testHistory.some(t => t.difficulty === 'expert' && parseInt(t.accuracy) === 100)
+    };
+  },
+
+  // Complete quest
+  completeQuest(quest) {
+    this.userProgress.completedQuests.push(quest.id);
+    this.userProgress.totalXP += quest.reward;
+
+    // Show quest completion celebration
+    this.showQuestComplete(quest);
+
+    // Play sound
+    SoundManager.playAchievement();
+
+    // Award points to achievement system
+    if (AchievementSystem) {
+      AchievementSystem.userProgress.totalPoints += quest.reward;
+      AchievementSystem.saveProgress();
+    }
+  },
+
+  // Show quest completion celebration
+  showQuestComplete(quest) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl max-w-md w-full mx-4 p-6 text-center shadow-2xl animate-bounce">
             <div class="text-5xl mb-3">${quest.icon}</div>
             <h2 class="text-2xl font-bold text-white mb-2">Quest Complete!</h2>
@@ -9147,37 +9147,37 @@ SocialIntegration.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeQuestComplete');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Unlock next learning path
-      unlockNextPath() {
-        const paths = ['beginner', 'intermediate', 'advanced', 'expert'];
-        const currentIndex = paths.indexOf(this.userProgress.currentPath);
-        const nextPath = paths[currentIndex + 1];
-        
-        if (nextPath) {
-          this.userProgress.currentPath = nextPath;
-          this.showPathUnlock(nextPath);
-        }
-        
-        this.saveProgress();
-      },
-      
-      // Show path unlock celebration
-      showPathUnlock(pathId) {
-        const path = this.paths[pathId.toUpperCase()];
-        
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeQuestComplete');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Unlock next learning path
+  unlockNextPath() {
+    const paths = ['beginner', 'intermediate', 'advanced', 'expert'];
+    const currentIndex = paths.indexOf(this.userProgress.currentPath);
+    const nextPath = paths[currentIndex + 1];
+
+    if (nextPath) {
+      this.userProgress.currentPath = nextPath;
+      this.showPathUnlock(nextPath);
+    }
+
+    this.saveProgress();
+  },
+
+  // Show path unlock celebration
+  showPathUnlock(pathId) {
+    const path = this.paths[pathId.toUpperCase()];
+
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl max-w-md w-full mx-4 p-6 text-center shadow-2xl animate-bounce">
             <div class="text-6xl mb-3">${path.icon}</div>
             <h2 class="text-2xl font-bold text-white mb-2">New Path Unlocked!</h2>
@@ -9191,36 +9191,36 @@ SocialIntegration.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        // Award path rewards
-        if (AchievementSystem) {
-          AchievementSystem.userProgress.totalPoints += path.rewards.points;
-          AchievementSystem.saveProgress();
-        }
-        
-        const closeBtn = modal.querySelector('#closePathUnlock');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Update player level based on XP
-      updateLevel() {
-        const newLevel = Math.floor(this.userProgress.totalXP / 100) + 1;
-        if (newLevel > this.userProgress.currentLevel) {
-          this.userProgress.currentLevel = newLevel;
-          this.showLevelUp(newLevel);
-        }
-      },
-      
-      // Show level up celebration
-      showLevelUp(level) {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        modal.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    // Award path rewards
+    if (AchievementSystem) {
+      AchievementSystem.userProgress.totalPoints += path.rewards.points;
+      AchievementSystem.saveProgress();
+    }
+
+    const closeBtn = modal.querySelector('#closePathUnlock');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Update player level based on XP
+  updateLevel() {
+    const newLevel = Math.floor(this.userProgress.totalXP / 100) + 1;
+    if (newLevel > this.userProgress.currentLevel) {
+      this.userProgress.currentLevel = newLevel;
+      this.showLevelUp(newLevel);
+    }
+  },
+
+  // Show level up celebration
+  showLevelUp(level) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    modal.innerHTML = `
           <div class="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl max-w-md w-full mx-4 p-6 text-center shadow-2xl animate-bounce">
             <div class="text-6xl mb-3">⬆️</div>
             <h2 class="text-3xl font-bold text-white mb-2">Level Up!</h2>
@@ -9231,25 +9231,25 @@ SocialIntegration.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closeLevelUp');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Show learning paths panel
-      showLearningPaths() {
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
-        modal.style.animation = 'fadeIn 0.2s ease';
-        
-        const currentPath = this.paths[this.userProgress.currentPath.toUpperCase()];
-        const completedCount = this.userProgress.completedQuests.length;
-        const totalQuests = Object.values(this.paths).reduce((sum, p) => sum + p.quests.length, 0);
-        
-        modal.innerHTML = `
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closeLevelUp');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Show learning paths panel
+  showLearningPaths() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50 overflow-y-auto py-8';
+    modal.style.animation = 'fadeIn 0.2s ease';
+
+    const currentPath = this.paths[this.userProgress.currentPath.toUpperCase()];
+    const completedCount = this.userProgress.completedQuests.length;
+    const totalQuests = Object.values(this.paths).reduce((sum, p) => sum + p.quests.length, 0);
+
+    modal.innerHTML = `
           <div class="bg-white dark:bg-gray-800 rounded-2xl max-w-5xl w-full mx-4 p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4 sticky top-0 bg-white dark:bg-gray-800 py-2">
               <h3 class="text-2xl font-bold text-gray-800 dark:text-white">
@@ -9287,9 +9287,9 @@ SocialIntegration.init();
               <h4 class="font-semibold mb-3">Available Paths</h4>
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
                 ${Object.entries(this.paths).map(([key, path]) => {
-                  const isUnlocked = this.canAccessPath(path);
-                  const isActive = this.userProgress.currentPath === path.id;
-                  return `
+      const isUnlocked = this.canAccessPath(path);
+      const isActive = this.userProgress.currentPath === path.id;
+      return `
                     <div class="p-3 rounded-xl ${isActive ? 'bg-green-100 dark:bg-green-900/30 border-2 border-green-500' : isUnlocked ? 'bg-gray-100 dark:bg-gray-700' : 'bg-gray-200 dark:bg-gray-800 opacity-50'}">
                       <div class="text-3xl mb-1">${path.icon}</div>
                       <p class="font-bold text-sm">${path.name}</p>
@@ -9298,7 +9298,7 @@ SocialIntegration.init();
                       ${isActive ? '<p class="text-xs text-green-500 mt-1">✓ Current Path</p>' : ''}
                     </div>
                   `;
-                }).join('')}
+    }).join('')}
               </div>
             </div>
             
@@ -9306,8 +9306,8 @@ SocialIntegration.init();
             <h4 class="font-semibold mb-3">${currentPath.name} - Quests</h4>
             <div class="space-y-2 mb-6">
               ${currentPath.quests.map(quest => {
-                const isCompleted = this.userProgress.completedQuests.includes(quest.id);
-                return `
+      const isCompleted = this.userProgress.completedQuests.includes(quest.id);
+      return `
                   <div class="p-3 rounded-lg ${isCompleted ? 'bg-green-100 dark:bg-green-900/30' : 'bg-gray-100 dark:bg-gray-700'}">
                     <div class="flex items-center gap-3">
                       <div class="text-2xl">${quest.icon}</div>
@@ -9325,7 +9325,7 @@ SocialIntegration.init();
                     </div>
                   </div>
                 `;
-              }).join('')}
+    }).join('')}
             </div>
             
             <!-- Skill Tree -->
@@ -9348,54 +9348,53 @@ SocialIntegration.init();
             </button>
           </div>
         `;
-        
-        document.body.appendChild(modal);
-        
-        const closeBtn = modal.querySelector('#closePathsPanel') || modal.querySelector('#closePathsBtn');
-        closeBtn.onclick = () => modal.remove();
-        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-      },
-      
-      // Check if user can access a path
-      canAccessPath(path) {
-        return this.userProgress.currentLevel >= path.requiredLevel;
-      },
-      
-      // Get skill icon
-      getSkillIcon(skill) {
-        const icons = {
-          speed: '⚡',
-          accuracy: '🎯',
-          endurance: '💪',
-          coding: '💻',
-          literature: '📚'
-        };
-        return icons[skill] || '⭐';
-      },
-      
-      // Show notification
-      showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${
-          type === 'success' ? 'bg-green-500' : 'bg-blue-500'
-        }`;
-        notification.textContent = message;
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 3000);
-      },
-      
-      // Setup event listeners
-      setupEventListeners() {
-        const pathsBtn = document.getElementById('learningPathsBtn');
-        if (pathsBtn) {
-          pathsBtn.onclick = () => this.showLearningPaths();
-        }
-        
-        // Check quests after each test
-        const originalFinishTest = finishTest;
-        window.finishTest = function() {
-          originalFinishTest();
-          LearningPathsSystem.checkQuests();
-        };
-      }
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('#closePathsPanel') || modal.querySelector('#closePathsBtn');
+    closeBtn.onclick = () => modal.remove();
+    modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+  },
+
+  // Check if user can access a path
+  canAccessPath(path) {
+    return this.userProgress.currentLevel >= path.requiredLevel;
+  },
+
+  // Get skill icon
+  getSkillIcon(skill) {
+    const icons = {
+      speed: '⚡',
+      accuracy: '🎯',
+      endurance: '💪',
+      coding: '💻',
+      literature: '📚'
     };
+    return icons[skill] || '⭐';
+  },
+
+  // Show notification
+  showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed bottom-20 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg shadow-lg z-50 text-white ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+      }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
+  },
+
+  // Setup event listeners
+  setupEventListeners() {
+    const pathsBtn = document.getElementById('learningPathsBtn');
+    if (pathsBtn) {
+      pathsBtn.onclick = () => this.showLearningPaths();
+    }
+
+    // Check quests after each test
+    const originalFinishTest = finishTest;
+    window.finishTest = function () {
+      originalFinishTest();
+      LearningPathsSystem.checkQuests();
+    };
+  }
+};
