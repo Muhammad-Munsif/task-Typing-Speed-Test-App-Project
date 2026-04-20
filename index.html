@@ -8,7 +8,538 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ==================== RESPONSIVE FIXES ==================== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #1e40af;
+      --success: #10b981;
+      --error: #ef4444;
+      --warning: #f59e0b;
+    }
+
+    body {
+      transition: background-color 0.3s ease, color 0.2s ease;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Mobile-first responsive container */
+    .container {
+      width: 100%;
+      max-width: 100%;
+      padding: 0 12px;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        max-width: 640px;
+        padding: 0 16px;
+      }
+    }
+
+    @media (min-width: 768px) {
+      .container {
+        max-width: 768px;
+        padding: 0 20px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .container {
+        max-width: 1024px;
+        padding: 0 24px;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .container {
+        max-width: 1200px;
+      }
+    }
+
+    /* Responsive header buttons */
+    .header-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+      max-width: 100%;
+    }
+
+    .header-buttons button {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      font-size: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .header-buttons button {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 14px;
+      }
+      .header-buttons {
+        gap: 6px;
+      }
+    }
+
+    /* Responsive stats cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    @media (min-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .stat-card {
+      padding: 16px 12px;
+    }
+
+    @media (max-width: 640px) {
+      .stat-card {
+        padding: 12px 8px;
+      }
+      .stat-card p:first-child {
+        font-size: 10px;
+      }
+      .stat-card .stat-value {
+        font-size: 20px;
+      }
+    }
+
+    /* Responsive settings grid */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .settings-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .settings-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* Responsive buttons row */
+    .action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      min-width: 120px;
+      padding: 12px 16px;
+      font-size: 14px;
+    }
+
+    @media (max-width: 480px) {
+      .action-buttons button {
+        min-width: 100%;
+        padding: 10px 12px;
+      }
+    }
+
+    /* Responsive quote display */
+    #quoteDisplay {
+      font-size: clamp(14px, 4vw, 20px);
+      line-height: 1.6;
+      padding: 16px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    @media (min-width: 768px) {
+      #quoteDisplay {
+        padding: 20px;
+        max-height: 300px;
+      }
+    }
+
+    /* Responsive textarea */
+    #quoteInput {
+      font-size: 16px !important;
+      /* Prevents zoom on iOS */
+      padding: 14px;
+    }
+
+    @media (min-width: 768px) {
+      #quoteInput {
+        font-size: 18px !important;
+        padding: 16px;
+      }
+    }
+
+    /* Responsive badges grid */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    @media (min-width: 480px) {
+      .badges-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (min-width: 768px) {
+      .badges-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+      .typing-test {
+        padding: 16px !important;
+        border-radius: 20px !important;
+      }
+      
+      h1 {
+        font-size: 24px !important;
+      }
+      
+      .difficulty-badge,
+      .text-sm {
+        font-size: 11px !important;
+      }
+      
+      .key-hint {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+      }
+      
+      .result-card {
+        margin: 16px !important;
+        padding: 20px !important;
+      }
+      
+      .result-card .text-3xl {
+        font-size: 24px !important;
+      }
+    }
+
+    /* Touch device optimizations */
+    @media (hover: none) and (pointer: coarse) {
+      button, 
+      .btn-primary,
+      .stat {
+        cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
+      }
+      
+      button:active {
+        transform: scale(0.96);
+        transition: transform 0.05s;
+      }
+      
+      input, textarea {
+        font-size: 16px !important;
+      }
+    }
+
+    /* Landscape mode fixes */
+    @media (max-width: 900px) and (orientation: landscape) {
+      .typing-test {
+        padding: 12px !important;
+      }
+      
+      .stats-grid {
+        gap: 8px;
+      }
+      
+      .stat-card {
+        padding: 8px;
+      }
+      
+      #quoteDisplay {
+        max-height: 150px;
+        font-size: 14px;
+      }
+      
+      .header-buttons button {
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    /* Prevent horizontal scroll */
+    body {
+      overflow-x: hidden;
+      width: 100%;
+      position: relative;
+    }
+    
+    /* Smooth scrolling */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* Better touch targets */
+    button, 
+    .btn-primary,
+    .difficulty-option,
+    .time-option,
+    .source-option {
+      min-height: 44px;
+    }
+    
+    /* Loading spinner */
+    .loader {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #e5e7eb;
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px) scale(0.96);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+    }
+    
+    /* Character styling */
+    .char {
+      transition: all 0.05s linear;
+      display: inline-block;
+      border-radius: 3px;
+      padding: 0 1px;
+      white-space: pre-wrap;
+    }
+    
+    .char.correct {
+      color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+    }
+    
+    .char.incorrect {
+      color: #f87171;
+      background: rgba(239, 68, 68, 0.2);
+      text-decoration: underline wavy #ef4444;
+    }
+    
+    .char.current {
+      background: rgba(59, 130, 246, 0.4) !important;
+      border-radius: 4px;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; background: rgba(59, 130, 246, 0.6) !important; transform: scale(1.02); }
+    }
+    
+    /* Progress bar animation */
+    .progress-fill {
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899, #3b82f6);
+      background-size: 300% auto;
+      animation: shimmer 2s linear infinite;
+      transition: width 0.1s ease-out;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    
+    /* Difficulty badges */
+    .difficulty-badge {
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.7rem;
+      backdrop-filter: blur(4px);
+      display: inline-block;
+    }
+    
+    .difficulty-easy {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border-left: 3px solid #10b981;
+    }
+    
+    .difficulty-medium {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fbbf24;
+      border-left: 3px solid #f59e0b;
+    }
+    
+    .difficulty-hard {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border-left: 3px solid #ef4444;
+    }
+    
+    /* Modal styling */
+    .result-modal {
+      backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.7);
+      transition: opacity 0.2s ease;
+    }
+    
+    .result-card {
+      animation: slideUp 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+    
+    /* Settings panel */
+    .settings-panel {
+      transition: max-height 0.35s ease-out, opacity 0.25s ease;
+      overflow: hidden;
+    }
+    
+    .settings-panel.active {
+      max-height: 500px !important;
+      opacity: 1 !important;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Button styles */
+    .btn-primary {
+      background: linear-gradient(105deg, #2563eb, #1d4ed8);
+      transition: all 0.2s;
+    }
+    
+    .btn-primary:hover:not(:disabled) {
+      filter: brightness(1.08);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 20px -12px #2563eb;
+    }
+    
+    button:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+    
+    /* History items */
+    .history-item {
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    
+    .history-item:hover {
+      transform: translateX(4px);
+      background: rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Light mode */
+    body.light {
+      background: linear-gradient(135deg, #e0e7ff 0%, #f9fafc 100%);
+      color: #1f2937;
+    }
+    
+    body.light .typing-test {
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.15);
+    }
+    
+    body.light .stat {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+    }
+    
+    body.light textarea {
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      color: #1f2937;
+    }
+    
+    /* Dark mode */
+    body.dark {
+      background: radial-gradient(circle at 20% 30%, #0a0f1a, #030712);
+      color: #f3f4f6;
+    }
+    
+    body.dark .typing-test {
+      background: rgba(17, 24, 39, 0.94);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+    }
+    
+    body.dark .stat {
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid #334155;
+    }
+    
+    body.dark textarea {
+      background: #0f172a;
+      border: 2px solid #334155;
+      color: #e2e8f0;
+    }
+    
+    body.dark .char.extra {
+      background: rgba(124, 45, 18, 0.3);
+      color: #fdba74;
+    }
+    
+    /* Print styles */
+    @media print {
+      .settings-panel,
+      .result-modal,
+      .action-buttons,
+      .header-buttons button {
+        display: none !important;
+      }
+      
+      .typing-test {
+        box-shadow: none !important;
+        background: white !important;
+        color: black !important;
+      }
+    }
+    
+    /* Reduced motion preference */
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
 </head>
 
 <body class="light">
@@ -20,8 +551,7 @@
         <div class="flex-1 min-w-0">
           <h1 class="text-2xl md:text-4xl font-black tracking-tight flex items-center gap-2 flex-wrap">
             <i class="fas fa-keyboard text-blue-500 text-xl md:text-3xl"></i>
-            <span
-              class="bg-gradient-to-r from-blue-600 to-purple-500 bg-clip-text text-transparent text-lg md:text-3xl">VelocityType</span>
+            <span class="bg-gradient-to-r from-blue-600 to-purple-500 bg-clip-text text-transparent text-lg md:text-3xl">VelocityType</span>
             <span class="text-xs bg-blue-100 dark:bg-blue-900/50 px-2 py-1 rounded-full">Pro</span>
           </h1>
           <p class="text-gray-600 dark:text-gray-400 text-xs md:text-sm mt-1 flex items-center gap-2">
@@ -31,134 +561,82 @@
         <div class="header-buttons">
           <!-- All buttons will be here - scrollable on mobile -->
           <div class="flex flex-wrap gap-1 md:gap-2 justify-end max-h-32 overflow-y-auto md:overflow-visible">
-            <button id="exportBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Export Results">
+            <button id="exportBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Export Results">
               <i class="fas fa-download text-green-500 text-sm md:text-base"></i>
             </button>
-            <button id="replayBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Typing Replay">
+            <button id="replayBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Typing Replay">
               <i class="fas fa-video text-purple-500 text-sm md:text-base"></i>
             </button>
-            <button id="grammarCheckBtn"
-              class="p-2 md:p-3 rounded-full bg-red-200/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Grammar Check">
+            <button id="grammarCheckBtn" class="p-2 md:p-3 rounded-full bg-red-200/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Grammar Check">
               <i class="fas fa-spell-check text-green-500 text-sm md:text-base"></i>
             </button>
-            <button id="classroomBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Classroom">
+            <button id="classroomBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Classroom">
               <i class="fas fa-graduation-cap text-blue-500 text-sm md:text-base"></i>
             </button>
-            <button id="shareBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Share Results">
+            <button id="shareBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Share Results">
               <i class="fas fa-share-alt text-green-500 text-sm md:text-base"></i>
             </button>
-            <button id="aiDifficultyBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="AI Difficulty">
+            <button id="aiDifficultyBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="AI Difficulty">
               <i class="fas fa-microchip text-purple-500 text-sm md:text-base"></i>
             </button>
-            <button id="certificationBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Certifications">
+            <button id="certificationBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Certifications">
               <i class="fas fa-certificate text-yellow-500 text-sm md:text-base"></i>
             </button>
-            <button id="apiBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Developer API">
+            <button id="apiBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Developer API">
               <i class="fas fa-code text-blue-500 text-sm md:text-base"></i>
             </button>
-            <button id="socialIntegrationBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Social Integration">
+            <button id="socialIntegrationBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Social Integration">
               <i class="fab fa-discord text-indigo-500 text-sm md:text-base"></i>
             </button>
-            <button id="themeMarketplaceBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Theme Marketplace">
+            <button id="themeMarketplaceBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Theme Marketplace">
               <i class="fas fa-palette text-pink-500 text-sm md:text-base"></i>
             </button>
-            <button id="tournamentBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Tournaments">
+            <button id="tournamentBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Tournaments">
               <i class="fas fa-trophy text-yellow-500 text-sm md:text-base"></i>
             </button>
-            <button id="learningPathsBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Learning Paths">
+            <button id="learningPathsBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Learning Paths">
               <i class="fas fa-road text-green-500 text-sm md:text-base"></i>
             </button>
-            <button id="multiplayerBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Multiplayer Race">
+            <button id="multiplayerBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Multiplayer Race">
               <i class="fas fa-users text-purple-500 text-sm md:text-base"></i>
             </button>
-            <button id="dailyChallengeBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Daily Challenge">
+            <button id="dailyChallengeBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Daily Challenge">
               <i class="fas fa-calendar-day text-orange-500 text-sm md:text-base"></i>
             </button>
-            <button id="analyticsBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Analytics">
+            <button id="analyticsBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Analytics">
               <i class="fas fa-chart-line text-blue-500 text-sm md:text-base"></i>
             </button>
-            <button id="leaderboardBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Leaderboard">
+            <button id="leaderboardBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Leaderboard">
               <i class="fas fa-trophy text-yellow-500 text-sm md:text-base"></i>
             </button>
-            <button id="aiCoachBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="AI Coach">
+            <button id="aiCoachBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="AI Coach">
               <i class="fas fa-robot text-purple-500 text-sm md:text-base"></i>
             </button>
-            <button id="voiceCommandBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Voice Commands">
+            <button id="voiceCommandBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Voice Commands">
               <i class="fas fa-microphone text-purple-500 text-sm md:text-base"></i>
             </button>
-            <button id="customTextBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Custom Text">
+            <button id="customTextBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Custom Text">
               <i class="fas fa-file-alt text-purple-500 text-sm md:text-base"></i>
             </button>
-            <button id="achievementsToggle"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Achievements">
+            <button id="achievementsToggle" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Achievements">
               <i class="fas fa-trophy text-yellow-500 text-sm md:text-base"></i>
             </button>
-            <button id="shortcutsHelpBtn"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Keyboard Shortcuts">
+            <button id="shortcutsHelpBtn" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Keyboard Shortcuts">
               <i class="fas fa-keyboard text-sm md:text-base"></i>
             </button>
-            <button id="themeToggle"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Toggle theme">
+            <button id="themeToggle" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Toggle theme">
               <i class="fas fa-sun text-yellow-500 text-sm md:text-base"></i>
             </button>
-            <button id="settingsToggle"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:rotate-45 transition"
-              aria-label="Settings">
+            <button id="settingsToggle" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:rotate-45 transition" aria-label="Settings">
               <i class="fas fa-sliders-h text-sm md:text-base"></i>
             </button>
-            <button id="premiumBtn"
-              class="p-2 md:p-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 shadow-md hover:scale-110 transition"
-              aria-label="Premium">
+            <button id="premiumBtn" class="p-2 md:p-3 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 shadow-md hover:scale-110 transition" aria-label="Premium">
               <i class="fas fa-crown text-white text-sm md:text-base"></i>
             </button>
-            <button id="historyToggle"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="History">
+            <button id="historyToggle" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="History">
               <i class="fas fa-chart-simple text-sm md:text-base"></i>
             </button>
-            <button id="statsToggle"
-              class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition"
-              aria-label="Detailed Stats">
+            <button id="statsToggle" class="p-2 md:p-3 rounded-full bg-white/80 dark:bg-gray-800/80 shadow-md hover:scale-110 transition" aria-label="Detailed Stats">
               <i class="fas fa-chart-pie text-sm md:text-base"></i>
             </button>
           </div>
@@ -169,57 +647,35 @@
       <div id="settingsPanel" class="settings-panel rounded-2xl overflow-hidden max-h-0 opacity-0">
         <div class="bg-black/5 dark:bg-white/5 p-4 md:p-5 rounded-2xl backdrop-blur-sm settings-grid">
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i
-                class="fas fa-hourglass-half text-blue-500"></i> Duration</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i class="fas fa-hourglass-half text-blue-500"></i> Duration</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-time="15"
-                class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">15s</button>
-              <button data-time="30"
-                class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">30s</button>
-              <button data-time="60"
-                class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-blue-500 text-white">60s</button>
-              <button data-time="120"
-                class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">120s</button>
+              <button data-time="15" class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">15s</button>
+              <button data-time="30" class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">30s</button>
+              <button data-time="60" class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-blue-500 text-white">60s</button>
+              <button data-time="120" class="time-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">120s</button>
             </div>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i
-                class="fas fa-chart-line text-green-500"></i> Difficulty</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i class="fas fa-chart-line text-green-500"></i> Difficulty</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-difficulty="easy"
-                class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">Easy</button>
-              <button data-difficulty="medium"
-                class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-blue-500 text-white">Medium</button>
-              <button data-difficulty="hard"
-                class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">Hard</button>
-              <button data-difficulty="expert"
-                class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i
-                  class="fas fa-fire text-orange-500 mr-1"></i>Expert</button>
+              <button data-difficulty="easy" class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">Easy</button>
+              <button data-difficulty="medium" class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-blue-500 text-white">Medium</button>
+              <button data-difficulty="hard" class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700">Hard</button>
+              <button data-difficulty="expert" class="difficulty-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i class="fas fa-fire text-orange-500 mr-1"></i>Expert</button>
             </div>
-            <p class="text-xs mt-1 opacity-60"><span id="quoteCountBadge"><i class="fas fa-book-open mr-1"></i>20+
-                quotes</span></p>
+            <p class="text-xs mt-1 opacity-60"><span id="quoteCountBadge"><i class="fas fa-book-open mr-1"></i>20+ quotes</span></p>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i
-                class="fas fa-quote-right text-purple-500"></i> Category</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i class="fas fa-quote-right text-purple-500"></i> Category</p>
             <div class="flex gap-2 flex-wrap">
-              <button data-source="programming"
-                class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-blue-500 text-white"><i
-                  class="fas fa-code mr-1"></i>Code</button>
-              <button data-source="literature"
-                class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i
-                  class="fas fa-book mr-1"></i>Lit</button>
-              <button data-source="mixed"
-                class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i
-                  class="fas fa-globe mr-1"></i>Wisdom</button>
-              <button data-source="science"
-                class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i
-                  class="fas fa-flask mr-1"></i>Science</button>
+              <button data-source="programming" class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-blue-500 text-white"><i class="fas fa-code mr-1"></i>Code</button>
+              <button data-source="literature" class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i class="fas fa-book mr-1"></i>Lit</button>
+              <button data-source="mixed" class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i class="fas fa-globe mr-1"></i>Wisdom</button>
+              <button data-source="science" class="source-option px-3 py-1 md:px-4 md:py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700"><i class="fas fa-flask mr-1"></i>Science</button>
             </div>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i
-                class="fas fa-volume-up text-pink-500"></i> Sound & Haptics</p>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i class="fas fa-volume-up text-pink-500"></i> Sound & Haptics</p>
             <div class="flex flex-col gap-2">
               <div class="flex items-center justify-between">
                 <span class="text-sm">Sound Effects</span>
@@ -238,10 +694,8 @@
             <p class="text-xs mt-1 opacity-60">Click on first keystroke to enable audio</p>
           </div>
           <div>
-            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i
-                class="fas fa-eye text-cyan-500"></i> Focus Mode</p>
-            <button id="focusModeToggle" class="px-4 py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700 w-full"><i
-                class="fas fa-eye-slash mr-1"></i>Focus Off</button>
+            <p class="font-semibold mb-2 flex gap-2 text-gray-700 dark:text-gray-300 text-sm"><i class="fas fa-eye text-cyan-500"></i> Focus Mode</p>
+            <button id="focusModeToggle" class="px-4 py-2 rounded-xl text-sm bg-gray-200 dark:bg-gray-700 w-full"><i class="fas fa-eye-slash mr-1"></i>Focus Off</button>
             <p class="text-xs mt-1 opacity-60">Minimal interface for distraction-free practice</p>
           </div>
         </div>
@@ -254,28 +708,23 @@
 
       <!-- Stats Cards - Responsive Grid -->
       <div class="stats-grid mb-4 md:mb-6">
-        <div
-          class="stat-card rounded-2xl p-3 md:p-4 text-center shadow-sm transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
+        <div class="stat-card rounded-2xl p-3 md:p-4 text-center shadow-sm transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
           <p class="text-xs uppercase tracking-wider opacity-60"><i class="far fa-clock mr-1"></i>Time</p>
           <p id="time" class="stat-value text-2xl md:text-3xl font-mono font-bold">60s</p>
         </div>
-        <div
-          class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
+        <div class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
           <p class="text-xs uppercase tracking-wider opacity-60"><i class="fas fa-bolt mr-1"></i>WPM</p>
           <p id="wpm" class="stat-value text-2xl md:text-3xl font-bold text-blue-500">0</p>
         </div>
-        <div
-          class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
+        <div class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
           <p class="text-xs uppercase tracking-wider opacity-60"><i class="fas fa-gauge-high mr-1"></i>Raw WPM</p>
           <p id="rawWpm" class="stat-value text-xl md:text-2xl font-bold text-purple-500">0</p>
         </div>
-        <div
-          class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
+        <div class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
           <p class="text-xs uppercase tracking-wider opacity-60"><i class="fas fa-bullseye mr-1"></i>Accuracy</p>
           <p id="accuracy" class="stat-value text-2xl md:text-3xl font-bold text-emerald-500">0%</p>
         </div>
-        <div
-          class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
+        <div class="stat-card rounded-2xl p-3 md:p-4 text-center transition-all hover:scale-[1.02] bg-white dark:bg-gray-800">
           <p class="text-xs uppercase tracking-wider opacity-60"><i class="fas fa-times-circle mr-1"></i>Errors</p>
           <p id="errors" class="stat-value text-2xl md:text-3xl font-bold text-rose-400">0</p>
         </div>
@@ -287,35 +736,27 @@
           <span id="difficultyBadge" class="difficulty-badge difficulty-medium text-xs">Medium</span>
           <span class="text-xs md:text-sm"><i class="far fa-file-alt"></i> <span id="wordsCount">0</span> words</span>
           <span class="text-xs md:text-sm"><i class="fas fa-i-cursor"></i> <span id="quoteLength">0</span> chars</span>
-          <span class="text-xs md:text-sm"><i class="fas fa-tachometer-alt"></i> <span id="charPerSec">0</span>
-            CPS</span>
+          <span class="text-xs md:text-sm"><i class="fas fa-tachometer-alt"></i> <span id="charPerSec">0</span> CPS</span>
           <span class="text-xs md:text-sm"><i class="fas fa-clock"></i> <span id="timeElapsed">0</span>s elapsed</span>
         </div>
         <div class="text-xs opacity-60 flex items-center gap-1 md:gap-2 flex-wrap">
           <i class="fas fa-keyboard"></i>
-          <kbd class="px-1.5 py-0.5 md:px-2 md:py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd>
-          restart
+          <kbd class="px-1.5 py-0.5 md:px-2 md:py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd> restart
           <kbd class="px-1.5 py-0.5 md:px-2 md:py-0.5 bg-gray-200 dark:bg-gray-700 rounded text-xs">Esc</kbd> clear
         </div>
       </div>
 
       <!-- Quote Display Area -->
-      <div id="quoteDisplay"
-        class="mb-4 md:mb-5 p-3 md:p-5 rounded-2xl text-base md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[120px] md:min-h-[150px] transition-all duration-300 bg-black/5 dark:bg-black/20 overflow-y-auto">
+      <div id="quoteDisplay" class="mb-4 md:mb-5 p-3 md:p-5 rounded-2xl text-base md:text-xl leading-relaxed tracking-wide font-mono shadow-inner min-h-[120px] md:min-h-[150px] transition-all duration-300 bg-black/5 dark:bg-black/20 overflow-y-auto">
         Loading...
       </div>
 
       <!-- Input Area -->
       <div class="relative mb-4 md:mb-5">
-        <textarea id="quoteInput" rows="3"
-          class="w-full p-3 md:p-4 rounded-2xl resize-none text-base md:text-lg font-mono focus:outline-none transition-all duration-200"
-          placeholder="Start typing to begin the test..."></textarea>
+        <textarea id="quoteInput" rows="3" class="w-full p-3 md:p-4 rounded-2xl resize-none text-base md:text-lg font-mono focus:outline-none transition-all duration-200" placeholder="Start typing to begin the test..."></textarea>
         <div class="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex gap-2">
-          <span id="charCount"
-            class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur text-white">0/0</span>
-          <button id="clearBtn"
-            class="p-1.5 md:p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition"
-            title="Clear input">
+          <span id="charCount" class="text-xs bg-black/40 dark:bg-white/20 px-2 py-1 rounded-full backdrop-blur text-white">0/0</span>
+          <button id="clearBtn" class="p-1.5 md:p-2 rounded-full bg-gray-300/80 dark:bg-gray-700/80 hover:bg-gray-400 transition" title="Clear input">
             <i class="fas fa-eraser text-xs md:text-sm"></i>
           </button>
         </div>
@@ -323,16 +764,13 @@
 
       <!-- Action Buttons - Responsive -->
       <div class="action-buttons">
-        <button id="restartBtn"
-          class="btn-primary px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold flex gap-2 items-center justify-center shadow-md text-white text-sm md:text-base">
+        <button id="restartBtn" class="btn-primary px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold flex gap-2 items-center justify-center shadow-md text-white text-sm md:text-base">
           <i class="fas fa-arrows-rotate"></i>Restart
         </button>
-        <button id="newQuoteBtn"
-          class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold flex gap-2 items-center justify-center shadow-md transition text-sm md:text-base">
+        <button id="newQuoteBtn" class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold flex gap-2 items-center justify-center shadow-md transition text-sm md:text-base">
           <i class="fas fa-dice-d6"></i>New Quote
         </button>
-        <button id="practiceBtn"
-          class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold flex gap-2 items-center justify-center shadow-md transition text-sm md:text-base">
+        <button id="practiceBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl font-bold flex gap-2 items-center justify-center shadow-md transition text-sm md:text-base">
           <i class="fas fa-infinity"></i>Practice Mode
         </button>
       </div>
@@ -347,10 +785,8 @@
 
     <!-- Result Modal -->
     <div id="resultModal" class="result-modal fixed inset-0 hidden items-center justify-center z-50 p-4">
-      <div
-        class="result-card bg-white dark:bg-gray-900 rounded-2xl md:rounded-3xl shadow-2xl max-w-md w-full p-5 md:p-7 text-center mx-auto">
-        <div
-          class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-lg">
+      <div class="result-card bg-white dark:bg-gray-900 rounded-2xl md:rounded-3xl shadow-2xl max-w-md w-full p-5 md:p-7 text-center mx-auto">
+        <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-lg">
           <i class="fas fa-crown text-3xl md:text-4xl text-white"></i>
         </div>
         <h2 class="text-xl md:text-2xl font-black">Test Complete!</h2>
@@ -374,11 +810,8 @@
           </div>
         </div>
         <div class="flex gap-3">
-          <button id="closeResultBtn"
-            class="btn-primary flex-1 py-2 md:py-3 rounded-xl font-semibold text-white text-sm md:text-base">Close</button>
-          <button id="shareResultBtn"
-            class="bg-gray-200 dark:bg-gray-700 flex-1 py-2 md:py-3 rounded-xl font-semibold hover:bg-gray-300 transition text-sm md:text-base"><i
-              class="fab fa-twitter mr-2"></i>Share</button>
+          <button id="closeResultBtn" class="btn-primary flex-1 py-2 md:py-3 rounded-xl font-semibold text-white text-sm md:text-base">Close</button>
+          <button id="shareResultBtn" class="bg-gray-200 dark:bg-gray-700 flex-1 py-2 md:py-3 rounded-xl font-semibold hover:bg-gray-300 transition text-sm md:text-base"><i class="fab fa-twitter mr-2"></i>Share</button>
         </div>
       </div>
     </div>
